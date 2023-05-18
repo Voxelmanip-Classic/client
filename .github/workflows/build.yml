@@ -1,0 +1,51 @@
+name: build
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
+
+env:
+  MINETEST_POSTGRESQL_CONNECT_STRING: 'host=localhost user=minetest password=minetest dbname=minetest'
+
+jobs:
+  # Current gcc version
+  gcc_12:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps g++-12 libluajit-5.1-dev
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: gcc-12
+          CXX: g++-12

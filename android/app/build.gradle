@@ -1,0 +1,92 @@
+apply plugin: 'com.android.application'
+
+android {
+	compileSdkVersion 33
+	buildToolsVersion '33.0.2'
+	ndkVersion "$ndk_version"
+	defaultConfig {
+		applicationId 'se.voxelmanip.voxelmanip_classic'
+		minSdkVersion 21
+		targetSdkVersion 33
+
+		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+		versionCode project.versionCode
+
+		ndk {
+			abiFilters "arm64-v8a"
+		}
+	}
+
+	// load properties
+	Properties props = new Properties()
+	def propfile = file('../local.properties')
+	if (propfile.exists())
+		props.load(new FileInputStream(propfile))
+
+	if (props.getProperty('keystore') != null) {
+		signingConfigs {
+			release {
+				storeFile file(props['keystore'])
+				storePassword props['keystore.password']
+				keyAlias props['key']
+				keyPassword props['key.password']
+			}
+		}
+
+		buildTypes {
+			release {
+				minifyEnabled true
+				signingConfig signingConfigs.release
+			}
+		}
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
+task prepareAssets() {
+	def assetsFolder = "build/assets"
+	def projRoot = rootDir.parent
+
+	doFirst {
+		logger.lifecycle('Preparing assets at {}', assetsFolder)
+	}
+
+	doLast {
+		copy {
+			from "${projRoot}/doc/lgpl-2.1.txt" into assetsFolder
+		}
+		copy {
+			from "${projRoot}/builtin" into "${assetsFolder}/builtin"
+		}
+		copy {
+			from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
+		}
+		copy {
+			from "../native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
+		}
+		copy {
+			from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
+		}
+		copy {
+			from "${projRoot}/textures/base" into "${assetsFolder}/textures/base"
+		}
+	}
+
+	task zipAssets(dependsOn: prepareAssets, type: Zip) {
+		archiveFileName = "Minetest.zip"
+		from assetsFolder
+		destinationDirectory = file("src/main/assets")
+	}
+}
+
+preBuild.dependsOn zipAssets
+prepareAssets.dependsOn ':native:getDeps'
+
+dependencies {
+	implementation project(':native')
+	implementation 'androidx.appcompat:appcompat:1.6.1'
+}

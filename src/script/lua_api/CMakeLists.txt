@@ -1,0 +1,27 @@
+set(common_SCRIPT_LUA_API_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/l_base.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_env.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_inventory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_item.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_itemstackmeta.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_metadata.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_modchannels.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_nodemeta.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_object.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_particles.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_server.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_settings.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_storage.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_util.cpp
+	PARENT_SCOPE)
+
+set(client_SCRIPT_LUA_API_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/l_camera.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_client.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_localplayer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_mainmenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_minimap.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_particles_local.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_sound.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_storage.cpp
+	PARENT_SCOPE)

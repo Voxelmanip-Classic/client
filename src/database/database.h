@@ -43,11 +43,6 @@ public:
 	virtual bool saveBlock(const v3s16 &pos, const std::string &data) = 0;
 	virtual void loadBlock(const v3s16 &pos, std::string *block) = 0;
 	virtual bool deleteBlock(const v3s16 &pos) = 0;
-
-	static s64 getBlockAsInteger(const v3s16 &pos);
-	static v3s16 getIntegerAsBlock(s64 i);
-
-	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst) = 0;
 };
 
 class PlayerSAO;

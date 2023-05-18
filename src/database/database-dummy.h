@@ -24,18 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "irrlichttypes.h"
 
-class Database_Dummy : public MapDatabase, public PlayerDatabase, public ModStorageDatabase
+class Database_Dummy : public ModStorageDatabase
 {
 public:
-	bool saveBlock(const v3s16 &pos, const std::string &data);
-	void loadBlock(const v3s16 &pos, std::string *block);
-	bool deleteBlock(const v3s16 &pos);
-	void listAllLoadableBlocks(std::vector<v3s16> &dst);
-
-	void savePlayer(RemotePlayer *player);
-	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
-	bool removePlayer(const std::string &name);
-	void listPlayers(std::vector<std::string> &res);
 
 	void getModEntries(const std::string &modname, StringMap *storage);
 	void getModKeys(const std::string &modname, std::vector<std::string> *storage);

@@ -802,31 +802,7 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 
 ServerMap::~ServerMap()
 {
-	verbosestream<<FUNCTION_NAME<<std::endl;
 
-	try
-	{
-		if (m_map_saving_enabled) {
-			// Save only changed parts
-			save(MOD_STATE_WRITE_AT_UNLOAD);
-			infostream << "ServerMap: Saved map to " << m_savedir << std::endl;
-		} else {
-			infostream << "ServerMap: Map not saved" << std::endl;
-		}
-	}
-	catch(std::exception &e)
-	{
-		infostream<<"ServerMap: Failed to save map to "<<m_savedir
-				<<", exception: "<<e.what()<<std::endl;
-	}
-
-	/*
-		Close database if it was opened
-	*/
-	delete dbase;
-	delete dbase_ro;
-
-	deleteDetachedBlocks();
 }
 
 bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
@@ -837,147 +813,21 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 void ServerMap::finishBlockMake(BlockMakeData *data,
 	std::map<v3s16, MapBlock*> *changed_blocks)
 {
-	v3s16 bpmin = data->blockpos_min;
-	v3s16 bpmax = data->blockpos_max;
 
-	/*
-		Blit generated stuff to map
-		NOTE: blitBackAll adds nearly everything to changed_blocks
-	*/
-	data->vmanip->blitBackAll(changed_blocks);
-
-	/*
-		Copy transforming liquid information
-	*/
-	while (data->transforming_liquid.size()) {
-		m_transforming_liquid.push_back(data->transforming_liquid.front());
-		data->transforming_liquid.pop_front();
-	}
-
-	for (auto &changed_block : *changed_blocks) {
-		MapBlock *block = changed_block.second;
-		if (!block)
-			continue;
-		/*
-			Update day/night difference cache of the MapBlocks
-		*/
-		block->expireDayNightDiff();
-		/*
-			Set block as modified
-		*/
-		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-			MOD_REASON_EXPIRE_DAYNIGHTDIFF);
-	}
-
-	/*
-		Set central blocks as generated
-	*/
-	for (s16 x = bpmin.X; x <= bpmax.X; x++)
-	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
-	for (s16 y = bpmin.Y; y <= bpmax.Y; y++) {
-		MapBlock *block = getBlockNoCreateNoEx(v3s16(x, y, z));
-		if (!block)
-			continue;
-
-		block->setGenerated(true);
-	}
-
-	/*
-		Save changed parts of map
-		NOTE: Will be saved later.
-	*/
-	//save(MOD_STATE_WRITE_AT_UNLOAD);
-	m_chunks_in_progress.erase(bpmin);
 }
 
 MapSector *ServerMap::createSector(v2s16 p2d)
 {
-	/*
-		Check if it exists already in memory
-	*/
-	MapSector *sector = getSectorNoGenerate(p2d);
-	if (sector)
-		return sector;
-
-	/*
-		Do not create over max mapgen limit
-	*/
-	if (blockpos_over_max_limit(v3s16(p2d.X, 0, p2d.Y)))
-		throw InvalidPositionException("createSector(): pos. over max mapgen limit");
-
-	/*
-		Generate blank sector
-	*/
-
-	sector = new MapSector(this, p2d, m_gamedef);
-
-	/*
-		Insert to container
-	*/
-	m_sectors[p2d] = sector;
-
-	return sector;
+	return NULL;
 }
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
-	/*
-		Do not create over max mapgen limit
-	*/
-	if (blockpos_over_max_limit(p))
-		throw InvalidPositionException("createBlock(): pos. over max mapgen limit");
-
-	v2s16 p2d(p.X, p.Z);
-	s16 block_y = p.Y;
-	/*
-		This will create or load a sector if not found in memory.
-		If block exists on disk, it will be loaded.
-
-		NOTE: On old save formats, this will be slow, as it generates
-		      lighting on blocks for them.
-	*/
-	MapSector *sector;
-	try {
-		sector = createSector(p2d);
-	} catch (InvalidPositionException &e) {
-		infostream<<"createBlock: createSector() failed"<<std::endl;
-		throw e;
-	}
-
-	/*
-		Try to get a block from the sector
-	*/
-
-	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
-	if (block) {
-		return block;
-	}
-	// Create blank
-	block = sector->createBlankBlock(block_y);
-
-	return block;
+	return NULL;
 }
 
 MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
-	{
-		MapBlock *block = getBlockNoCreateNoEx(p);
-		if (block)
-			return block;
-	}
-
-	{
-		MapBlock *block = loadBlock(p);
-		if(block)
-			return block;
-	}
-
-	if (create_blank) {
-		MapSector *sector = createSector(v2s16(p.X, p.Z));
-		MapBlock *block = sector->createBlankBlock(p.Y);
-
-		return block;
-	}
 
 	return NULL;
 }
@@ -990,13 +840,6 @@ bool ServerMap::isBlockInQueue(v3s16 pos)
 void ServerMap::addNodeAndUpdate(v3s16 p, MapNode n,
 		std::map<v3s16, MapBlock*> &modified_blocks,
 		bool remove_metadata)
-{
-
-}
-
-// N.B.  This requires no synchronization, since data will not be modified unless
-// the VoxelManipulator being updated belongs to the same thread.
-void ServerMap::updateVManip(v3s16 pos)
 {
 
 }
@@ -1021,16 +864,6 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 
 }
 
-MapDatabase *ServerMap::createDatabase(
-	const std::string &name,
-	const std::string &savedir,
-	Settings &conf)
-{
-	if (name == "dummy")
-		return new Database_Dummy();
-
-	throw BaseException(std::string("Database backend ") + name + " not supported.");
-}
 
 void ServerMap::beginSave()
 {
@@ -1059,37 +892,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
-	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
-
-	v2s16 p2d(blockpos.X, blockpos.Z);
-
-	std::string ret;
-	dbase->loadBlock(blockpos, &ret);
-	if (!ret.empty()) {
-		loadBlock(&ret, blockpos, createSector(p2d), false);
-	} else if (dbase_ro) {
-		dbase_ro->loadBlock(blockpos, &ret);
-		if (!ret.empty()) {
-			loadBlock(&ret, blockpos, createSector(p2d), false);
-		}
-	} else {
-		return NULL;
-	}
-
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if (created_new && (block != NULL)) {
-		std::map<v3s16, MapBlock*> modified_blocks;
-		// Fix lighting if necessary
-		voxalgo::update_block_border_lighting(this, block, modified_blocks);
-		if (!modified_blocks.empty()) {
-			//Modified lighting, send event
-			MapEditEvent event;
-			event.type = MEET_OTHER;
-			event.setModifiedBlocks(modified_blocks);
-			dispatchEvent(event);
-		}
-	}
-	return block;
+	return NULL;
 }
 
 bool ServerMap::deleteBlock(v3s16 blockpos)

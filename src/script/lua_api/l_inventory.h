@@ -112,15 +112,3 @@ public:
 
 	static const char className[];
 };
-
-class ModApiInventory : public ModApiBase {
-private:
-	static int l_create_detached_inventory_raw(lua_State *L);
-
-	static int l_remove_detached_inventory_raw(lua_State *L);
-
-	static int l_get_inventory(lua_State *L);
-
-public:
-	static void Initialize(lua_State *L, int top);
-};

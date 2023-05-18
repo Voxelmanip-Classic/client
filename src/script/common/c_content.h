@@ -54,7 +54,6 @@ struct ItemDefinition;
 struct ToolCapabilities;
 struct ObjectProperties;
 struct SimpleSoundSpec;
-struct ServerPlayingSound;
 class Inventory;
 class InventoryList;
 struct NodeBox;
@@ -89,9 +88,6 @@ TileDef            read_tiledef              (lua_State *L, int index,
 void               read_soundspec            (lua_State *L, int index,
                                               SimpleSoundSpec &spec);
 NodeBox            read_nodebox              (lua_State *L, int index);
-
-void               read_server_sound_params  (lua_State *L, int index,
-                                              ServerPlayingSound &params);
 
 ItemStack          read_item                 (lua_State *L, int index, IItemDefManager *idef);
 

@@ -380,11 +380,6 @@ public:
 			std::map<v3s16, MapBlock*> &modified_blocks,
 			bool remove_metadata) override;
 
-	/*
-		Database functions
-	*/
-	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
-
 	// Call these before and after saving of blocks
 	void beginSave() override;
 	void endSave() override;
@@ -407,8 +402,6 @@ public:
 	void deleteDetachedBlocks();
 
 	void step();
-
-	void updateVManip(v3s16 pos);
 
 	// For debug printing
 	void PrintInfo(std::ostream &out) override;

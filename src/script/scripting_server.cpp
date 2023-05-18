@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_particles.h"
-#include "lua_api/l_server.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
 #include "lua_api/l_storage.h"
@@ -100,7 +99,6 @@ void ServerScripting::initAsync()
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiItemMod::InitializeAsync);
-	asyncEngine.registerStateInitializer(ModApiServer::InitializeAsync);
 	// not added: ModApiHttp async api can't really work together with our jobs
 	// not added: ModApiStorage is probably not thread safe(?)
 
@@ -136,7 +134,6 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiInventory::Initialize(L, top);
 	ModApiItemMod::Initialize(L, top);
 	ModApiParticles::Initialize(L, top);
-	ModApiServer::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);

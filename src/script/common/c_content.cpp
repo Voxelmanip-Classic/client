@@ -1657,54 +1657,6 @@ void luaentity_get(lua_State *L, u16 id)
 }
 
 /******************************************************************************/
-bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
-{
-	if (index < 0)
-		index = lua_gettop(L) + 1 + index;
-
-	if (!lua_istable(L, index))
-		return false;
-
-	getfloatfield(L, index, "offset",      np->offset);
-	getfloatfield(L, index, "scale",       np->scale);
-	getfloatfield(L, index, "persist",     np->persist);
-	getfloatfield(L, index, "persistence", np->persist);
-	getfloatfield(L, index, "lacunarity",  np->lacunarity);
-	getintfield(L,   index, "seed",        np->seed);
-	getintfield(L,   index, "octaves",     np->octaves);
-
-	u32 flags    = 0;
-	u32 flagmask = 0;
-	np->flags = getflagsfield(L, index, "flags", flagdesc_noiseparams,
-		&flags, &flagmask) ? flags : NOISE_FLAG_DEFAULTS;
-
-	lua_getfield(L, index, "spread");
-	np->spread  = read_v3f(L, -1);
-	lua_pop(L, 1);
-
-	return true;
-}
-
-void push_noiseparams(lua_State *L, NoiseParams *np)
-{
-	lua_newtable(L);
-	setfloatfield(L, -1, "offset",      np->offset);
-	setfloatfield(L, -1, "scale",       np->scale);
-	setfloatfield(L, -1, "persist",     np->persist);
-	setfloatfield(L, -1, "persistence", np->persist);
-	setfloatfield(L, -1, "lacunarity",  np->lacunarity);
-	setintfield(  L, -1, "seed",        np->seed);
-	setintfield(  L, -1, "octaves",     np->octaves);
-
-	push_flags_string(L, flagdesc_noiseparams, np->flags,
-		np->flags);
-	lua_setfield(L, -2, "flags");
-
-	push_v3f(L, np->spread);
-	lua_setfield(L, -2, "spread");
-}
-
-/******************************************************************************/
 // Returns depth of json value tree
 static int push_json_value_getdepth(const Json::Value &value)
 {

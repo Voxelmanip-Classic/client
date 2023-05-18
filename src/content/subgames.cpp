@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h" // for set_default_settings
-#include "map_settings_manager.h"
 #include "util/string.h"
 
 #ifndef SERVER
@@ -34,18 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // The maximum number of identical world names allowed
 #define MAX_WORLD_NAMES 100
-
-namespace
-{
-
-bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
-{
-	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
-	return conf.readConfigFile(conf_path.c_str());
-}
-
-}
-
 
 void SubgameSpec::checkAndLog() const
 {
@@ -342,86 +329,6 @@ std::vector<WorldSpec> getAvailableWorlds()
 	} while (false);
 	infostream << worlds.size() << " found." << std::endl;
 	return worlds;
-}
-
-void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
-		const SubgameSpec &gamespec, bool create_world)
-{
-	std::string final_path = path;
-
-	// If we're creating a new world, ensure that the path isn't already taken
-	if (create_world) {
-		int counter = 1;
-		while (fs::PathExists(final_path) && counter < MAX_WORLD_NAMES) {
-			final_path = path + "_" + std::to_string(counter);
-			counter++;
-		}
-
-		if (fs::PathExists(final_path)) {
-			throw BaseException("Too many similar filenames");
-		}
-	}
-
-	Settings *game_settings = Settings::getLayer(SL_GAME);
-	const bool new_game_settings = (game_settings == nullptr);
-	if (new_game_settings) {
-		// Called by main-menu without a Server instance running
-		// -> create and free manually
-		game_settings = Settings::createLayer(SL_GAME);
-	}
-
-	getGameMinetestConfig(gamespec.path, *game_settings);
-	game_settings->removeSecureSettings();
-
-	infostream << "Initializing world at " << final_path << std::endl;
-
-	fs::CreateAllDirs(final_path);
-
-	// Create world.mt if does not already exist
-	std::string worldmt_path = final_path + DIR_DELIM "world.mt";
-	if (!fs::PathExists(worldmt_path)) {
-		Settings gameconf;
-		std::string gameconf_path = gamespec.path + DIR_DELIM "game.conf";
-		gameconf.readConfigFile(gameconf_path.c_str());
-
-		Settings conf; // for world.mt
-
-		conf.set("world_name", name);
-		conf.set("gameid", gamespec.id);
-
-		std::string backend = "dummy";
-		if (gameconf.exists("map_persistent") && !gameconf.getBool("map_persistent")) {
-			backend = "dummy";
-		}
-		conf.set("backend", backend);
-
-		conf.set("player_backend", "dummy");
-		conf.set("auth_backend", "dummy");
-		conf.set("mod_storage_backend", "dummy");
-		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
-		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
-		if (MAP_BLOCKSIZE != 16)
-			conf.set("blocksize", std::to_string(MAP_BLOCKSIZE));
-
-		if (!conf.updateConfigFile(worldmt_path.c_str())) {
-			throw BaseException("Failed to update the config file");
-		}
-	}
-
-	// Create map_meta.txt if does not already exist
-	std::string map_meta_path = final_path + DIR_DELIM + "map_meta.txt";
-	if (!fs::PathExists(map_meta_path)) {
-		MapSettingsManager mgr(map_meta_path);
-
-		mgr.setMapSetting("seed", g_settings->get("fixed_map_seed"));
-
-		mgr.makeMapgenParams();
-		mgr.saveMapMeta();
-	}
-
-	// The Settings object is no longer needed for created worlds
-	if (new_game_settings)
-		delete game_settings;
 }
 
 std::vector<std::string> getEnvModPaths()

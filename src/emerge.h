@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "util/container.h"
 #include "util/metricsbackend.h"
-#include "mapgen/mapgen.h" // for MapgenParams
 #include "map.h"
 
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)
@@ -112,23 +111,10 @@ public:
 	u32 gen_notify_on = 0;
 	std::set<u32> gen_notify_on_deco_ids;
 
-	// Parameters passed to mapgens owned by ServerMap
-	// TODO(hmmmm): Remove this after mapgen helper methods using them
-	// are moved to ServerMap
-	MapgenParams *mgparams;
-
-	// Hackish workaround:
-	// For now, EmergeManager must hold onto a ptr to the Map's setting manager
-	// since the Map can only be accessed through the Environment, and the
-	// Environment is not created until after script initialization.
-	MapSettingsManager *map_settings_mgr;
-
 	// Methods
 	EmergeManager(Server *server, MetricsBackend *mb);
 	~EmergeManager();
 	DISABLE_CLASS_COPY(EmergeManager);
-
-	void initMapgens(MapgenParams *mgparams);
 
 	void startThreads();
 	void stopThreads();
@@ -149,16 +135,7 @@ public:
 
 	bool isBlockInQueue(v3s16 pos);
 
-	Mapgen *getCurrentMapgen();
-
-	// Mapgen helpers methods
-	int getSpawnLevelAtPoint(v2s16 p);
-	bool isBlockUnderground(v3s16 blockpos);
-
-	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
-
 private:
-	std::vector<Mapgen *> m_mapgens;
 	std::vector<EmergeThread *> m_threads;
 	bool m_threads_active = false;
 
@@ -172,21 +149,6 @@ private:
 
 	// Emerge metrics
 	MetricCounterPtr m_completed_emerge_counter[5];
-
-	// Requires m_queue_mutex held
-	EmergeThread *getOptimalThread();
-
-	bool pushBlockEmergeData(
-		v3s16 pos,
-		u16 peer_requested,
-		u16 flags,
-		EmergeCompletionCallback callback,
-		void *callback_param,
-		bool *entry_already_exists);
-
-	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
-
-	void reportCompletedEmerge(EmergeAction action);
 
 	friend class EmergeThread;
 };

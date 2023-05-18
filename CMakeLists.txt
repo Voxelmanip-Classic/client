@@ -267,9 +267,6 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
-if(NOT USE_LUAJIT)
-	add_subdirectory(lib/bitop)
-endif()
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

@@ -102,18 +102,6 @@ public:
 	Some "old-style" interrupts:
 */
 
-class InvalidNoiseParamsException : public BaseException {
-public:
-	InvalidNoiseParamsException():
-		BaseException("One or more noise parameters were invalid or require "
-			"too much memory")
-	{}
-
-	InvalidNoiseParamsException(const std::string &s):
-		BaseException(s)
-	{}
-};
-
 class InvalidPositionException : public BaseException
 {
 public:

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "daynightratio.h"
 #include "emerge.h"
+#include "nodedef.h"
 
 
 Environment::Environment(IGameDef *gamedef):

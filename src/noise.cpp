@@ -38,15 +38,6 @@
 // Unsigned magic seed prevents undefined behavior.
 #define NOISE_MAGIC_SEED 1013U
 
-FlagDesc flagdesc_noiseparams[] = {
-	{"defaults",    NOISE_FLAG_DEFAULTS},
-	{"eased",       NOISE_FLAG_EASED},
-	{"absvalue",    NOISE_FLAG_ABSVALUE},
-	{"pointbuffer", NOISE_FLAG_POINTBUFFER},
-	{"simplex",     NOISE_FLAG_SIMPLEX},
-	{NULL,          0}
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 
 PcgRandom::PcgRandom(u64 state, u64 seq)
@@ -164,16 +155,6 @@ float noise2d(int x, int y, s32 seed)
 }
 
 
-float noise3d(int x, int y, int z, s32 seed)
-{
-	unsigned int n = (NOISE_MAGIC_X * x + NOISE_MAGIC_Y * y + NOISE_MAGIC_Z * z
-			+ NOISE_MAGIC_SEED * seed) & 0x7fffffff;
-	n = (n >> 13) ^ n;
-	n = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
-	return 1.f - (float)(int)n / 0x40000000;
-}
-
-
 inline float dotProduct(float vx, float vy, float wx, float wy)
 {
 	return vx * wx + vy * wy;
@@ -202,24 +183,6 @@ inline float biLinearInterpolation(
 	return linearInterpolation(u, v, y);
 }
 
-
-inline float triLinearInterpolation(
-	float v000, float v100, float v010, float v110,
-	float v001, float v101, float v011, float v111,
-	float x, float y, float z,
-	bool eased)
-{
-	// Inlining will optimize this branch out when possible
-	if (eased) {
-		x = easeCurve(x);
-		y = easeCurve(y);
-		z = easeCurve(z);
-	}
-	float u = biLinearInterpolation(v000, v100, v010, v110, x, y, false);
-	float v = biLinearInterpolation(v001, v101, v011, v111, x, y, false);
-	return linearInterpolation(u, v, z);
-}
-
 float noise2d_gradient(float x, float y, s32 seed, bool eased)
 {
 	// Calculate the integer coordinates
@@ -237,33 +200,6 @@ float noise2d_gradient(float x, float y, s32 seed, bool eased)
 	return biLinearInterpolation(v00, v10, v01, v11, xl, yl, eased);
 }
 
-
-float noise3d_gradient(float x, float y, float z, s32 seed, bool eased)
-{
-	// Calculate the integer coordinates
-	int x0 = myfloor(x);
-	int y0 = myfloor(y);
-	int z0 = myfloor(z);
-	// Calculate the remaining part of the coordinates
-	float xl = x - (float)x0;
-	float yl = y - (float)y0;
-	float zl = z - (float)z0;
-	// Get values for corners of cube
-	float v000 = noise3d(x0,     y0,     z0,     seed);
-	float v100 = noise3d(x0 + 1, y0,     z0,     seed);
-	float v010 = noise3d(x0,     y0 + 1, z0,     seed);
-	float v110 = noise3d(x0 + 1, y0 + 1, z0,     seed);
-	float v001 = noise3d(x0,     y0,     z0 + 1, seed);
-	float v101 = noise3d(x0 + 1, y0,     z0 + 1, seed);
-	float v011 = noise3d(x0,     y0 + 1, z0 + 1, seed);
-	float v111 = noise3d(x0 + 1, y0 + 1, z0 + 1, seed);
-	// Interpolate
-	return triLinearInterpolation(
-		v000, v100, v010, v110,
-		v001, v101, v011, v111,
-		xl, yl, zl,
-		eased);
-}
 
 
 float noise2d_perlin(float x, float y, s32 seed,

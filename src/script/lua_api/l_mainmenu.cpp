@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "content/content.h"
 #include "content/subgames.h"
-#include "mapgen/mapgen.h"
 #include "settings.h"
 #include "client/client.h"
 #include "client/renderingengine.h"
@@ -349,161 +348,6 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_content_info(lua_State *L)
-{
-	std::string path = luaL_checkstring(L, 1);
-
-	ContentSpec spec;
-	spec.path = path;
-	parseContentInfo(spec);
-
-	lua_newtable(L);
-
-	lua_pushstring(L, spec.name.c_str());
-	lua_setfield(L, -2, "name");
-
-	lua_pushstring(L, spec.type.c_str());
-	lua_setfield(L, -2, "type");
-
-	lua_pushstring(L, spec.author.c_str());
-	lua_setfield(L, -2, "author");
-
-	if (!spec.title.empty()) {
-		lua_pushstring(L, spec.title.c_str());
-		lua_setfield(L, -2, "title");
-	}
-
-	lua_pushinteger(L, spec.release);
-	lua_setfield(L, -2, "release");
-
-	lua_pushstring(L, spec.desc.c_str());
-	lua_setfield(L, -2, "description");
-
-	lua_pushstring(L, spec.path.c_str());
-	lua_setfield(L, -2, "path");
-
-	if (spec.type == "mod") {
-		ModSpec spec;
-		spec.path = path;
-		parseModContents(spec);
-
-		// Dependencies
-		lua_newtable(L);
-		int i = 1;
-		for (const auto &dep : spec.depends) {
-			lua_pushstring(L, dep.c_str());
-			lua_rawseti(L, -2, i++);
-		}
-		lua_setfield(L, -2, "depends");
-
-		// Optional Dependencies
-		lua_newtable(L);
-		i = 1;
-		for (const auto &dep : spec.optdepends) {
-			lua_pushstring(L, dep.c_str());
-			lua_rawseti(L, -2, i++);
-		}
-		lua_setfield(L, -2, "optional_depends");
-	}
-
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
-{
-	std::string worldpath = luaL_checkstring(L, 1);
-
-	ModConfiguration modmgr;
-
-	// Add all game mods
-	SubgameSpec gamespec = findWorldSubgame(worldpath);
-	modmgr.addGameMods(gamespec);
-	modmgr.addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
-
-	// Add user-configured mods
-	std::vector<ModSpec> modSpecs;
-
-	luaL_checktype(L, 2, LUA_TTABLE);
-
-	lua_pushnil(L);
-	while (lua_next(L, 2)) {
-		// Ignore non-string keys
-		if (lua_type(L, -2) != LUA_TSTRING) {
-			throw LuaError(
-					"Unexpected non-string key in table passed to "
-					"core.check_mod_configuration");
-		}
-
-		std::string modpath = luaL_checkstring(L, -1);
-		lua_pop(L, 1);
-		std::string virtual_path = lua_tostring(L, -1);
-
-		modSpecs.emplace_back();
-		ModSpec &spec = modSpecs.back();
-		spec.name = fs::GetFilenameFromPath(modpath.c_str());
-		spec.path = modpath;
-		spec.virtual_path = virtual_path;
-		if (!parseModContents(spec)) {
-			throw LuaError("Not a mod!");
-		}
-	}
-
-	modmgr.addMods(modSpecs);
-	try {
-		modmgr.checkConflictsAndDeps();
-	} catch (const ModError &err) {
-		errorstream << err.what() << std::endl;
-
-		lua_newtable(L);
-
-		lua_pushboolean(L, false);
-		lua_setfield(L, -2, "is_consistent");
-
-		lua_newtable(L);
-		lua_setfield(L, -2, "unsatisfied_mods");
-
-		lua_newtable(L);
-		lua_setfield(L, -2, "satisfied_mods");
-
-		lua_pushstring(L, err.what());
-		lua_setfield(L, -2, "error_message");
-		return 1;
-	}
-
-
-	lua_newtable(L);
-
-	lua_pushboolean(L, modmgr.isConsistent());
-	lua_setfield(L, -2, "is_consistent");
-
-	lua_newtable(L);
-	int top = lua_gettop(L);
-	unsigned int index = 1;
-	for (const auto &spec : modmgr.getUnsatisfiedMods()) {
-		lua_pushnumber(L, index);
-		push_mod_spec(L, spec, true);
-		lua_settable(L, top);
-		index++;
-	}
-
-	lua_setfield(L, -2, "unsatisfied_mods");
-
-	lua_newtable(L);
-	top = lua_gettop(L);
-	index = 1;
-	for (const auto &spec : modmgr.getMods()) {
-		lua_pushnumber(L, index);
-		push_mod_spec(L, spec, false);
-		lua_settable(L, top);
-		index++;
-	}
-	lua_setfield(L, -2, "satisfied_mods");
-
-	return 1;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 {
 	GUIEngine *engine = getGuiEngine(L);
@@ -520,82 +364,6 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_create_world(lua_State *L)
-{
-	const char *name   = luaL_checkstring(L, 1);
-	const char *gameid = luaL_checkstring(L, 2);
-
-	StringMap use_settings;
-	luaL_checktype(L, 3, LUA_TTABLE);
-	lua_pushnil(L);
-	while (lua_next(L, 3) != 0) {
-		// key at index -2 and value at index -1
-		use_settings[luaL_checkstring(L, -2)] = luaL_checkstring(L, -1);
-		lua_pop(L, 1);
-	}
-	lua_pop(L, 1);
-
-	std::string path = porting::path_user + DIR_DELIM
-			"worlds" + DIR_DELIM
-			+ sanitizeDirName(name, "world_");
-
-	std::vector<SubgameSpec> games = getAvailableGames();
-	auto game_it = std::find_if(games.begin(), games.end(), [gameid] (const SubgameSpec &spec) {
-		return spec.id == gameid;
-	});
-	if (game_it == games.end()) {
-		lua_pushstring(L, "Game ID not found");
-		return 1;
-	}
-
-	// Set the settings for world creation
-	// this is a bad hack but the best we have right now..
-	StringMap backup;
-	for (auto it : use_settings) {
-		if (g_settings->existsLocal(it.first))
-			backup[it.first] = g_settings->get(it.first);
-		g_settings->set(it.first, it.second);
-	}
-
-	// Create world if it doesn't exist
-	try {
-		loadGameConfAndInitWorld(path, name, *game_it, true);
-		lua_pushnil(L);
-	} catch (const BaseException &e) {
-		auto err = std::string("Failed to initialize world: ") + e.what();
-		lua_pushstring(L, err.c_str());
-	}
-
-	// Restore previous settings
-	for (auto it : use_settings) {
-		auto it2 = backup.find(it.first);
-		if (it2 == backup.end())
-			g_settings->remove(it.first); // wasn't set before
-		else
-			g_settings->set(it.first, it2->second); // was set before
-	}
-
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_delete_world(lua_State *L)
-{
-	int world_id = luaL_checkinteger(L, 1) - 1;
-	std::vector<WorldSpec> worlds = getAvailableWorlds();
-	if (world_id < 0 || world_id >= (int) worlds.size()) {
-		lua_pushstring(L, "Invalid world index");
-		return 1;
-	}
-	const WorldSpec &spec = worlds[world_id];
-	if (!fs::RecursiveDelete(spec.path)) {
-		lua_pushstring(L, "Failed to delete world");
-		return 1;
-	}
-	return 0;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -608,22 +376,6 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 
 	engine->setTopleftText(text);
 	return 0;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
-{
-	std::vector<const char *> names;
-	bool include_hidden = lua_isboolean(L, 1) && readParam<bool>(L, 1);
-	Mapgen::getMapgenNames(&names, include_hidden);
-
-	lua_newtable(L);
-	for (size_t i = 0; i != names.size(); i++) {
-		lua_pushstring(L, names[i]);
-		lua_rawseti(L, -2, i + 1);
-	}
-
-	return 1;
 }
 
 
@@ -1034,16 +786,11 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_table_index);
 	API_FCT(get_worlds);
 	API_FCT(get_games);
-	API_FCT(get_content_info);
-	API_FCT(check_mod_configuration);
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(show_keys_menu);
-	API_FCT(create_world);
-	API_FCT(delete_world);
 	API_FCT(set_background);
 	API_FCT(set_topleft_text);
-	API_FCT(get_mapgen_names);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
 	API_FCT(get_modpaths);
@@ -1080,7 +827,6 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 {
 	API_FCT(get_worlds);
 	API_FCT(get_games);
-	API_FCT(get_mapgen_names);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
 	API_FCT(get_modpaths);

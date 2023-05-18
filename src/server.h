@@ -214,15 +214,10 @@ public:
 	*/
 	void onMapEditEvent(const MapEditEvent &event);
 
-	// Connection must be locked when called
-	std::string getStatusString();
 	inline double getUptime() const { return m_uptime_counter->get(); }
 
 	// read shutdown state
 	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
-
-	// request server to shutdown
-	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
@@ -233,7 +228,6 @@ public:
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
 	bool checkPriv(const std::string &name, const std::string &priv);
-	void reportPrivsModified(const std::string &name=""); // ""=all
 	void reportInventoryFormspecModified(const std::string &name);
 	void reportFormspecPrependModified(const std::string &name);
 
@@ -247,9 +241,6 @@ public:
 		ServerActiveObject *attached, const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
-
-	bool dynamicAddMedia(std::string filepath, u32 token,
-		const std::string &to_player, bool ephemeral);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -338,10 +329,6 @@ public:
 	void SendMovePlayer(session_t peer_id);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
-
-	void SendMinimapModes(session_t peer_id,
-			std::vector<MinimapMode> &modes,
-			size_t wanted_mode);
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
@@ -481,7 +468,6 @@ private:
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
-	void stepPendingDynMediaCallbacks(float dtime);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
@@ -505,8 +491,6 @@ private:
 	void HandlePlayerDeath(PlayerSAO* sao, const PlayerHPChangeReason &reason);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);
-
-	void handleChatInterfaceEvent(ChatEvent *evt);
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
 	std::wstring handleChat(const std::string &name, std::wstring wmessage_input,

@@ -52,21 +52,6 @@ bool isMenuActive()
 // Passed to menus to allow disconnecting and exiting
 MainGameCallback *g_gamecallback = nullptr;
 
-#if 0
-// This can be helpful for the next code cleanup
-static void dump_start_data(const GameStartData &data)
-{
-	std::cout <<
-		"\ndedicated   " << (int)data.is_dedicated_server <<
-		"\nport        " << data.socket_port <<
-		"\nworld_path  " << data.world_spec.path <<
-		"\nworld game  " << data.world_spec.gameid <<
-		"\ngame path   " << data.game_spec.path <<
-		"\nplayer name " << data.name <<
-		"\naddress     " << data.address << std::endl;
-}
-#endif
-
 ClientLauncher::~ClientLauncher()
 {
 	delete input;

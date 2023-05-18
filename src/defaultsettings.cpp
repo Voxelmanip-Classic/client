@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "constants.h"
 #include "porting.h"
-#include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
 void set_default_settings()
@@ -294,7 +293,6 @@ void set_default_settings()
 	settings->setDefault("port", "30000");
 	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
-	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("default_game", "nodecore");
 	settings->setDefault("max_users", "15");
@@ -309,16 +307,11 @@ void set_default_settings()
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_block_send_distance", "12");
-	settings->setDefault("block_send_optimize_distance", "4");
-	settings->setDefault("server_side_occlusion_culling", "true");
 	settings->setDefault("csm_restriction_flags", "62");
 	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "6125");
-	settings->setDefault("server_unload_unused_data_timeout", "29");
-	settings->setDefault("max_objects_per_block", "256");
 	settings->setDefault("server_map_save_interval", "5.3");
-	settings->setDefault("sqlite_synchronous", "2");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
@@ -327,10 +320,6 @@ void set_default_settings()
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("chat_log_level", "error");
-	settings->setDefault("emergequeue_limit_total", "1024");
-	settings->setDefault("emergequeue_limit_diskonly", "128");
-	settings->setDefault("emergequeue_limit_generate", "128");
-	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
 	settings->setDefault("secure.http_mods", "");
@@ -356,7 +345,6 @@ void set_default_settings()
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("max_block_generate_distance", "10");
-	Mapgen::setDefaultSettings(settings);
 
 	settings->setDefault("screen_dpi", "72");
 	settings->setDefault("display_density_factor", "1");
@@ -380,12 +368,9 @@ void set_default_settings()
 	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("performance_tradeoffs", "true");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
-	settings->setDefault("emergequeue_limit_diskonly", "16");
-	settings->setDefault("emergequeue_limit_generate", "16");
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max_unfocused", "10");
-	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("server_map_save_interval", "15");

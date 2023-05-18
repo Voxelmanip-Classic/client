@@ -316,37 +316,6 @@ local function parse_config_file(read_all, parse_mods)
 			end
 		end
 
-		-- Parse mods
-		local mods_category_initialized = false
-		local mods = {}
-		pkgmgr.get_mods(core.get_modpath(), "mods", mods)
-		for _, mod in ipairs(mods) do
-			local path = mod.path .. DIR_DELIM .. FILENAME
-			local file = io.open(path, "r")
-			if file then
-				if not mods_category_initialized then
-					fgettext_ne("Content: Mods") -- not used, but needed for xgettext
-					table.insert(settings, {
-						name = "Content: Mods",
-						level = 0,
-						type = "category",
-					})
-					mods_category_initialized = true
-				end
-
-				table.insert(settings, {
-					name = mod.name,
-					readable_name = mod.title,
-					level = 1,
-					type = "category",
-				})
-
-				parse_single_file(file, path, read_all, settings, 2, false)
-
-				file:close()
-			end
-		end
-
 		-- Parse client mods
 		local clientmods_category_initialized = false
 		local clientmods = {}
@@ -465,44 +434,6 @@ local function get_current_value(setting)
 		value = setting.default
 	end
 	return value
-end
-
-local function get_current_np_group(setting)
-	local value = core.settings:get_np_group(setting.name)
-	if value == nil then
-		return setting.values
-	end
-	local p = "%g"
-	return {
-		p:format(value.offset),
-		p:format(value.scale),
-		p:format(value.spread.x),
-		p:format(value.spread.y),
-		p:format(value.spread.z),
-		p:format(value.seed),
-		p:format(value.octaves),
-		p:format(value.persistence),
-		p:format(value.lacunarity),
-		value.flags
-	}
-end
-
-local function get_current_np_group_as_string(setting)
-	local value = core.settings:get_np_group(setting.name)
-	if value == nil then
-		return setting.default
-	end
-	return ("%g, %g, (%g, %g, %g), %g, %g, %g, %g"):format(
-		value.offset,
-		value.scale,
-		value.spread.x,
-		value.spread.y,
-		value.spread.z,
-		value.seed,
-		value.octaves,
-		value.persistence,
-		value.lacunarity
-	) .. (value.flags ~= "" and (", " .. value.flags) or "")
 end
 
 local checkboxes = {} -- handle checkboxes events

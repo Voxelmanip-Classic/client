@@ -36,8 +36,6 @@
 #undef RANDOM_MAX
 #endif
 
-extern FlagDesc flagdesc_noiseparams[];
-
 // Note: this class is not polymorphic so that its high level of
 // optimizability may be preserved in the common use case
 class PseudoRandom {
@@ -216,10 +214,8 @@ inline float NoisePerlin3D_PO(NoiseParams *np, float x, float xoff,
 
 // Return value: -1 ... 1
 float noise2d(int x, int y, s32 seed);
-float noise3d(int x, int y, int z, s32 seed);
 
 float noise2d_gradient(float x, float y, s32 seed, bool eased=true);
-float noise3d_gradient(float x, float y, float z, s32 seed, bool eased=false);
 
 float noise2d_perlin(float x, float y, s32 seed,
 		int octaves, float persistence, bool eased=true);

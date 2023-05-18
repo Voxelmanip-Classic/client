@@ -760,8 +760,6 @@ protected:
 	bool init(const std::string &map_dir, const std::string &address,
 			u16 port, const SubgameSpec &gamespec);
 	bool initSound();
-	bool createSingleplayerServer(const std::string &map_dir,
-			const SubgameSpec &gamespec, u16 port);
 
 	// Client creation
 	bool createClient(const GameStartData &start_data);
@@ -916,7 +914,6 @@ private:
 	InputHandler *input = nullptr;
 
 	Client *client = nullptr;
-	Server *server = nullptr;
 
 	ClientDynamicInfo client_display_info{};
 	float dynamic_info_send_timer = 0;
@@ -1069,8 +1066,6 @@ Game::~Game()
 	delete soundmaker;
 	sound_manager.reset();
 
-	delete server; // deleted first to stop all server threads
-
 	delete hud;
 	delete camera;
 	delete quicktune;
@@ -1193,8 +1188,7 @@ void Game::run()
 	const bool initial_window_maximized = g_settings->getBool("window_maximized");
 
 	while (m_rendering_engine->run()
-			&& !(*kill || g_gamecallback->shutdown_requested
-			|| (server && server->isShutdownRequested()))) {
+			&& !(*kill || g_gamecallback->shutdown_requested)) {
 
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
@@ -1351,8 +1345,7 @@ bool Game::init(
 
 	// Create a server if not connecting to an existing one
 	if (address.empty()) {
-		if (!createSingleplayerServer(map_dir, gamespec, port))
-			return false;
+		return false;
 	}
 
 	return true;
@@ -1380,36 +1373,6 @@ bool Game::initSound()
 		return false;
 
 	soundmaker->registerReceiver(eventmgr);
-
-	return true;
-}
-
-bool Game::createSingleplayerServer(const std::string &map_dir,
-		const SubgameSpec &gamespec, u16 port)
-{
-	showOverlayMessage(N_("Creating server..."), 0, 5);
-
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, port);
-
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-			   << "\" failed: " << e.what()
-			   << " -- Listening on all addresses." << std::endl;
-	}
-
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
-			bind_addr.serializeString().c_str());
-		errorstream << *error_message << std::endl;
-		return false;
-	}
-
-	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr,
-			false, nullptr, error_message);
-	server->start();
 
 	return true;
 }
@@ -1498,10 +1461,6 @@ bool Game::createClient(const GameStartData &start_data)
 	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
 	str += L" ";
 	str += utf8_to_wide(g_version_hash);
-	str += L" [";
-	str += simple_singleplayer_mode ? wstrgettext("Singleplayer")
-			: wstrgettext("Multiplayer");
-	str += L"]";
 	str += L" [";
 	str += driver->getName();
 	str += L"]";
@@ -1626,9 +1585,6 @@ bool Game::connectToServer(const GameStartData &start_data,
 			// Update client and server
 			client->step(dtime);
 
-			if (server != NULL)
-				server->step(dtime);
-
 			// End condition
 			if (client->getState() == LC_Init) {
 				*connect_ok = true;
@@ -1687,9 +1643,6 @@ bool Game::getServerContent(bool *aborted)
 
 		// Update client and server
 		client->step(dtime);
-
-		if (server != NULL)
-			server->step(dtime);
 
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
@@ -2630,9 +2583,6 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 inline void Game::step(f32 dtime)
 {
-	if (server)
-		server->step(dtime);
-
 	client->step(dtime);
 }
 

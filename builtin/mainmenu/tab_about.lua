@@ -99,13 +99,6 @@ local previous_contributors = {
 }
 
 local rollertest_info = {
-	"This is a custom build of Minetest called ROllertest.",
-	"Do not report bugs specific to ROllertest to",
-	"the Minetest core developers!",
-	""
-}
-
-local rollertest_info = {
 	"Voxelmanip Classic is made possible by the Minetest",
 	"engine, which is free software licensed under LGPLv2.1.",
 	"",

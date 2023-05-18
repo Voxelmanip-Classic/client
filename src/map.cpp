@@ -793,85 +793,11 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		EmergeManager *emerge, MetricsBackend *mb):
 	Map(gamedef),
-	settings_mgr(savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 
-	// Tell the EmergeManager about our MapSettingsManager
-	emerge->map_settings_mgr = &settings_mgr;
 
-	/*
-		Try to load map; if not found, create a new one.
-	*/
-
-	// Determine which database backend to use
-	std::string conf_path = savedir + DIR_DELIM + "world.mt";
-	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("backend")) {
-		// fall back to dummy
-		conf.set("backend", "dummy");
-	}
-	std::string backend = conf.get("backend");
-	dbase = createDatabase(backend, savedir, conf);
-	if (conf.exists("readonly_backend")) {
-		std::string readonly_dir = savedir + DIR_DELIM + "readonly";
-		dbase_ro = createDatabase(conf.get("readonly_backend"), readonly_dir, conf);
-	}
-	if (!conf.updateConfigFile(conf_path.c_str()))
-		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
-
-	m_savedir = savedir;
-	m_map_saving_enabled = false;
-
-	m_save_time_counter = mb->addCounter(
-		"minetest_map_save_time", "Time spent saving blocks (in microseconds)");
-	m_save_count_counter = mb->addCounter(
-		"minetest_map_saved_blocks", "Number of blocks saved");
-	m_loaded_blocks_gauge = mb->addGauge(
-		"minetest_map_loaded_blocks", "Number of loaded blocks");
-
-	m_map_compression_level = rangelim(g_settings->getS16("map_compression_level_disk"), -1, 9);
-
-	try {
-		// If directory exists, check contents and load if possible
-		if (fs::PathExists(m_savedir)) {
-			// If directory is empty, it is safe to save into it.
-			if (fs::GetDirListing(m_savedir).empty()) {
-				infostream<<"ServerMap: Empty save directory is valid."
-						<<std::endl;
-				m_map_saving_enabled = true;
-			}
-			else
-			{
-
-				if (settings_mgr.loadMapMeta()) {
-					infostream << "ServerMap: Metadata loaded from "
-						<< savedir << std::endl;
-				} else {
-					infostream << "ServerMap: Metadata could not be loaded "
-						"from " << savedir << ", assuming valid save "
-						"directory." << std::endl;
-				}
-
-				m_map_saving_enabled = true;
-				// Map loaded, not creating new one
-				return;
-			}
-		}
-		// If directory doesn't exist, it is safe to save to it
-		else{
-			m_map_saving_enabled = true;
-		}
-	}
-	catch(std::exception &e)
-	{
-		warningstream<<"ServerMap: Failed to load map from "<<savedir
-				<<", exception: "<<e.what()<<std::endl;
-		infostream<<"Please remove the map or fix it."<<std::endl;
-		warningstream<<"Map saving will be disabled."<<std::endl;
-	}
 }
 
 ServerMap::~ServerMap()
@@ -903,90 +829,8 @@ ServerMap::~ServerMap()
 	deleteDetachedBlocks();
 }
 
-MapgenParams *ServerMap::getMapgenParams()
-{
-	// getMapgenParams() should only ever be called after Server is initialized
-	assert(settings_mgr.mapgen_params != NULL);
-	return settings_mgr.mapgen_params;
-}
-
-u64 ServerMap::getSeed()
-{
-	return getMapgenParams()->seed;
-}
-
-bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
-{
-	const s16 mapgen_limit_bp = rangelim(
-		getMapgenParams()->mapgen_limit, 0, MAX_MAP_GENERATION_LIMIT) /
-		MAP_BLOCKSIZE;
-	return p.X < -mapgen_limit_bp ||
-		p.X >  mapgen_limit_bp ||
-		p.Y < -mapgen_limit_bp ||
-		p.Y >  mapgen_limit_bp ||
-		p.Z < -mapgen_limit_bp ||
-		p.Z >  mapgen_limit_bp;
-}
-
 bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 {
-	s16 csize = getMapgenParams()->chunksize;
-	v3s16 bpmin = EmergeManager::getContainingChunk(blockpos, csize);
-	v3s16 bpmax = bpmin + v3s16(1, 1, 1) * (csize - 1);
-
-	if (!m_chunks_in_progress.insert(bpmin).second)
-		return false;
-
-	v3s16 extra_borders(1, 1, 1);
-	v3s16 full_bpmin = bpmin - extra_borders;
-	v3s16 full_bpmax = bpmax + extra_borders;
-
-	// Do nothing if not inside mapgen limits (+-1 because of neighbors)
-	if (blockpos_over_mapgen_limit(full_bpmin) ||
-			blockpos_over_mapgen_limit(full_bpmax))
-		return false;
-
-	data->seed = getSeed();
-	data->blockpos_min = bpmin;
-	data->blockpos_max = bpmax;
-	data->nodedef = m_nodedef;
-
-	/*
-		Create the whole area of this and the neighboring blocks
-	*/
-	for (s16 x = full_bpmin.X; x <= full_bpmax.X; x++)
-	for (s16 z = full_bpmin.Z; z <= full_bpmax.Z; z++) {
-		v2s16 sectorpos(x, z);
-		// Sector metadata is loaded from disk if not already loaded.
-		MapSector *sector = createSector(sectorpos);
-		FATAL_ERROR_IF(sector == NULL, "createSector() failed");
-
-		for (s16 y = full_bpmin.Y; y <= full_bpmax.Y; y++) {
-			v3s16 p(x, y, z);
-
-			MapBlock *block = emergeBlock(p, false);
-			if (block == NULL) {
-				block = createBlock(p);
-
-				// Block gets sunlight if this is true.
-				// Refer to the map generator heuristics.
-				bool ug = m_emerge->isBlockUnderground(p);
-				block->setIsUnderground(ug);
-			}
-		}
-	}
-
-	/*
-		Now we have a big empty area.
-
-		Make a ManualMapVoxelManipulator that contains this and the
-		neighboring blocks
-	*/
-
-	data->vmanip = new MMVManip(this);
-	data->vmanip->initialEmerge(full_bpmin, full_bpmax);
-
-	// Data is ready now.
 	return true;
 }
 
@@ -1136,15 +980,6 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	}
 
 	return NULL;
-}
-
-MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
-{
-	MapBlock *block = getBlockNoCreateNoEx(p3d);
-	if (block == NULL)
-		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, false);
-
-	return block;
 }
 
 bool ServerMap::isBlockInQueue(v3s16 pos)

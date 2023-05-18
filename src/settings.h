@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <mutex>
 
 class Settings;
-struct NoiseParams;
 
 // Global objects
 extern Settings *g_settings; // Same as Settings::getLayer(SL_GLOBAL);
@@ -169,9 +168,6 @@ public:
 	v3f getV3F(const std::string &name) const;
 	u32 getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 			u32 *flagmask) const;
-	bool getNoiseParams(const std::string &name, NoiseParams &np) const;
-	bool getNoiseParamsFromValue(const std::string &name, NoiseParams &np) const;
-	bool getNoiseParamsFromGroup(const std::string &name, NoiseParams &np) const;
 
 	// return all keys used in this object
 	std::vector<std::string> getNames() const;
@@ -225,7 +221,6 @@ public:
 	bool setV3F(const std::string &name, v3f value);
 	bool setFlagStr(const std::string &name, u32 flags,
 		const FlagDesc *flagdesc = nullptr, u32 flagmask = U32_MAX);
-	bool setNoiseParams(const std::string &name, const NoiseParams &np);
 
 	// remove a setting
 	bool remove(const std::string &name);

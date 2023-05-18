@@ -593,72 +593,6 @@ u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	return flags;
 }
 
-
-bool Settings::getNoiseParams(const std::string &name, NoiseParams &np) const
-{
-	if (getNoiseParamsFromGroup(name, np) || getNoiseParamsFromValue(name, np))
-		return true;
-	if (auto parent = getParent())
-		return parent->getNoiseParams(name, np);
-
-	return false;
-}
-
-
-bool Settings::getNoiseParamsFromValue(const std::string &name,
-	NoiseParams &np) const
-{
-	std::string value;
-
-	if (!getNoEx(name, value))
-		return false;
-
-	// Format: f32,f32,(f32,f32,f32),s32,s32,f32[,f32]
-	Strfnd f(value);
-
-	np.offset   = stof(f.next(","));
-	np.scale    = stof(f.next(","));
-	f.next("(");
-	np.spread.X = stof(f.next(","));
-	np.spread.Y = stof(f.next(","));
-	np.spread.Z = stof(f.next(")"));
-	f.next(",");
-	np.seed     = stoi(f.next(","));
-	np.octaves  = stoi(f.next(","));
-	np.persist  = stof(f.next(","));
-
-	std::string optional_params = f.next("");
-	if (!optional_params.empty())
-		np.lacunarity = stof(optional_params);
-
-	return true;
-}
-
-
-bool Settings::getNoiseParamsFromGroup(const std::string &name,
-	NoiseParams &np) const
-{
-	Settings *group = NULL;
-
-	if (!getGroupNoEx(name, group))
-		return false;
-
-	group->getFloatNoEx("offset",      np.offset);
-	group->getFloatNoEx("scale",       np.scale);
-	group->getV3FNoEx("spread",        np.spread);
-	group->getS32NoEx("seed",          np.seed);
-	group->getU16NoEx("octaves",       np.octaves);
-	group->getFloatNoEx("persistence", np.persist);
-	group->getFloatNoEx("lacunarity",  np.lacunarity);
-
-	np.flags = 0;
-	if (!group->getFlagStrNoEx("flags", np.flags, flagdesc_noiseparams))
-		np.flags = NOISE_FLAG_DEFAULTS;
-
-	return true;
-}
-
-
 bool Settings::exists(const std::string &name) const
 {
 	if (existsLocal(name))
@@ -956,24 +890,6 @@ bool Settings::setFlagStr(const std::string &name, u32 flags,
 
 	return set(name, writeFlagString(flags, flagdesc, flagmask));
 }
-
-
-bool Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
-{
-	Settings *group = new Settings;
-
-	group->setFloat("offset",      np.offset);
-	group->setFloat("scale",       np.scale);
-	group->setV3F("spread",        np.spread);
-	group->setS32("seed",          np.seed);
-	group->setU16("octaves",       np.octaves);
-	group->setFloat("persistence", np.persist);
-	group->setFloat("lacunarity",  np.lacunarity);
-	group->setFlagStr("flags",     np.flags, flagdesc_noiseparams, np.flags);
-
-	return setEntry(name, &group, true);
-}
-
 
 bool Settings::remove(const std::string &name)
 {

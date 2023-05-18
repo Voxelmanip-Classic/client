@@ -124,7 +124,6 @@ LOCAL_SRC_FILES := \
 	$(wildcard ../../src/database/*.cpp)          \
 	$(wildcard ../../src/gui/*.cpp)              \
 	$(wildcard ../../src/irrlicht_changes/*.cpp) \
-	$(wildcard ../../src/mapgen/*.cpp)           \
 	$(wildcard ../../src/network/*.cpp)          \
 	$(wildcard ../../src/script/*.cpp)           \
 	$(wildcard ../../src/script/*/*.cpp)         \

@@ -200,7 +200,6 @@ add_subdirectory(threading)
 add_subdirectory(content)
 add_subdirectory(database)
 add_subdirectory(gui)
-add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(util)
@@ -209,7 +208,6 @@ add_subdirectory(server)
 
 set(common_SRCS
 	${database_SRCS}
-	${mapgen_SRCS}
 	${server_SRCS}
 	${content_SRCS}
 	chat.cpp
@@ -234,7 +232,6 @@ set(common_SRCS
 	log.cpp
 	main.cpp
 	map.cpp
-	map_settings_manager.cpp
 	mapblock.cpp
 	mapnode.cpp
 	mapsector.cpp

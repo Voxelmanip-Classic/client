@@ -64,7 +64,6 @@ class IGameDef;
 struct DigParams;
 struct HitParams;
 struct EnumString;
-struct NoiseParams;
 class Schematic;
 class ServerActiveObject;
 struct collisionMoveResult;
@@ -168,10 +167,6 @@ void               push_soundspec            (lua_State *L,
 bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
-
-bool               read_noiseparams          (lua_State *L, int index,
-                                              NoiseParams *np);
-void               push_noiseparams          (lua_State *L, NoiseParams *np);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

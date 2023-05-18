@@ -31,8 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * 'secure.*' settings
  * some security-relevant settings
  *   (better solution pending)
- * some mapgen settings
- *   (not security-criticial, just to avoid messing up user configs)
  */
 #define CHECK_SETTING_SECURITY(L, name) \
 	if (o->m_settings == g_settings) { \
@@ -45,16 +43,7 @@ static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 	if (ScriptApiSecurity::isSecure(L) && name.compare(0, 7, "secure.") == 0)
 		throw LuaError("Attempted to set secure setting.");
 
-	bool is_mainmenu = false;
-#ifndef SERVER
-	is_mainmenu = ModApiBase::getGuiEngine(L) != nullptr;
-#endif
-	if (!is_mainmenu && (name == "mg_name" || name == "mg_flags")) {
-		errorstream << "Tried to set global setting " << name << ", ignoring. "
-			"minetest.set_mapgen_setting() should be used instead." << std::endl;
-		infostream << script_get_backtrace(L) << std::endl;
-		return -1;
-	}
+	bool is_mainmenu = ModApiBase::getGuiEngine(L) != nullptr;
 
 	const char *disallowed[] = {"texture_path"};
 	if (!is_mainmenu) {
@@ -146,24 +135,6 @@ int LuaSettings::l_get_bool(lua_State* L)
 	return 1;
 }
 
-// get_np_group(self, key) -> value
-int LuaSettings::l_get_np_group(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	LuaSettings *o = checkObject<LuaSettings>(L, 1);
-
-	std::string key = std::string(luaL_checkstring(L, 2));
-	if (o->m_settings->exists(key)) {
-		NoiseParams np;
-		o->m_settings->getNoiseParams(key, np);
-		push_noiseparams(L, &np);
-	} else {
-		lua_pushnil(L);
-	}
-
-	return 1;
-}
-
 // get_flags(self, key) -> table or nil
 int LuaSettings::l_get_flags(lua_State *L)
 {
@@ -221,22 +192,6 @@ int LuaSettings::l_set_bool(lua_State* L)
 	return 0;
 }
 
-// set_np_group(self, key, value)
-int LuaSettings::l_set_np_group(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	LuaSettings *o = checkObject<LuaSettings>(L, 1);
-
-	std::string key = std::string(luaL_checkstring(L, 2));
-	NoiseParams value;
-	read_noiseparams(L, 3, &value);
-
-	CHECK_SETTING_SECURITY(L, key);
-
-	o->m_settings->setNoiseParams(key, value);
-
-	return 0;
-}
 
 // remove(self, key) -> success
 int LuaSettings::l_remove(lua_State* L)
@@ -354,11 +309,9 @@ const char LuaSettings::className[] = "Settings";
 const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
-	luamethod(LuaSettings, get_np_group),
 	luamethod(LuaSettings, get_flags),
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
-	luamethod(LuaSettings, set_np_group),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
 	luamethod(LuaSettings, write),

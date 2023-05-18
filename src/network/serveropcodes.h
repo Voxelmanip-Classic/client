@@ -45,6 +45,4 @@ struct ClientCommandFactory
 	bool reliable;
 };
 
-extern const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES];
-
 extern const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES];

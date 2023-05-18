@@ -23,9 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "hud.h"
 #include "gamedef.h"
-#include "serialization.h" // For SER_FMT_VER_INVALID
-#include "content/mods.h"
-#include "inventorymanager.h"
 #include "content/subgames.h"
 #include "network/peerhandler.h"
 #include "network/address.h"
@@ -37,10 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientiface.h"
 #include "chatmessage.h"
 #include "sound.h"
-#include "translation.h"
 #include <string>
-#include <list>
-#include <map>
 #include <vector>
 #include <unordered_set>
 
@@ -93,25 +87,6 @@ struct MediaInfo
 	}
 };
 
-// Combines the pure sound (SimpleSoundSpec) with positional information
-struct ServerPlayingSound
-{
-	SoundLocation type = SoundLocation::Local;
-
-	float gain = 1.0f; // for amplification of the base sound
-	float max_hear_distance = 32 * BS;
-	v3f pos;
-	u16 object = 0;
-	std::string to_player;
-	std::string exclude_player;
-
-	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
-
-	SimpleSoundSpec spec;
-
-	std::unordered_set<session_t> clients; // peer ids
-};
-
 struct MinimapMode {
 	MinimapType type = MINIMAP_TYPE_OFF;
 	std::string label;
@@ -159,7 +134,6 @@ public:
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
 	void Receive();
-	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
 	 * Command Handlers
@@ -168,40 +142,11 @@ public:
 	void handleCommand(NetworkPacket* pkt);
 
 	void handleCommand_Null(NetworkPacket* pkt) {};
-	void handleCommand_Deprecated(NetworkPacket* pkt);
-	void handleCommand_Init(NetworkPacket* pkt);
-	void handleCommand_Init2(NetworkPacket* pkt);
-	void handleCommand_ModChannelJoin(NetworkPacket *pkt);
-	void handleCommand_ModChannelLeave(NetworkPacket *pkt);
-	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
-	void handleCommand_RequestMedia(NetworkPacket* pkt);
-	void handleCommand_ClientReady(NetworkPacket* pkt);
-	void handleCommand_GotBlocks(NetworkPacket* pkt);
-	void handleCommand_PlayerPos(NetworkPacket* pkt);
-	void handleCommand_DeletedBlocks(NetworkPacket* pkt);
-	void handleCommand_InventoryAction(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
-	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
-	void handleCommand_Interact(NetworkPacket* pkt);
-	void handleCommand_RemovedSounds(NetworkPacket* pkt);
-	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
-	void handleCommand_InventoryFields(NetworkPacket* pkt);
-	void handleCommand_FirstSrp(NetworkPacket* pkt);
-	void handleCommand_SrpBytesA(NetworkPacket* pkt);
-	void handleCommand_SrpBytesM(NetworkPacket* pkt);
-	void handleCommand_HaveMedia(NetworkPacket *pkt);
-	void handleCommand_UpdateClientInfo(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket *pkt);
 	void Send(session_t peer_id, NetworkPacket *pkt);
-
-	// Helper for handleCommand_PlayerPos and handleCommand_Interact
-	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
-		NetworkPacket *pkt);
 
 	// Both setter and getter need no envlock,
 	// can be called freely from threads
@@ -216,12 +161,8 @@ public:
 
 	inline double getUptime() const { return m_uptime_counter->get(); }
 
-	// read shutdown state
-	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
-
 	// Returns -1 if failed, sound handle on success
 	// Envlock
-	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
@@ -320,8 +261,6 @@ public:
 	bool getClientInfo(session_t peer_id, ClientInfo &ret);
 	const ClientDynamicInfo *getClientDynamicInfo(session_t peer_id);
 
-	void printToConsoleOnly(const std::string &text);
-
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
 	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
@@ -339,9 +278,6 @@ public:
 
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
-
-	// Get or load translations for a language
-	Translations *getTranslationLanguage(const std::string &lang_code);
 
 	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
 
@@ -363,23 +299,7 @@ public:
 private:
 	friend class EmergeThread;
 	friend class RemoteClient;
-	friend class TestServerShutdownState;
 
-	struct ShutdownState {
-		friend class TestServerShutdownState;
-		public:
-			bool is_requested = false;
-			bool should_reconnect = false;
-			std::string message;
-
-			void reset();
-			void trigger(float delay, const std::string &msg, bool reconnect);
-			void tick(float dtime, Server *server);
-			std::wstring getShutdownTimerMessage() const;
-			bool isTimerRunning() const { return m_timer > 0.0f; }
-		private:
-			float m_timer = 0.0f;
-	};
 
 	struct PendingDynamicMediaCallback {
 		std::string filename; // only set if media entry and file is to be deleted
@@ -462,8 +382,6 @@ private:
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 
-	bool addMediaFile(const std::string &filename, const std::string &filepath,
-			std::string *filedata = nullptr, std::string *digest = nullptr);
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
@@ -479,10 +397,8 @@ private:
 	void SendSpawnParticle(session_t peer_id, u16 protocol_version,
 		const ParticleParameters &p);
 
-	void SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
-	void SendCSMRestrictionFlags(session_t peer_id);
 
 	/*
 		Something random
@@ -490,12 +406,6 @@ private:
 
 	void HandlePlayerDeath(PlayerSAO* sao, const PlayerHPChangeReason &reason);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
-	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);
-
-	// This returns the answer to the sender of wmessage, or "" if there is none
-	std::wstring handleChat(const std::string &name, std::wstring wmessage_input,
-		bool check_shout_priv = false, RemotePlayer *player = nullptr);
-	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(session_t peer_id, ClientState state_min = CS_Active);
@@ -566,8 +476,6 @@ private:
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
 
-	std::unordered_map<std::string, Translations> server_translations;
-
 	/*
 		Threads
 	*/
@@ -602,8 +510,6 @@ private:
 	/*
 		Random stuff
 	*/
-
-	ShutdownState m_shutdown_state;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
@@ -641,13 +547,6 @@ private:
 	std::unordered_map<u32, PendingDynamicMediaCallback> m_pending_dyn_media;
 	float m_step_pending_dyn_media_timer = 0.0f;
 
-	/*
-		Sounds
-	*/
-	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id = 0; // positive values only
-	s32 nextSoundId();
-
 	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 
@@ -674,10 +573,3 @@ private:
 	MetricCounterPtr m_packet_recv_processed_counter;
 	MetricCounterPtr m_map_edit_event_counter;
 };
-
-/*
-	Runs a simple dedicated server loop.
-
-	Shuts down when kill is set to true.
-*/
-void dedicated_server_loop(Server &server, bool &kill);

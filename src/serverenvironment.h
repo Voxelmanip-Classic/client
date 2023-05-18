@@ -89,12 +89,6 @@ public:
 	void removePlayer(RemotePlayer *player);
 	bool removePlayerFromDatabase(const std::string &name);
 
-	/*
-		Save and load time of day and game timer
-	*/
-	void saveMeta();
-	void loadMeta();
-
 	u32 addParticleSpawner(float exptime);
 	u32 addParticleSpawner(float exptime, u16 attached_id);
 	void deleteParticleSpawner(u32 id, bool remove_from_object = true);

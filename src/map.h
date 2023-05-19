@@ -374,12 +374,6 @@ public:
 	*/
 	MapBlock *emergeBlock(v3s16 p, bool create_blank=true) override;
 
-	bool isBlockInQueue(v3s16 pos);
-
-	void addNodeAndUpdate(v3s16 p, MapNode n,
-			std::map<v3s16, MapBlock*> &modified_blocks,
-			bool remove_metadata) override;
-
 	// Call these before and after saving of blocks
 	void beginSave() override;
 	void endSave() override;

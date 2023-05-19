@@ -89,14 +89,6 @@ LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
 	return dynamic_cast<LuaEntitySAO *>(ao);
 }
 
-void RemoteClient::GetNextBlocks (
-		ServerEnvironment *env,
-		EmergeManager * emerge,
-		float dtime,
-		std::vector<PrioritySortedBlockTransfer> &dest)
-{
-
-}
 
 void RemoteClient::GotBlock(v3s16 p)
 {

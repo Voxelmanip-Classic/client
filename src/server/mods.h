@@ -61,13 +61,4 @@ public:
 		return configuration.getUnsatisfiedModsError();
 	}
 
-	/**
-	 * Recursively gets all paths of mod folders that can contain media files.
-	 *
-	 * Result is ordered in descending priority, ie. files from an earlier path
-	 * should not be replaced by files from a latter one.
-	 *
-	 * @param paths result vector
-	 */
-	void getModsMediaPaths(std::vector<std::string> &paths) const;
 };

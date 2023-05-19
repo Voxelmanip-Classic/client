@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "settings.h"
-#include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/numeric.h" // rangelim
@@ -28,9 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "debug.h"
 #include "log.h"
-#include "util/serialize.h"
 #include "filesys.h"
-#include "noise.h"
 #include <cctype>
 #include <algorithm>
 

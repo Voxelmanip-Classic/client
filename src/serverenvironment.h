@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <random>
 
-class IGameDef;
 struct GameParams;
 class RemotePlayer;
 class PlayerDatabase;
@@ -132,15 +131,6 @@ public:
 		std::queue<u16> &added_objects);
 
 	/*
-		Find out what new objects have been removed from
-		inside a radius around a position
-	*/
-	void getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
-		s16 player_radius,
-		std::set<u16> &current_objects,
-		std::queue<u16> &removed_objects);
-
-	/*
 		Get the next message emitted by some active object.
 		Returns false if no messages are available, true otherwise.
 	*/
@@ -150,12 +140,6 @@ public:
 		const core::line3d<f32> &shootline_on_map,
 		std::vector<PointedThing> &objects
 	);
-
-	/*
-		Activate objects and dynamically modify for the dtime determined
-		from timestamp and additional_dtime
-	*/
-	void activateBlock(MapBlock *block, u32 additional_dtime=0);
 
 	/*
 		Other stuff
@@ -201,11 +185,6 @@ public:
 	};
 	BlockStatus getBlockStatus(v3s16 blockpos);
 
-	// Sets the static object status all the active objects in the specified block
-	// This is only really needed for deleting blocks from the map
-	void setStaticForActiveObjectsInBlock(v3s16 blockpos,
-		bool static_exists, v3s16 static_block=v3s16(0,0,0));
-
 	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
 	const std::vector<RemotePlayer *> getPlayers() const { return m_players; }
@@ -213,11 +192,6 @@ public:
 
 	AuthDatabase *getAuthDatabase() { return m_auth_database; }
 private:
-
-	/**
-	 * called if env_meta.txt doesn't exist (e.g. new world)
-	 */
-	void loadDefaultMeta();
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
 			const std::string &savedir, const Settings &conf);

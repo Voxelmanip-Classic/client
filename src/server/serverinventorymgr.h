@@ -42,15 +42,6 @@ public:
 	Inventory *getInventory(const InventoryLocation &loc);
 	void setInventoryModified(const InventoryLocation &loc);
 
-	// Creates or resets inventory
-	Inventory *createDetachedInventory(const std::string &name, IItemDefManager *idef,
-			const std::string &player = "");
-	bool removeDetachedInventory(const std::string &name);
-	bool checkDetachedInventoryAccess(const InventoryLocation &loc, const std::string &player) const;
-
-	void sendDetachedInventories(const std::string &peer_name, bool incremental,
-			std::function<void(const std::string &, Inventory *)> apply_cb);
-
 private:
 	struct DetachedInventory
 	{

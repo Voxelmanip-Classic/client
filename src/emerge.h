@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)
 #define BLOCK_EMERGE_FORCE_QUEUE (1 << 1)
 
-class EmergeThread;
 class NodeDefManager;
 class Settings;
 
@@ -86,22 +85,6 @@ struct BlockEmergeData {
 	EmergeCallbackList callbacks;
 };
 
-class EmergeParams {
-	friend class EmergeManager;
-public:
-	EmergeParams() = delete;
-	~EmergeParams();
-	DISABLE_CLASS_COPY(EmergeParams);
-
-	const NodeDefManager *ndef; // shared
-
-	u32 gen_notify_on;
-	const std::set<u32> *gen_notify_on_deco_ids; // shared
-
-private:
-	EmergeParams(EmergeManager *parent);
-};
-
 class EmergeManager {
 
 public:
@@ -116,39 +99,6 @@ public:
 	~EmergeManager();
 	DISABLE_CLASS_COPY(EmergeManager);
 
-	void startThreads();
-	void stopThreads();
 	bool isRunning();
 
-	bool enqueueBlockEmerge(
-		session_t peer_id,
-		v3s16 blockpos,
-		bool allow_generate,
-		bool ignore_queue_limits=false);
-
-	bool enqueueBlockEmergeEx(
-		v3s16 blockpos,
-		session_t peer_id,
-		u16 flags,
-		EmergeCompletionCallback callback,
-		void *callback_param);
-
-	bool isBlockInQueue(v3s16 pos);
-
-private:
-	std::vector<EmergeThread *> m_threads;
-	bool m_threads_active = false;
-
-	std::mutex m_queue_mutex;
-	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	std::unordered_map<u16, u32> m_peer_queue_count;
-
-	u32 m_qlimit_total;
-	u32 m_qlimit_diskonly;
-	u32 m_qlimit_generate;
-
-	// Emerge metrics
-	MetricCounterPtr m_completed_emerge_counter[5];
-
-	friend class EmergeThread;
 };

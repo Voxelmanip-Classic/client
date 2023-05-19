@@ -34,10 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "database/database.h"
 #include "config.h"
-#include "player.h"
 #include "porting.h"
 #include "network/socket.h"
-#include "mapblock.h"
 
 #ifndef SERVER
 #include "gui/guiMainMenu.h"

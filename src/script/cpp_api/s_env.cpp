@@ -80,48 +80,6 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 
 }
 
-void ScriptApiEnv::on_emerge_area_completion(
-	v3s16 blockpos, int action, ScriptCallbackState *state)
-{
-	Server *server = getServer();
-
-	// This function should be executed with envlock held.
-	// The caller (LuaEmergeAreaCallback in src/script/lua_api/l_env.cpp)
-	// should have obtained the lock.
-	// Note that the order of these locks is important!  Envlock must *ALWAYS*
-	// be acquired before attempting to acquire scriptlock, or else ServerThread
-	// will try to acquire scriptlock after it already owns envlock, thus
-	// deadlocking EmergeThread and ServerThread
-
-	SCRIPTAPI_PRECHECKHEADER
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	lua_rawgeti(L, LUA_REGISTRYINDEX, state->callback_ref);
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-
-	push_v3s16(L, blockpos);
-	lua_pushinteger(L, action);
-	lua_pushinteger(L, state->refcount);
-	lua_rawgeti(L, LUA_REGISTRYINDEX, state->args_ref);
-
-	setOriginDirect(state->origin.c_str());
-
-	try {
-		PCALL_RES(lua_pcall(L, 4, 0, error_handler));
-	} catch (LuaError &e) {
-		// Note: don't throw here, we still need to run the cleanup code below
-		server->setAsyncFatalError(e);
-	}
-
-	lua_pop(L, 1); // Pop error handler
-
-	if (state->refcount == 0) {
-		luaL_unref(L, LUA_REGISTRYINDEX, state->callback_ref);
-		luaL_unref(L, LUA_REGISTRYINDEX, state->args_ref);
-	}
-}
-
 void ScriptApiEnv::check_for_falling(v3s16 p)
 {
 	SCRIPTAPI_PRECHECKHEADER

@@ -18,25 +18,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <algorithm>
-#include <stack>
 #include "serverenvironment.h"
 #include "settings.h"
 #include "log.h"
 #include "mapblock.h"
-#include "nodedef.h"
-#include "nodemetadata.h"
-#include "gamedef.h"
 #include "map.h"
-#include "porting.h"
-#include "profiler.h"
 #include "raycast.h"
 #include "remoteplayer.h"
 #include "scripting_server.h"
 #include "server.h"
-#include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
-#include "threading/mutex_auto_lock.h"
 #include "filesys.h"
 #include "gameparams.h"
 #include "database/database-dummy.h"
@@ -274,20 +266,6 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 }
 
 
-/**
- * called if env_meta.txt doesn't exist (e.g. new world)
- */
-void ServerEnvironment::loadDefaultMeta()
-{
-
-}
-
-void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
-{
-
-}
-
-
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
 
@@ -389,77 +367,6 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		player_radius_f, current_objects, added_objects);
 }
 
-/*
-	Finds out what objects have been removed from
-	inside a radius around a position
-*/
-void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
-	s16 player_radius,
-	std::set<u16> &current_objects,
-	std::queue<u16> &removed_objects)
-{
-	f32 radius_f = radius * BS;
-	f32 player_radius_f = player_radius * BS;
-
-	if (player_radius_f < 0)
-		player_radius_f = 0;
-	/*
-		Go through current_objects; object is removed if:
-		- object is not found in m_active_objects (this is actually an
-		  error condition; objects should be removed only after all clients
-		  have been informed about removal), or
-		- object is to be removed or deactivated, or
-		- object is too far away
-	*/
-	for (u16 id : current_objects) {
-		ServerActiveObject *object = getActiveObject(id);
-
-		if (object == NULL) {
-			infostream << "ServerEnvironment::getRemovedActiveObjects():"
-				<< " object in current_objects is NULL" << std::endl;
-			removed_objects.push(id);
-			continue;
-		}
-
-		if (object->isGone()) {
-			removed_objects.push(id);
-			continue;
-		}
-
-		f32 distance_f = object->getBasePosition().getDistanceFrom(playersao->getBasePosition());
-		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			if (distance_f <= player_radius_f || player_radius_f == 0)
-				continue;
-		} else if (distance_f <= radius_f)
-			continue;
-
-		// Object is no longer visible
-		removed_objects.push(id);
-	}
-}
-
-void ServerEnvironment::setStaticForActiveObjectsInBlock(
-	v3s16 blockpos, bool static_exists, v3s16 static_block)
-{
-	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if (!block)
-		return;
-
-	for (auto &so_it : block->m_static_objects.getAllActives()) {
-		// Get the ServerActiveObject counterpart to this StaticObject
-		ServerActiveObject *sao = m_ao_manager.getActiveObject(so_it.first);
-		if (!sao) {
-			// If this ever happens, there must be some kind of nasty bug.
-			errorstream << "ServerEnvironment::setStaticForObjectsInBlock(): "
-				"Object from MapBlock::m_static_objects::m_active not found "
-				"in m_active_objects";
-			continue;
-		}
-
-		sao->m_static_exists = static_exists;
-		sao->m_static_block  = static_block;
-	}
-}
 
 bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 {

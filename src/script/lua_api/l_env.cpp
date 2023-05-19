@@ -125,25 +125,6 @@ const luaL_Reg LuaRaycast::methods[] =
 	{ 0, 0 }
 };
 
-void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
-{
-	ScriptCallbackState *state = (ScriptCallbackState *)param;
-	assert(state != NULL);
-	assert(state->script != NULL);
-	assert(state->refcount > 0);
-
-	// state must be protected by envlock
-	Server *server = state->script->getServer();
-	MutexAutoLock envlock(server->m_env_mutex);
-
-	state->refcount--;
-
-	state->script->on_emerge_area_completion(blockpos, action, state);
-
-	if (state->refcount == 0)
-		delete state;
-}
-
 // Exported functions
 
 // set_node(pos, node)

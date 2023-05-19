@@ -26,19 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "serialization.h"
 #include "nodemetadata.h"
-#include "settings.h"
 #include "log.h"
 #include "profiler.h"
 #include "nodedef.h"
 #include "gamedef.h"
-#include "util/directiontables.h"
 #include "util/basic_macros.h"
-#include "environment.h"
-#include "emerge.h"
-#include "config.h"
-#include "server.h"
 #include "database/database.h"
-#include "database/database-dummy.h"
 #include "script/scripting_server.h"
 #include <deque>
 #include <queue>
@@ -830,18 +823,6 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
 
 	return NULL;
-}
-
-bool ServerMap::isBlockInQueue(v3s16 pos)
-{
-	return true;
-}
-
-void ServerMap::addNodeAndUpdate(v3s16 p, MapNode n,
-		std::map<v3s16, MapBlock*> &modified_blocks,
-		bool remove_metadata)
-{
-
 }
 
 void ServerMap::reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks)

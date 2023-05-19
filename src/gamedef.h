@@ -27,7 +27,6 @@ class IItemDefManager;
 class NodeDefManager;
 class ITextureSource;
 class IShaderSource;
-class EmergeManager;
 class Camera;
 class ModChannel;
 class ModStorage;

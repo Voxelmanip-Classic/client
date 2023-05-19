@@ -132,7 +132,6 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	// Initialize mod api modules
 	ModApiEnvMod::Initialize(L, top);
 	ModApiItemMod::Initialize(L, top);
-	ModApiParticles::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);

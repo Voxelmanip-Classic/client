@@ -39,7 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class MapBlock;
 class ServerEnvironment;
-class EmergeManager;
 
 /*
  * State Transitions
@@ -255,14 +254,6 @@ public:
 	RemoteClient();
 	~RemoteClient() = default;
 
-	/*
-		Finds block that should be sent next to the client.
-		Environment should be locked when this is called.
-		dtime is used for resetting send radius at slow interval
-	*/
-	void GetNextBlocks(ServerEnvironment *env, EmergeManager* emerge,
-			float dtime, std::vector<PrioritySortedBlockTransfer> &dest);
-
 	void GotBlock(v3s16 p);
 
 	void SentBlock(v3s16 p);
@@ -381,13 +372,6 @@ private:
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
 	std::unordered_set<v3s16> m_blocks_sent;
-
-	/*
-		Cache of blocks that have been occlusion culled at the current distance.
-		As GetNextBlocks traverses the same distance multiple times, this saves
-		significant CPU time.
-	 */
-	std::unordered_set<v3s16> m_blocks_occ;
 
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;

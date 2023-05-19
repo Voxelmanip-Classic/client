@@ -199,7 +199,7 @@ void GUIFormSpecMenu::setInitialFocus()
 
 	// 3. first table
 	for (gui::IGUIElement *it : children) {
-		if (it->getTypeName() == std::string("GUITable")) {
+		if (it->getType() == gui::EGUIET_TABLE) {
 			Environment->setFocus(it);
 			return;
 		}

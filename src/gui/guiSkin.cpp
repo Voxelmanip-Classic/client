@@ -77,6 +77,7 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Sizes[EGDS_BUTTON_PRESSED_TEXT_OFFSET_X] = 0;
 	Sizes[EGDS_BUTTON_PRESSED_TEXT_OFFSET_Y] = 2;
 
+#ifndef IRRLICHT_VMC_VERSION
 	Texts[EGDT_MSG_BOX_OK] = L"OK";
 	Texts[EGDT_MSG_BOX_CANCEL] = L"Cancel";
 	Texts[EGDT_MSG_BOX_YES] = L"Yes";
@@ -85,6 +86,7 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Texts[EGDT_WINDOW_RESTORE] = L"Restore";
 	Texts[EGDT_WINDOW_MINIMIZE] = L"Minimize";
 	Texts[EGDT_WINDOW_MAXIMIZE] = L"Maximize";
+#endif
 
 	Icons[EGDI_WINDOW_MAXIMIZE] = 225;
 	Icons[EGDI_WINDOW_RESTORE] = 226;
@@ -232,7 +234,7 @@ void GUISkin::setIcon(EGUI_DEFAULT_ICON icon, u32 index)
 		Icons[icon] = index;
 }
 
-
+#ifndef IRRLICHT_VMC_VERSION
 //! Returns a default text. For example for Message box button captions:
 //! "OK", "Cancel", "Yes", "No" and so on.
 const wchar_t* GUISkin::getDefaultText(EGUI_DEFAULT_TEXT text) const
@@ -251,7 +253,7 @@ void GUISkin::setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText)
 	if ((u32)which < EGDT_COUNT)
 		Texts[which] = newText;
 }
-
+#endif
 
 //! draws a standard 3d button pane
 /**	Used for drawing for example buttons in normal state.

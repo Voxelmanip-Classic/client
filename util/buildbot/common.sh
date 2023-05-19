@@ -5,15 +5,12 @@ GAME_GIT=https://github.com/minetest/minetest_game
 GAME_BRANCH=master
 GAME_NAME=minetest_game
 
+libpng_version=1.6.39
 ogg_version=1.3.5
 openal_version=1.23.0
 vorbis_version=1.3.7
-curl_version=8.0.1
-gettext_version=0.20.2
 freetype_version=2.12.1
-sqlite3_version=3.41.2
 luajit_version=20230221
-leveldb_version=1.23
 zlib_version=1.2.13
 zstd_version=1.5.5
 
@@ -78,11 +75,9 @@ add_cmake_libs () {
 	local gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
 	cmake_args+=(
-		-DVERSION_EXTRA=rollertest
-
-		-DCMAKE_PREFIX_PATH=$libdir/irrlicht
-		-DIRRLICHT_DLL="$irr_dlls"
-		-DIRRLICHTMT_FORCE_BINARY=1
+		-DPNG_LIBRARY=$libdir/libpng/lib/libpng.dll.a
+		-DPNG_PNG_INCLUDE_DIR=$libdir/libpng/include
+		-DPNG_DLL=$libdir/libpng/bin/libpng16.dll
 
 		-DZLIB_INCLUDE_DIR=$libdir/zlib/include
 		-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a
@@ -108,26 +103,9 @@ add_cmake_libs () {
 		-DOPENAL_LIBRARY=$libdir/openal/lib/libOpenAL32.dll.a
 		-DOPENAL_DLL=$libdir/openal/bin/OpenAL32.dll
 
-		-DCURL_DLL=$libdir/curl/bin/libcurl-4.dll
-		-DCURL_INCLUDE_DIR=$libdir/curl/include
-		-DCURL_LIBRARY=$libdir/curl/lib/libcurl.dll.a
-
-		-DGETTEXT_MSGFMT=`command -v msgfmt`
-		-DGETTEXT_DLL="$gettext_dlls"
-		-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include
-		-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a
-
 		-DFREETYPE_INCLUDE_DIR_freetype2=$libdir/freetype/include/freetype2
 		-DFREETYPE_INCLUDE_DIR_ft2build=$libdir/freetype/include/freetype2
 		-DFREETYPE_LIBRARY=$libdir/freetype/lib/libfreetype.dll.a
 		-DFREETYPE_DLL=$libdir/freetype/bin/libfreetype-6.dll
-
-		-DSQLITE3_INCLUDE_DIR=$libdir/sqlite3/include
-		-DSQLITE3_LIBRARY=$libdir/sqlite3/lib/libsqlite3.dll.a
-		-DSQLITE3_DLL=$libdir/sqlite3/bin/libsqlite3-0.dll
-
-		-DLEVELDB_INCLUDE_DIR=$libdir/leveldb/include
-		-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a
-		-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
 	)
 }

@@ -29,12 +29,8 @@ echo "Using $toolchain_file"
 find_runtime_dlls x86_64-w64-mingw32
 
 # Get stuff
-irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
-
 mkdir -p $libdir
-
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version.zip
 download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/zlib-$zlib_version-win64.zip"
 download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/zstd-$zstd_version-win64.zip"
 download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/libogg-$ogg_version-win64.zip"
@@ -42,6 +38,7 @@ download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/libvorbis-$vorbis_
 download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/freetype-$freetype_version-win64.zip"
 download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/luajit-$luajit_version-win64.zip"
 download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/openal-soft-$openal_version-win64.zip"
+download "https://files.voxelmanip.se/minetest/vmc-mingw-libs/libpng-$libpng_version-win64.zip"
 
 # Set source dir, downloading Minetest as needed
 get_sources
@@ -49,7 +46,7 @@ get_sources
 git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 
 # Build the thing
-cd $sourcedir
+cd $builddir
 [ -d build ] && rm -rf build
 
 cmake_args=(

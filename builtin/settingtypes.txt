@@ -497,28 +497,13 @@ hud_hotbar_max_width (Maximum hotbar width) float 1.0 0.001 1.0
 chat_font_size (Chat font size) int 0 0 72
 
 
-[Client and Server]
+[Advanced]
 
-[*Client]
+[*Developer Options]
 
-#    Type of occlusion_culler
-#    "loops" is the legacy algorithm with nested loops and O(N^3) complexity
-#    "bfs" is the new algorithm based on breadth-first-search and side culling
-occlusion_culler (Occlusion Culler) enum bfs bfs,loops
-
-#    Type of occlusion_culler
-#    "loops" is the legacy algorithm with nested loops and O(N^3) complexity
-#    "bfs" is the new algorithm based on breadth-first-search and side culling
-occlusion_culler (Occlusion Culler) enum bfs bfs,loops
-
-#    Use raytraced occlusion culling in the new culler.
-#	 This flag enables use of raytraced occlusion culling test for
-#    client mesh sizes smaller than 4x4x4 map blocks.
-enable_raytraced_culling (Enable Raytraced Culling) bool true
-
-[*Server Security]
-
-[**Client-side Modding]
+#    Enable Lua modding support on client.
+#    This support is experimental and API can change.
+enable_client_modding (Client modding) bool false
 
 #    Restricts the access of certain client-side functions on servers.
 #    Combine the byteflags below to restrict client-side features, or set to 0
@@ -535,60 +520,6 @@ csm_restriction_flags (Client side modding restrictions) int 62 0 63
 #   If the CSM restriction for node range is enabled, get_node calls are limited
 #   to this distance from the player to the node.
 csm_restriction_noderange (Client side node lookup range restriction) int 0 0 4294967295
-
-[*Server Gameplay]
-
-[**Physics]
-
-#    Horizontal and vertical acceleration on ground or when climbing,
-#    in nodes per second per second.
-movement_acceleration_default (Default acceleration) float 3.0 0.0
-
-#    Horizontal acceleration in air when jumping or falling,
-#    in nodes per second per second.
-movement_acceleration_air (Acceleration in air) float 2.0 0.0
-
-#    Horizontal and vertical acceleration in fast mode,
-#    in nodes per second per second.
-movement_acceleration_fast (Fast mode acceleration) float 10.0 0.0
-
-#    Walking and flying speed, in nodes per second.
-movement_speed_walk (Walking speed) float 4.0 0.0
-
-#    Sneaking speed, in nodes per second.
-movement_speed_crouch (Sneaking speed) float 1.35 0.0
-
-#    Walking, flying and climbing speed in fast mode, in nodes per second.
-movement_speed_fast (Fast mode speed) float 20.0 0.0
-
-#    Vertical climbing speed, in nodes per second.
-movement_speed_climb (Climbing speed) float 3.0 0.0
-
-#    Initial vertical speed when jumping, in nodes per second.
-movement_speed_jump (Jumping speed) float 6.5 0.0
-
-#    How much you are slowed down when moving inside a liquid.
-#    Decrease this to increase liquid resistance to movement.
-movement_liquid_fluidity (Liquid fluidity) float 1.0 0.001
-
-#    Maximum liquid resistance. Controls deceleration when entering liquid at
-#    high speed.
-movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
-
-#    Controls sinking speed in liquid when idling. Negative values will cause
-#    you to rise instead.
-movement_liquid_sink (Liquid sinking) float 10.0
-
-#    Acceleration of gravity, in nodes per second per second.
-movement_gravity (Gravity) float 9.81
-
-[Advanced]
-
-[*Developer Options]
-
-#    Enable Lua modding support on client.
-#    This support is experimental and API can change.
-enable_client_modding (Client modding) bool false
 
 [**Debugging]
 

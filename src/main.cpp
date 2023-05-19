@@ -569,17 +569,10 @@ static bool read_config_file(const Settings &cmd_args)
 		g_settings_path = cmd_args.get("config");
 	} else {
 		std::vector<std::string> filenames;
-		filenames.push_back(porting::path_user + DIR_DELIM + "minetest.conf");
+		filenames.push_back(porting::path_user + DIR_DELIM + "voxelmanip_classic.conf");
 		// Legacy configuration file location
 		filenames.push_back(porting::path_user +
-				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
-
-#if RUN_IN_PLACE
-		// Try also from a lower level (to aid having the same configuration
-		// for many RUN_IN_PLACE installs)
-		filenames.push_back(porting::path_user +
-				DIR_DELIM + ".." + DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
-#endif
+				DIR_DELIM + ".." + DIR_DELIM + "voxelmanip_classic.conf");
 
 		for (const std::string &filename : filenames) {
 			bool r = g_settings->readConfigFile(filename.c_str());

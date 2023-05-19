@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Voxelmanip Classic
+GenericName=Voxelmanip Classic
+Comment=Multiplayer infinite-world block sandbox
+Exec=voxelmanip_classic
+Icon=voxelmanip_classic
+Terminal=false
+PrefersNonDefaultGPU=true
+Type=Application
+Categories=Game;Simulation;
+StartupNotify=false
+Keywords=sandbox;world;mining;crafting;blocks;nodes;multiplayer;roleplaying;

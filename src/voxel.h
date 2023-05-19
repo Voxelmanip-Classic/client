@@ -477,12 +477,6 @@ public:
 			v3s16 dst_pos, v3s16 from_pos, const v3s16 &size);
 
 	/*
-		Algorithms
-	*/
-
-	void clearFlag(u8 flag);
-
-	/*
 		Member variables
 	*/
 

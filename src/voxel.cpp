@@ -273,47 +273,6 @@ void VoxelManipulator::copyTo(MapNode *dst, const VoxelArea& dst_area,
 	-----------------------------------------------------
 */
 
-void VoxelManipulator::clearFlag(u8 flags)
-{
-	// 0-1ms on moderate area
-	TimeTaker timer("clearFlag", &clearflag_time);
-
-	//v3s16 s = m_area.getExtent();
-
-	/*dstream<<"clearFlag clearing area of size "
-			<<""<<s.X<<"x"<<s.Y<<"x"<<s.Z<<""
-			<<std::endl;*/
-
-	//s32 count = 0;
-
-	/*for(s32 z=m_area.MinEdge.Z; z<=m_area.MaxEdge.Z; z++)
-	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
-	for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
-	{
-		u8 f = m_flags[m_area.index(x,y,z)];
-		m_flags[m_area.index(x,y,z)] &= ~flags;
-		if(m_flags[m_area.index(x,y,z)] != f)
-			count++;
-	}*/
-
-	s32 volume = m_area.getVolume();
-	for(s32 i=0; i<volume; i++)
-	{
-		m_flags[i] &= ~flags;
-	}
-
-	/*s32 volume = m_area.getVolume();
-	for(s32 i=0; i<volume; i++)
-	{
-		u8 f = m_flags[i];
-		m_flags[i] &= ~flags;
-		if(m_flags[i] != f)
-			count++;
-	}
-
-	dstream<<"clearFlag changed "<<count<<" flags out of "
-			<<volume<<" nodes"<<std::endl;*/
-}
 
 const MapNode VoxelManipulator::ContentIgnoreNode = MapNode(CONTENT_IGNORE);
 

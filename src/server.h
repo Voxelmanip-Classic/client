@@ -202,17 +202,6 @@ public:
 	ServerEnvironment & getEnv() { return *m_env; }
 	v3f findSpawnPos();
 
-	void setSky(RemotePlayer *player, const SkyboxParams &params);
-	void setSun(RemotePlayer *player, const SunParams &params);
-	void setMoon(RemotePlayer *player, const MoonParams &params);
-	void setStars(RemotePlayer *player, const StarParams &params);
-
-	void setClouds(RemotePlayer *player, const CloudParams &params);
-
-	void overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
-
-	void setLighting(RemotePlayer *player, const Lighting &lighting);
-
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);

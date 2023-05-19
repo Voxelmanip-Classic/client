@@ -40,15 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #endif
 
-const EnumString ModApiEnvMod::es_BlockStatusType[] =
-{
-	{ServerEnvironment::BS_UNKNOWN, "unknown"},
-	{ServerEnvironment::BS_EMERGING, "emerging"},
-	{ServerEnvironment::BS_LOADED,  "loaded"},
-	{ServerEnvironment::BS_ACTIVE,  "active"},
-	{0, NULL},
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 
 

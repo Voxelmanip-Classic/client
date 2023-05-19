@@ -148,8 +148,6 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);
-
-	static const EnumString es_BlockStatusType[];
 };
 
 //! Lua wrapper for RaycastState objects

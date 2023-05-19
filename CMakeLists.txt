@@ -10,7 +10,7 @@ else()
 endif()
 
 # This can be read from ${PROJECT_NAME} after project() is called
-project(minetest)
+project(voxelmanip_classic)
 set(PROJECT_NAME_CAPITALIZED "Voxelmanip Classic")
 
 set(CMAKE_CXX_STANDARD 14)
@@ -169,7 +169,6 @@ elseif(UNIX) # Linux, BSD etc
 		set(EXAMPLE_CONF_DIR ".")
 		set(MANDIR "unix/man")
 		set(XDG_APPS_DIR "unix/applications")
-		set(APPDATADIR "unix/metainfo")
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
@@ -180,7 +179,6 @@ elseif(UNIX) # Linux, BSD etc
 		set(MANDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
 		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/applications")
-		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/metainfo")
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/icons")
 		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LOCALEDIR}")
 	endif()
@@ -245,13 +243,10 @@ if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
 
 	if(UNIX AND NOT APPLE)
-		install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
-		install(FILES "misc/net.minetest.minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
-		install(FILES "misc/net.minetest.minetest.appdata.xml" DESTINATION "${APPDATADIR}")
-		install(FILES "misc/minetest.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
-		install(FILES "misc/minetest-xorg-icon-128.png"
+		install(FILES "misc/voxelmanip_classic.desktop" DESTINATION "${XDG_APPS_DIR}")
+		install(FILES "misc/icon-128.png"
 			DESTINATION "${ICONDIR}/hicolor/128x128/apps"
-			RENAME "minetest.png")
+			RENAME "voxelmanip_classic.png")
 	endif()
 
 	if(APPLE)

@@ -107,7 +107,7 @@ void initAndroid()
 	JavaVM *jvm = app_global->activity->vm;
 	JavaVMAttachArgs lJavaVMAttachArgs;
 	lJavaVMAttachArgs.version = JNI_VERSION_1_6;
-	lJavaVMAttachArgs.name = PROJECT_NAME_C "NativeThread";
+	lJavaVMAttachArgs.name = "MinetestNativeThread";
 	lJavaVMAttachArgs.group = nullptr;
 
 	if (jvm->AttachCurrentThread(&porting::jnienv, &lJavaVMAttachArgs) == JNI_ERR) {

@@ -1,42 +1,15 @@
-Minetest
-========
+# Voxelmanip Classic
 
-![Build Status](https://github.com/minetest/minetest/workflows/build/badge.svg)
-[![Translation status](https://hosted.weblate.org/widgets/minetest/-/svg-badge.svg)](https://hosted.weblate.org/engage/minetest/?utm_source=widget)
-[![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
-
-Minetest is a free open-source voxel game engine with easy modding and game creation.
-
-Copyright (C) 2010-2022 Perttu Ahola <celeron55@gmail.com>
-and contributors (see source file comments and the version control log)
-
-In case you downloaded the source code
---------------------------------------
-If you downloaded the Minetest Engine source code in which this file is
-contained, you probably want to download the [Minetest Game](https://github.com/minetest/minetest_game/)
-project too. See its README.txt for more information.
+This is the client for Voxelmanip Classic, which is forked from the Minetest engine.
 
 Table of Contents
 ------------------
 
-1. [Further Documentation](#further-documentation)
 2. [Default Controls](#default-controls)
 3. [Paths](#paths)
 4. [Configuration File](#configuration-file)
 5. [Command-line Options](#command-line-options)
 6. [Compiling](#compiling)
-7. [Docker](#docker)
-8. [Version Scheme](#version-scheme)
-
-
-Further documentation
-----------------------
-- Website: https://minetest.net/
-- Wiki: https://wiki.minetest.net/
-- Developer wiki: https://dev.minetest.net/
-- Forum: https://forum.minetest.net/
-- GitHub: https://github.com/minetest/minetest/
-- [doc/](doc/) directory of source distribution
 
 Default controls
 ----------------
@@ -131,7 +104,7 @@ Compiling
 |------------|---------|------------|
 | GCC        | 5.1+    | or Clang 3.5+ |
 | CMake      | 3.5+    |            |
-| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
+| IrrlichtMt | -       | Custom version of Irrlicht |
 | Freetype   | 2.0+    |            |
 | Zstd       | 1.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
@@ -156,100 +129,42 @@ For Alpine users:
 
 #### Download
 
-You can install Git for easily keeping your copy up to date.
-If you don’t want Git, read below on how to get the source without Git.
-This is an example for installing Git on Debian/Ubuntu:
-
-    sudo apt install git
-
-For Fedora users:
-
-    sudo dnf install git
-
-For Arch users:
-
-	sudo pacman -S git
-
-For Alpine users:
-
-	sudo apk add git
-
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-    git clone --depth 1 https://github.com/minetest/minetest.git
+    git clone --depth 1 https://github.com/rollerozxa/voxelmanip-classic-mt
     cd minetest
-
-Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
-
-    git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
 Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
 
-    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
-
-Download source, without using Git:
-
-    wget https://github.com/minetest/minetest/archive/master.tar.gz
-    tar xf master.tar.gz
-    cd minetest-master
-
-Download Minetest Game, without using Git:
-
-    cd games/
-    wget https://github.com/minetest/minetest_game/archive/master.tar.gz
-    tar xf master.tar.gz
-    mv minetest_game-master minetest_game
-    cd ..
-
-Download IrrlichtMt, without using Git:
-
-    cd lib/
-    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
-    tar xf master.tar.gz
-    mv irrlicht-master irrlichtmt
-    cd ..
+    git clone --depth 1 https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt
 
 #### Build
 
 Build a version that runs directly from the source directory:
 
-    cmake . -DRUN_IN_PLACE=TRUE
-    make -j$(nproc)
+    cmake . -G Ninja -DRUN_IN_PLACE=TRUE
+    ninja
 
 Run it:
 
-    ./bin/minetest
+    ./bin/voxelmanip_classic
 
 - Use `cmake . -LH` to see all CMake options and their current state.
 - If you want to install it system-wide (or are making a distribution package),
   you will want to use `-DRUN_IN_PLACE=FALSE`.
-- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`.
-- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
   - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to compile IrrlichtMt, just the headers suffice.
-  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlichtmt/include`.
-
-- Minetest will use the IrrlichtMt package that is found first, given by the following order:
-  1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
-  2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
-  3. Installation of IrrlichtMt in the system-specific library paths
-  4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
-  - NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
 
 ### CMake options
 
 General options and their default values:
 
-    BUILD_CLIENT=TRUE          - Build Minetest client
-    BUILD_SERVER=FALSE         - Build Minetest server
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build
         SemiDebug              - Partially optimized debug build
         RelWithDebInfo         - Release build with debug information
         MinSizeRel             - Release build with -Os passed to compiler to make executable as small as possible
-    ENABLE_GLES=OFF            - Enable extra support code for OpenGL ES (requires support by IrrlichtMt)
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
     ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
@@ -270,8 +185,6 @@ Library specific options:
     ICONV_LIBRARY                   - Optional/platform-dependent; path to libiconv.so/libiconv.dylib
     IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
     IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
-    SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
-    SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex.so/spatialindex-32.lib
     LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
     LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
     OGG_DLL                         - Only if building with sound on Windows; path to libogg.dll
@@ -290,168 +203,3 @@ Library specific options:
     ZSTD_DLL                        - Only on Windows; path to libzstd.dll
     ZSTD_INCLUDE_DIR                - Directory that contains zstd.h
     ZSTD_LIBRARY                    - Path to libzstd.a/libzstd.so/ztd.lib
-
-### Compiling on Windows using MSVC
-
-### Requirements
-
-- [Visual Studio 2015 or newer](https://visualstudio.microsoft.com)
-- [CMake](https://cmake.org/download/)
-- [vcpkg](https://github.com/Microsoft/vcpkg)
-- [Git](https://git-scm.com/downloads)
-
-### Compiling and installing the dependencies
-
-It is highly recommended to use vcpkg as package manager.
-
-After you successfully built vcpkg you can easily install the required libraries:
-```powershell
-vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry --triplet x64-windows
-```
-
-- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
-- `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
-- `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
-- `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
-- `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
-
-There are other optional libraries, but they are not tested if they can build and link correctly.
-
-Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
-
-### Compile Minetest
-
-#### a) Using the vcpkg toolchain and CMake GUI
-1. Start up the CMake GUI
-2. Select **Browse Source...** and select DIR/minetest
-3. Select **Browse Build...** and select DIR/minetest-build
-4. Select **Configure**
-5. Choose the right visual Studio version and target platform. It has to match the version of the installed dependencies
-6. Choose **Specify toolchain file for cross-compiling**
-7. Click **Next**
-8. Select the vcpkg toolchain file e.g. `D:/vcpkg/scripts/buildsystems/vcpkg.cmake`
-9. Click Finish
-10. Wait until cmake have generated the cash file
-11. If there are any errors, solve them and hit **Configure**
-12. Click **Generate**
-13. Click **Open Project**
-14. Compile Minetest inside Visual studio.
-
-#### b) Using the vcpkg toolchain and the commandline
-
-Run the following script in PowerShell:
-
-```powershell
-cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
-cmake --build . --config Release
-```
-Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
-
-### Windows Installer using WiX Toolset
-
-Requirements:
-* [Visual Studio 2017](https://visualstudio.microsoft.com/)
-* [WiX Toolset](https://wixtoolset.org/)
-
-In the Visual Studio 2017 Installer select **Optional Features -> WiX Toolset**.
-
-Build the binaries as described above, but make sure you unselect `RUN_IN_PLACE`.
-
-Open the generated project file with Visual Studio. Right-click **Package** and choose **Generate**.
-It may take some minutes to generate the installer.
-
-### Compiling on MacOS
-
-#### Requirements
-- [Homebrew](https://brew.sh/)
-- [Git](https://git-scm.com/downloads)
-
-Install dependencies with homebrew:
-
-```
-brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
-```
-
-#### Download
-
-Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
-
-```bash
-git clone --depth 1 https://github.com/minetest/minetest.git
-cd minetest
-```
-
-Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
-
-```
-git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
-```
-
-Download Minetest's fork of Irrlicht:
-
-```
-git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
-```
-
-#### Build
-
-```bash
-mkdir build
-cd build
-
-cmake .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
-    -DCMAKE_FIND_FRAMEWORK=LAST \
-    -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-    -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE
-
-make -j$(sysctl -n hw.logicalcpu)
-make install
-```
-
-#### Run
-
-```
-open ./build/macos/minetest.app
-```
-
-Docker
-------
-We provide Minetest server Docker images using the GitLab mirror registry.
-
-Images are built on each commit and available using the following tag scheme:
-
-* `registry.gitlab.com/minetest/minetest/server:latest` (latest build)
-* `registry.gitlab.com/minetest/minetest/server:<branch/tag>` (current branch or current tag)
-* `registry.gitlab.com/minetest/minetest/server:<commit-id>` (current commit id)
-
-If you want to test it on a Docker server you can easily run:
-
-	sudo docker run registry.gitlab.com/minetest/minetest/server:<docker tag>
-
-If you want to use it in a production environment you should use volumes bound to the Docker host
-to persist data and modify the configuration:
-
-	sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ registry.gitlab.com/minetest/minetest/server:master
-
-Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
-
-**Note:** If you don't understand the previous commands please read the official Docker documentation before use.
-
-You can also host your Minetest server inside a Kubernetes cluster. See our example implementation in [`misc/kubernetes.yml`](misc/kubernetes.yml).
-
-
-Version scheme
---------------
-We use `major.minor.patch` since 5.0.0-dev. Prior to that we used `0.major.minor`.
-
-- Major is incremented when the release contains breaking changes, all other
-numbers are set to 0.
-- Minor is incremented when the release contains new non-breaking features,
-patch is set to 0.
-- Patch is incremented when the release only contains bugfixes and very
-minor/trivial features considered necessary.
-
-Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release,
-i.e.: 5.0.0-dev is the development version leading to 5.0.0.
-Prior to that we used `previous_version-dev`.

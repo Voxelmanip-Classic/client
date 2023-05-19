@@ -176,21 +176,6 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 	return player->getPlayerSAO();
 }
 
-void Server::setSky(RemotePlayer *player, const SkyboxParams &params) {}
-
-void Server::setSun(RemotePlayer *player, const SunParams &params) {}
-
-void Server::setMoon(RemotePlayer *player, const MoonParams &params) {}
-
-void Server::setStars(RemotePlayer *player, const StarParams &params) {}
-
-void Server::setClouds(RemotePlayer *player, const CloudParams &params) {}
-
-void Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
-	float ratio) {}
-
-void Server::setLighting(RemotePlayer *player, const Lighting &lighting) {}
-
 void Server::spawnParticle(const std::string &playername,
 	const ParticleParameters &p) {}
 

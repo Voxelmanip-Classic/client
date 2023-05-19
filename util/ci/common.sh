@@ -19,5 +19,4 @@ install_linux_deps() {
 
 	sudo apt-get update
 	sudo apt-get install -y --no-install-recommends "${pkgs[@]}" "$@"
-
 }

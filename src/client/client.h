@@ -58,7 +58,6 @@ class ModChannelMgr;
 class MtEventManager;
 struct PointedThing;
 struct MapNode;
-class MapDatabase;
 class Minimap;
 struct MinimapMapblock;
 class MeshUpdateManager;

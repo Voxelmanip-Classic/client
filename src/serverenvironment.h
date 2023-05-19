@@ -30,8 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct GameParams;
 class RemotePlayer;
-class PlayerDatabase;
-class AuthDatabase;
 class PlayerSAO;
 class ServerEnvironment;
 struct StaticObject;
@@ -74,16 +72,10 @@ public:
 	float getSendRecommendedInterval()
 	{ return m_recommended_send_interval; }
 
-	void kickAllPlayers(AccessDeniedCode reason,
-		const std::string &str_reason, bool reconnect);
 	// Save players
-	void saveLoadedPlayers(bool force = false);
 	void savePlayer(RemotePlayer *player);
-	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, session_t peer_id,
-		bool is_singleplayer);
-	void addPlayer(RemotePlayer *player);
+
 	void removePlayer(RemotePlayer *player);
-	bool removePlayerFromDatabase(const std::string &name);
 
 	u32 addParticleSpawner(float exptime);
 	u32 addParticleSpawner(float exptime, u16 attached_id);
@@ -127,12 +119,6 @@ public:
 		std::set<u16> &current_objects,
 		std::queue<u16> &added_objects);
 
-	/*
-		Get the next message emitted by some active object.
-		Returns false if no messages are available, true otherwise.
-	*/
-	bool getActiveObjectMessage(ActiveObjectMessage *dest);
-
 	virtual void getSelectedActiveObjects(
 		const core::line3d<f32> &shootline_on_map,
 		std::vector<PointedThing> &objects
@@ -173,21 +159,11 @@ public:
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
 
-	// Sorted by how ready a mapblock is
-	enum BlockStatus {
-		BS_UNKNOWN,
-		BS_EMERGING,
-		BS_LOADED,
-		BS_ACTIVE // always highest value
-	};
-	BlockStatus getBlockStatus(v3s16 blockpos);
-
 	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
 	const std::vector<RemotePlayer *> getPlayers() const { return m_players; }
 	u32 getPlayerCount() const { return m_players.size(); }
 
-	AuthDatabase *getAuthDatabase() { return m_auth_database; }
 private:
 
 	/*
@@ -252,9 +228,6 @@ private:
 
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<RemotePlayer*> m_players;
-
-	PlayerDatabase *m_player_database = nullptr;
-	AuthDatabase *m_auth_database = nullptr;
 
 	// Pseudo random generator for shuffling, etc.
 	std::mt19937 m_rgen;

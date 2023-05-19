@@ -104,113 +104,15 @@ RemotePlayer *ServerEnvironment::getPlayer(const char* name)
 	return NULL;
 }
 
-void ServerEnvironment::addPlayer(RemotePlayer *player)
-{
-	/*
-		Check that peer_ids are unique.
-		Also check that names are unique.
-		Exception: there can be multiple players with peer_id=0
-	*/
-	// If peer id is non-zero, it has to be unique.
-	if (player->getPeerId() != PEER_ID_INEXISTENT)
-		FATAL_ERROR_IF(getPlayer(player->getPeerId()) != NULL, "Peer id not unique");
-	// Name has to be unique.
-	FATAL_ERROR_IF(getPlayer(player->getName()) != NULL, "Player name not unique");
-	// Add.
-	m_players.push_back(player);
-}
-
 void ServerEnvironment::removePlayer(RemotePlayer *player)
 {
-	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
-		it != m_players.end(); ++it) {
-		if ((*it) == player) {
-			delete *it;
-			m_players.erase(it);
-			return;
-		}
-	}
-}
 
-bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
-{
-	return m_player_database->removePlayer(name);
-}
-
-void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
-	const std::string &str_reason, bool reconnect)
-{
-	for (RemotePlayer *player : m_players)
-		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
-}
-
-void ServerEnvironment::saveLoadedPlayers(bool force)
-{
-	for (RemotePlayer *player : m_players) {
-		if (force || player->checkModified() || (player->getPlayerSAO() &&
-				player->getPlayerSAO()->getMeta().isModified())) {
-			try {
-				m_player_database->savePlayer(player);
-			} catch (DatabaseException &e) {
-				errorstream << "Failed to save player " << player->getName() << " exception: "
-					<< e.what() << std::endl;
-				throw;
-			}
-		}
-	}
 }
 
 void ServerEnvironment::savePlayer(RemotePlayer *player)
 {
-	try {
-		m_player_database->savePlayer(player);
-	} catch (DatabaseException &e) {
-		errorstream << "Failed to save player " << player->getName() << " exception: "
-			<< e.what() << std::endl;
-		throw;
-	}
+
 }
-
-PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
-	session_t peer_id, bool is_singleplayer)
-{
-	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, is_singleplayer);
-	// Create player if it doesn't exist
-	if (!m_player_database->loadPlayer(player, playersao)) {
-		*new_player = true;
-		// Set player position
-		infostream << "Server: Finding spawn place for player \""
-			<< player->getName() << "\"" << std::endl;
-		playersao->setBasePosition(m_server->findSpawnPos());
-
-		// Make sure the player is saved
-		player->setModified(true);
-	} else {
-		// If the player exists, ensure that they respawn inside legal bounds
-		// This fixes an assert crash when the player can't be added
-		// to the environment
-		if (objectpos_over_limit(playersao->getBasePosition())) {
-			actionstream << "Respawn position for player \""
-				<< player->getName() << "\" outside limits, resetting" << std::endl;
-			playersao->setBasePosition(m_server->findSpawnPos());
-		}
-	}
-
-	// Add player to environment
-	addPlayer(player);
-
-	/* Clean up old HUD elements from previous sessions */
-	player->clearHud();
-
-	/* Add object to environment */
-	addActiveObject(playersao);
-
-	// Update active blocks quickly for a bit so objects in those blocks appear on the client
-	m_fast_active_block_divider = 10;
-
-	return playersao;
-}
-
 
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
@@ -238,11 +140,6 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 void ServerEnvironment::step(float dtime)
 {
 
-}
-
-ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
-{
-	return BS_UNKNOWN;
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime)
@@ -311,17 +208,6 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 
 	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
 		player_radius_f, current_objects, added_objects);
-}
-
-
-bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
-{
-	if (m_active_object_messages.empty())
-		return false;
-
-	*dest = std::move(m_active_object_messages.front());
-	m_active_object_messages.pop();
-	return true;
 }
 
 void ServerEnvironment::getSelectedActiveObjects(

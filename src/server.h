@@ -223,7 +223,6 @@ public:
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
 	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
 
 	bool joinModChannel(const std::string &channel);
@@ -243,24 +242,10 @@ public:
 	// Bind address
 	Address m_bind_addr;
 
-	// Environment mutex (envlock)
-	std::mutex m_env_mutex;
-
 private:
 	friend class RemoteClient;
 
 	void init();
-
-	void SendMovement(session_t peer_id);
-	void SendHP(session_t peer_id, u16 hp, bool effect);
-	void SendBreath(session_t peer_id, u16 breath);
-	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect = false);
-	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target);
-	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
-		u16 protocol_version);
-
 
 	/*
 		Something random
@@ -283,9 +268,6 @@ private:
 	// If true, do not allow multiple players and hide some multiplayer
 	// functionality
 	bool m_simple_singleplayer_mode;
-	// For "dedicated" server list flag
-	bool m_dedicated;
-	Settings *m_game_settings = nullptr;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
@@ -308,14 +290,6 @@ private:
 
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
-
-	/*
-		Threads
-	*/
-	// A buffer for time steps
-	// step() increments and AsyncRunStep() run by m_thread reads it.
-	float m_step_dtime = 0.0f;
-	std::mutex m_step_dtime_mutex;
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;

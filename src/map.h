@@ -389,14 +389,4 @@ protected:
 
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 
-private:
-
-	/*
-		Metadata is re-written on disk only if this is true.
-		This is reset to false when written on disk.
-	*/
-	bool m_map_metadata_changed = true;
-	MapDatabase *dbase = nullptr;
-	MapDatabase *dbase_ro = nullptr;
-
 };

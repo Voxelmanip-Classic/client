@@ -85,7 +85,6 @@ Server::Server(
 	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
-	m_dedicated(dedicated),
 	m_async_fatal_error(""),
 	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
@@ -130,26 +129,9 @@ void Server::Send(NetworkPacket *pkt) {}
 
 void Server::Send(session_t peer_id, NetworkPacket *pkt) {}
 
-void Server::SendMovement(session_t peer_id) {}
-
 void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason) {}
 
 void Server::SendPlayerHP(PlayerSAO *playersao, bool effect) {}
-
-void Server::SendHP(session_t peer_id, u16 hp, bool effect) {}
-
-void Server::SendBreath(session_t peer_id, u16 breath) {}
-
-void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect) {}
-
-void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target) {}
-
-void Server::SendNodeDef(session_t peer_id,
-	const NodeDefManager *nodedef, u16 protocol_version) {}
-
-void Server::SendInventory(PlayerSAO *sao, bool incremental) {}
 
 void Server::SendPlayerBreath(PlayerSAO *sao) {}
 

@@ -73,20 +73,6 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 // Exported functions
 
-// get_inventory(self)
-int NodeMetaRef::l_get_inventory(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
-	ref->getmeta(true);  // try to ensure the metadata exists
-
-	InventoryLocation loc;
-	loc.setNodeMeta(ref->m_p);
-	InvRef::create(L, loc);
-	return 1;
-}
-
 // mark_as_private(self, <string> or {<string>, <string>, ...})
 int NodeMetaRef::l_mark_as_private(lua_State *L)
 {
@@ -212,7 +198,6 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, get_keys),
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
-	luamethod(NodeMetaRef, get_inventory),
 	luamethod(NodeMetaRef, mark_as_private),
 	luamethod(MetaDataRef, equals),
 	{0,0}

@@ -311,7 +311,6 @@ void set_default_settings()
 	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "6125");
-	settings->setDefault("server_map_save_interval", "5.3");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
@@ -373,7 +372,6 @@ void set_default_settings()
 	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");
-	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("viewing_range", "90");
 	settings->setDefault("leaves_style", "simple");

@@ -370,8 +370,6 @@ public:
 	void endSave() override;
 
 	void save(ModifiedState save_level) override;
-	void listAllLoadableBlocks(std::vector<v3s16> &dst);
-	void listAllLoadedBlocks(std::vector<v3s16> &dst);
 
 	bool saveBlock(MapBlock *block) override;
 	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
@@ -390,16 +388,6 @@ public:
 	void PrintInfo(std::ostream &out) override;
 
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
-
-	/*!
-	 * Fixes lighting in one map block.
-	 * May modify other blocks as well, as light can spread
-	 * out of the specified block.
-	 * Returns false if the block is not generated (so nothing
-	 * changed), true otherwise.
-	 */
-	bool repairBlockLight(v3s16 blockpos,
-		std::map<v3s16, MapBlock *> *modified_blocks);
 
 	void transforming_liquid_add(v3s16 p);
 

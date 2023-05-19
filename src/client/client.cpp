@@ -707,7 +707,7 @@ void Client::step(float dtime)
 	// Write changes to the mod storage
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
-		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		m_mod_storage_save_timer = 7.0f;
 		m_mod_storage_database->endSave();
 		m_mod_storage_database->beginSave();
 	}
@@ -721,7 +721,6 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 
 	const char *image_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
-		".pcx", ".ppm", ".psd", ".wal", ".rgb",
 		NULL
 	};
 	name = removeStringEnd(filename, image_ext);
@@ -765,7 +764,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	}
 
 	const char *model_ext[] = {
-		".x", ".b3d", ".md2", ".obj",
+		".x", ".b3d", ".obj",
 		NULL
 	};
 	name = removeStringEnd(filename, model_ext);

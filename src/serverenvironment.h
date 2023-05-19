@@ -191,10 +191,6 @@ public:
 	AuthDatabase *getAuthDatabase() { return m_auth_database; }
 private:
 
-	static PlayerDatabase *openPlayerDatabase(const std::string &name,
-			const std::string &savedir, const Settings &conf);
-	static AuthDatabase *openAuthDatabase(const std::string &name,
-			const std::string &savedir, const Settings &conf);
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------
@@ -211,35 +207,6 @@ private:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
-
-	/*
-		Remove all objects that satisfy (isGone() && m_known_by_count==0)
-	*/
-	void removeRemovedObjects();
-
-	/*
-		Convert stored objects from block to active
-	*/
-	void activateObjects(MapBlock *block, u32 dtime_s);
-
-	/*
-		Convert objects that are not in active blocks to static.
-
-		If m_known_by_count != 0, active object is not deleted, but static
-		data is still updated.
-
-		If force_delete is set, active object is deleted nevertheless. It
-		shall only be set so in the destructor of the environment.
-	*/
-	void deactivateFarObjects(bool force_delete);
-
-	/*
-		A few helpers used by the three above methods
-	*/
-	void deleteStaticFromBlock(
-			ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge);
-	bool saveStaticToBlock(v3s16 blockpos, u16 store_id,
-			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
 	/*
 		Member variables

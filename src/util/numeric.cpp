@@ -107,68 +107,6 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	return h;
 }
 
-/*
-	blockpos_b: position of block in block coordinates
-	camera_pos: position of camera in nodes
-	camera_dir: an unit vector pointing to camera direction
-	range: viewing range
-	distance_ptr: return location for distance from the camera
-*/
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
-		f32 camera_fov, f32 range, f32 *distance_ptr)
-{
-	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
-
-	// Block center position
-	v3f blockpos(
-			((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
-			((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
-			((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
-	);
-
-	// Block position relative to camera
-	v3f blockpos_relative = blockpos - camera_pos;
-
-	// Total distance
-	f32 d = MYMAX(0, blockpos_relative.getLength() - BLOCK_MAX_RADIUS);
-
-	if (distance_ptr)
-		*distance_ptr = d;
-
-	// If block is far away, it's not in sight
-	if (d > range)
-		return false;
-
-	// If block is (nearly) touching the camera, don't
-	// bother validating further (that is, render it anyway)
-	if (d == 0)
-		return true;
-
-	// Adjust camera position, for purposes of computing the angle,
-	// such that a block that has any portion visible with the
-	// current camera position will have the center visible at the
-	// adjusted position
-	f32 adjdist = BLOCK_MAX_RADIUS / cos((M_PI - camera_fov) / 2);
-
-	// Block position relative to adjusted camera
-	v3f blockpos_adj = blockpos - (camera_pos - camera_dir * adjdist);
-
-	// Distance in camera direction (+=front, -=back)
-	f32 dforward = blockpos_adj.dotProduct(camera_dir);
-
-	// Cosine of the angle between the camera direction
-	// and the block direction (camera_dir is an unit vector)
-	f32 cosangle = dforward / blockpos_adj.getLength();
-
-	// If block is not in the field of view, skip it
-	// HOTFIX: use sligthly increased angle (+10%) to fix too aggressive
-	// culling. Somebody have to find out whats wrong with the math here.
-	// Previous value: camera_fov / 2
-	if (cosangle < std::cos(camera_fov * 0.55f))
-		return false;
-
-	return true;
-}
 
 inline float adjustDist(float dist, float zoom_fov)
 {

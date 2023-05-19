@@ -96,8 +96,6 @@ Server::Server(
 	m_nodedef(createNodeDefManager()),
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
-	m_admin_chat(iface),
-	m_on_shutdown_errmsg(on_shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr()) {}
 
 Server::~Server() {}
@@ -195,11 +193,6 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 		return NULL;
 	return player->getPlayerSAO();
 }
-
-void Server::setLocalPlayerAnimations(RemotePlayer *player,
-		v2s32 animation_frames[4], f32 frame_speed) {}
-
-void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third) {}
 
 void Server::setSky(RemotePlayer *player, const SkyboxParams &params) {}
 
@@ -299,29 +292,4 @@ bool Server::sendModChannelMessage(const std::string &channel, const std::string
 ModChannel* Server::getModChannel(const std::string &channel)
 {
 	return m_modchannel_mgr->getModChannel(channel);
-}
-
-ModStorageDatabase *Server::openModStorageDatabase(const std::string &world_path)
-{
-	std::string world_mt_path = world_path + DIR_DELIM + "world.mt";
-	Settings world_mt;
-	if (!world_mt.readConfigFile(world_mt_path.c_str()))
-		throw BaseException("Cannot read world.mt!");
-
-	std::string backend = world_mt.exists("mod_storage_backend") ?
-		world_mt.get("mod_storage_backend") : "files";
-
-	return openModStorageDatabase(backend, world_path, world_mt);
-}
-
-ModStorageDatabase *Server::openModStorageDatabase(const std::string &backend,
-		const std::string &world_path, const Settings &world_mt)
-{
-	if (backend == "files")
-		return new ModStorageDatabaseFiles(world_path);
-
-	if (backend == "dummy")
-		return new Database_Dummy();
-
-	throw BaseException("Mod storage database backend " + backend + " not supported");
 }

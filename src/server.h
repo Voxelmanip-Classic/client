@@ -156,8 +156,6 @@ public:
 	*/
 	void onMapEditEvent(const MapEditEvent &event);
 
-	inline double getUptime() const { return m_uptime_counter->get(); }
-
 	// Returns -1 if failed, sound handle on success
 	// Envlock
 	void stopSound(s32 handle);
@@ -181,7 +179,6 @@ public:
 	virtual IItemDefManager* getItemDefManager();
 	virtual const NodeDefManager* getNodeDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
-	virtual ModStorageDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	NodeDefManager* getWritableNodeDefManager();
@@ -205,10 +202,6 @@ public:
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
 	v3f findSpawnPos();
-
-	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
-			f32 frame_speed);
-	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
 	void setSky(RemotePlayer *player, const SkyboxParams &params);
 	void setSun(RemotePlayer *player, const SunParams &params);
@@ -242,11 +235,6 @@ public:
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
-	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
-
-	static ModStorageDatabase *openModStorageDatabase(const std::string &backend,
-			const std::string &world_path, const Settings &world_mt);
-
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
 
@@ -261,22 +249,6 @@ public:
 
 private:
 	friend class RemoteClient;
-
-
-	struct PendingDynamicMediaCallback {
-		std::string filename; // only set if media entry and file is to be deleted
-		float expiry_timer;
-		std::unordered_set<session_t> waiting_players;
-	};
-
-	// The standard library does not implement std::hash for pairs so we have this:
-	struct SBCHash {
-		size_t operator() (const std::pair<v3s16, u16> &p) const {
-			return std::hash<v3s16>()(p.first) ^ p.second;
-		}
-	};
-
-	typedef std::unordered_map<std::pair<v3s16, u16>, std::string, SBCHash> SerializedBlockCache;
 
 	void init();
 
@@ -350,35 +322,13 @@ private:
 	ServerThread *m_thread = nullptr;
 
 	/*
-		Time related stuff
-	*/
-	// Timer for sending time of day over network
-	float m_time_of_day_send_timer = 0.0f;
-
-	/*
 	 	Client interface
 	*/
 	ClientInterface m_clients;
 
 	/*
-		Peer change queue.
-		Queues stuff from peerAdded() and deletingPeer() to
-		handlePeerChanges()
-	*/
-	std::queue<con::PeerChange> m_peer_change_queue;
-
-	std::unordered_map<session_t, std::string> m_formspec_state_data;
-
-	/*
 		Random stuff
 	*/
-
-	ChatInterface *m_admin_chat;
-	std::string m_admin_nick;
-
-	// if a mod-error occurs in the on_shutdown callback, the error message will
-	// be written into this
-	std::string *const m_on_shutdown_errmsg;
 
 	/*
 		Map edit event queue. Automatically receives all map edits.
@@ -389,29 +339,6 @@ private:
 		ServerEnvironment?
 	*/
 
-	/*
-		Queue of map edits from the environment for sending to the clients
-		This is behind m_env_mutex
-	*/
-	std::queue<MapEditEvent*> m_unsent_map_edit_queue;
-	/*
-		If a non-empty area, map edit events contained within are left
-		unsent. Done at map generation time to speed up editing of the
-		generated area, as it will be sent anyway.
-		This is behind m_env_mutex
-	*/
-	VoxelArea m_ignore_map_edit_events_area;
-
-	// media files known to server
-	std::unordered_map<std::string, MediaInfo> m_media;
-
-	// pending dynamic media callbacks, clients inform the server when they have a file fetched
-	std::unordered_map<u32, PendingDynamicMediaCallback> m_pending_dyn_media;
-	float m_step_pending_dyn_media_timer = 0.0f;
-
-	ModStorageDatabase *m_mod_storage_database = nullptr;
-	float m_mod_storage_save_timer = 10.0f;
-
 	// CSM restrictions byteflag
 	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
 	u32 m_csm_restriction_noderange = 8;
@@ -421,14 +348,4 @@ private:
 
 	// Inventory manager
 	std::unique_ptr<ServerInventoryManager> m_inventory_mgr;
-
-	// Server metrics
-	MetricCounterPtr m_uptime_counter;
-	MetricGaugePtr m_player_gauge;
-	MetricGaugePtr m_timeofday_gauge;
-	MetricGaugePtr m_lag_gauge;
-	MetricCounterPtr m_aom_buffer_counter[2]; // [0] = rel, [1] = unrel
-	MetricCounterPtr m_packet_recv_counter;
-	MetricCounterPtr m_packet_recv_processed_counter;
-	MetricCounterPtr m_map_edit_event_counter;
 };

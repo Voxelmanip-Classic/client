@@ -824,17 +824,6 @@ void ServerMap::save(ModifiedState save_level)
 
 }
 
-void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
-{
-
-}
-
-void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
-{
-
-}
-
-
 void ServerMap::beginSave()
 {
 
@@ -880,12 +869,5 @@ void ServerMap::PrintInfo(std::ostream &out)
 {
 
 }
-
-bool ServerMap::repairBlockLight(v3s16 blockpos,
-	std::map<v3s16, MapBlock *> *modified_blocks)
-{
-	return true;
-}
-
 
 //END

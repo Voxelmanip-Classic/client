@@ -815,9 +815,6 @@ active_object_send_range_blocks (Active object send range) int 8 1 65535
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 max_block_send_distance (Max block send distance) int 12 1 65535
 
-#    Interval of saving important changes in the world, stated in seconds.
-server_map_save_interval (Map save interval) float 5.3 0.001
-
 [**Misc]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.

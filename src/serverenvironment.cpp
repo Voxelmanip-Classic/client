@@ -73,54 +73,12 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 
 void ServerEnvironment::init()
 {
-	// Determine which database backend to use
-	std::string conf_path = m_path_world + DIR_DELIM + "world.mt";
-	Settings conf;
 
-	std::string player_backend_name = "dummy";
-	std::string auth_backend_name = "dummy";
-
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-
-	// If we open world.mt read the backend configurations.
-	if (succeeded) {
-		// Check that the world's blocksize matches the compiled MAP_BLOCKSIZE
-		u16 blocksize = 16;
-		conf.getU16NoEx("blocksize", blocksize);
-		if (blocksize != MAP_BLOCKSIZE) {
-			throw BaseException(std::string("The map's blocksize is not supported."));
-		}
-
-		// Read those values before setting defaults
-		conf.getNoEx("player_backend", player_backend_name);
-		conf.getNoEx("auth_backend", auth_backend_name);
-	}
-
-	m_player_database = openPlayerDatabase(player_backend_name, m_path_world, conf);
-	m_auth_database = openAuthDatabase(auth_backend_name, m_path_world, conf);
-
-	if (m_map && m_script->has_on_mapblocks_changed()) {
-		m_map->addEventReceiver(&m_on_mapblocks_changed_receiver);
-		m_on_mapblocks_changed_receiver.receiving = true;
-	}
 }
 
 ServerEnvironment::~ServerEnvironment()
 {
-	// Convert all objects to static and delete the active objects
-	deactivateFarObjects(true);
 
-	// Drop/delete map
-	if (m_map)
-		m_map->drop();
-
-	// Deallocate players
-	for (RemotePlayer *m_player : m_players) {
-		delete m_player;
-	}
-
-	delete m_player_database;
-	delete m_auth_database;
 }
 
 Map & ServerEnvironment::getMap()
@@ -452,14 +410,6 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	return object->getId();
 }
 
-/*
-	Remove objects that satisfy (isGone() && m_known_by_count==0)
-*/
-void ServerEnvironment::removeRemovedObjects()
-{
-
-}
-
 ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
 		const std::string &data)
 {
@@ -470,54 +420,4 @@ ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
 			warningstream << "ServerActiveObject: No factory for type=" << type << std::endl;
 	}
 	return nullptr;
-}
-
-/*
-	Convert stored objects from blocks near the players to active.
-*/
-void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
-{
-
-}
-
-/*
-	Convert objects that are not standing inside active blocks to static.
-
-	If m_known_by_count != 0, active object is not deleted, but static
-	data is still updated.
-
-	If force_delete is set, active object is deleted nevertheless. It
-	shall only be set so in the destructor of the environment.
-
-	If block wasn't generated (not in memory or on disk),
-*/
-void ServerEnvironment::deactivateFarObjects(bool _force_delete)
-{
-
-}
-
-void ServerEnvironment::deleteStaticFromBlock(
-		ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge)
-{
-
-}
-
-bool ServerEnvironment::saveStaticToBlock(
-		v3s16 blockpos, u16 store_id,
-		ServerActiveObject *obj, const StaticObject &s_obj,
-		u32 mod_reason)
-{
-	return true;
-}
-
-PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
-		const std::string &savedir, const Settings &conf)
-{
-	throw BaseException(std::string("Database backend ") + name + " not supported.");
-}
-
-AuthDatabase *ServerEnvironment::openAuthDatabase(
-		const std::string &name, const std::string &savedir, const Settings &conf)
-{
-	throw BaseException(std::string("Database backend ") + name + " not supported.");
 }

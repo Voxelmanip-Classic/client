@@ -216,7 +216,6 @@ set(common_SRCS
 	convert_json.cpp
 	debug.cpp
 	defaultsettings.cpp
-	emerge.cpp
 	environment.cpp
 	face_position_cache.cpp
 	filesys.cpp

@@ -22,8 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mod_configuration.h"
 #include <memory>
 
-class MetricsBackend;
-class MetricCounter;
 class ServerScripting;
 
 /**

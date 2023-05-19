@@ -784,9 +784,8 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	ServerMap
 */
 ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
-		EmergeManager *emerge, MetricsBackend *mb):
-	Map(gamedef),
-	m_emerge(emerge)
+		MetricsBackend *mb):
+	Map(gamedef)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 
@@ -798,16 +797,6 @@ ServerMap::~ServerMap()
 
 }
 
-bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
-{
-	return true;
-}
-
-void ServerMap::finishBlockMake(BlockMakeData *data,
-	std::map<v3s16, MapBlock*> *changed_blocks)
-{
-
-}
 
 MapSector *ServerMap::createSector(v2s16 p2d)
 {
@@ -882,11 +871,6 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 	return true;
 }
 
-void ServerMap::deleteDetachedBlocks()
-{
-
-}
-
 void ServerMap::step()
 {
 
@@ -903,151 +887,5 @@ bool ServerMap::repairBlockLight(v3s16 blockpos,
 	return true;
 }
 
-MMVManip::MMVManip(Map *map):
-		VoxelManipulator(),
-		m_map(map)
-{
-	assert(map);
-}
-
-void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
-	bool load_if_inexistent)
-{
-	TimeTaker timer1("initialEmerge", &emerge_time);
-
-	assert(m_map);
-
-	// Units of these are MapBlocks
-	v3s16 p_min = blockpos_min;
-	v3s16 p_max = blockpos_max;
-
-	VoxelArea block_area_nodes
-			(p_min*MAP_BLOCKSIZE, (p_max+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-
-	u32 size_MB = block_area_nodes.getVolume()*4/1000000;
-	if(size_MB >= 1)
-	{
-		infostream<<"initialEmerge: area: ";
-		block_area_nodes.print(infostream);
-		infostream<<" ("<<size_MB<<"MB)";
-		infostream<<std::endl;
-	}
-
-	addArea(block_area_nodes);
-
-	for(s32 z=p_min.Z; z<=p_max.Z; z++)
-	for(s32 y=p_min.Y; y<=p_max.Y; y++)
-	for(s32 x=p_min.X; x<=p_max.X; x++)
-	{
-		u8 flags = 0;
-		MapBlock *block;
-		v3s16 p(x,y,z);
-		std::map<v3s16, u8>::iterator n;
-		n = m_loaded_blocks.find(p);
-		if(n != m_loaded_blocks.end())
-			continue;
-
-		bool block_data_inexistent = false;
-		{
-			TimeTaker timer2("emerge load", &emerge_load_time);
-
-			block = m_map->getBlockNoCreateNoEx(p);
-			if (!block)
-				block_data_inexistent = true;
-			else
-				block->copyTo(*this);
-		}
-
-		if(block_data_inexistent)
-		{
-
-			if (load_if_inexistent && !blockpos_over_max_limit(p)) {
-				ServerMap *svrmap = (ServerMap *)m_map;
-				block = svrmap->emergeBlock(p, false);
-				if (block == NULL)
-					block = svrmap->createBlock(p);
-				block->copyTo(*this);
-			} else {
-				flags |= VMANIP_BLOCK_DATA_INEXIST;
-
-				/*
-					Mark area inexistent
-				*/
-				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-				// Fill with VOXELFLAG_NO_DATA
-				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-				{
-					s32 i = m_area.index(a.MinEdge.X,y,z);
-					memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
-				}
-			}
-		}
-		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
-		{
-			// Mark that block was loaded as blank
-			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
-		}*/
-
-		m_loaded_blocks[p] = flags;
-	}
-
-	m_is_dirty = false;
-}
-
-void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
-	bool overwrite_generated)
-{
-	if(m_area.getExtent() == v3s16(0,0,0))
-		return;
-	assert(m_map);
-
-	/*
-		Copy data of all blocks
-	*/
-	for (auto &loaded_block : m_loaded_blocks) {
-		v3s16 p = loaded_block.first;
-		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-		bool existed = !(loaded_block.second & VMANIP_BLOCK_DATA_INEXIST);
-		if (!existed || (block == NULL) ||
-			(!overwrite_generated && block->isGenerated()))
-			continue;
-
-		block->copyFrom(*this);
-		block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_VMANIP);
-
-		if(modified_blocks)
-			(*modified_blocks)[p] = block;
-	}
-}
-
-MMVManip *MMVManip::clone() const
-{
-	MMVManip *ret = new MMVManip();
-
-	const s32 size = m_area.getVolume();
-	ret->m_area = m_area;
-	if (m_data) {
-		ret->m_data = new MapNode[size];
-		memcpy(ret->m_data, m_data, size * sizeof(MapNode));
-	}
-	if (m_flags) {
-		ret->m_flags = new u8[size];
-		memcpy(ret->m_flags, m_flags, size * sizeof(u8));
-	}
-
-	ret->m_is_dirty = m_is_dirty;
-	// Even if the copy is disconnected from a map object keep the information
-	// needed to write it back to one
-	ret->m_loaded_blocks = m_loaded_blocks;
-
-	return ret;
-}
-
-void MMVManip::reparent(Map *map)
-{
-	assert(map && !m_map);
-	m_map = map;
-}
 
 //END

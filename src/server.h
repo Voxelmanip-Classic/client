@@ -49,7 +49,6 @@ class ModChannelMgr;
 class RemotePlayer;
 class PlayerSAO;
 struct PlayerHPChangeReason;
-class EmergeManager;
 class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
@@ -422,9 +421,6 @@ private:
 
 	// Inventory manager
 	std::unique_ptr<ServerInventoryManager> m_inventory_mgr;
-
-	// Global server metrics backend
-	std::unique_ptr<MetricsBackend> m_metrics_backend;
 
 	// Server metrics
 	MetricCounterPtr m_uptime_counter;

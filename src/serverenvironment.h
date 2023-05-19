@@ -65,8 +65,6 @@ public:
 
 	Map & getMap();
 
-	ServerMap & getServerMap();
-
 	//TODO find way to remove this fct!
 	ServerScripting* getScriptIface()
 	{ return m_script; }
@@ -299,11 +297,6 @@ private:
 	IntervalLimiter m_particle_management_interval;
 	std::unordered_map<u32, float> m_particle_spawners;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
-
-	// Environment metrics
-	MetricCounterPtr m_step_time_counter;
-	MetricGaugePtr m_active_block_gauge;
-	MetricGaugePtr m_active_object_gauge;
 
 	ServerActiveObject* createSAO(ActiveObjectType type, v3f pos, const std::string &data);
 };

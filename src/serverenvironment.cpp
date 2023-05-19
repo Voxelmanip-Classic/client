@@ -68,14 +68,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_path_world(path_world),
 	m_rgen(seed())
 {
-	m_step_time_counter = mb->addCounter(
-		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
 
-	m_active_block_gauge = mb->addGauge(
-		"minetest_env_active_blocks", "Number of active blocks");
-
-	m_active_object_gauge = mb->addGauge(
-		"minetest_env_active_objects", "Number of active objects");
 }
 
 void ServerEnvironment::init()
@@ -131,11 +124,6 @@ ServerEnvironment::~ServerEnvironment()
 }
 
 Map & ServerEnvironment::getMap()
-{
-	return *m_map;
-}
-
-ServerMap & ServerEnvironment::getServerMap()
 {
 	return *m_map;
 }

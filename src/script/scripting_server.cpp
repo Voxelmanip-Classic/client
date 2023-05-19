@@ -98,7 +98,6 @@ void ServerScripting::initAsync()
 	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
-	asyncEngine.registerStateInitializer(ModApiItemMod::InitializeAsync);
 	// not added: ModApiHttp async api can't really work together with our jobs
 	// not added: ModApiStorage is probably not thread safe(?)
 
@@ -131,7 +130,6 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 
 	// Initialize mod api modules
 	ModApiEnvMod::Initialize(L, top);
-	ModApiItemMod::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);

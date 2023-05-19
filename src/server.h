@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
-#include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"

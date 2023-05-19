@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
-#include "util/metricsbackend.h"
 #include "util/numeric.h"
 #include "nodetimer.h"
 #include "debug.h"
@@ -45,7 +44,6 @@ class ServerMapSector;
 class MapBlock;
 class NodeMetadata;
 class IGameDef;
-class MetricsBackend;
 class ServerEnvironment;
 
 /*
@@ -338,7 +336,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(const std::string &savedir, IGameDef *gamedef, MetricsBackend *mb);
+	ServerMap(const std::string &savedir, IGameDef *gamedef);
 	~ServerMap();
 
 	/*
@@ -387,32 +385,11 @@ public:
 	// For debug printing
 	void PrintInfo(std::ostream &out) override;
 
-	bool isSavingEnabled(){ return m_map_saving_enabled; }
-
-	void transforming_liquid_add(v3s16 p);
-
 protected:
 
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 
 private:
-
-	std::string m_savedir;
-	bool m_map_saving_enabled;
-
-	int m_map_compression_level;
-
-	std::set<v3s16> m_chunks_in_progress;
-
-	// used by deleteBlock() and deleteDetachedBlocks()
-	MapBlockVect m_detached_blocks;
-
-	// Queued transforming water nodes
-	UniqueQueue<v3s16> m_transforming_liquid;
-	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;
-	u32 m_unprocessed_count = 0;
-	u64 m_inc_trending_up_start_time = 0; // milliseconds
-	bool m_queue_size_timer_started = false;
 
 	/*
 		Metadata is re-written on disk only if this is true.
@@ -422,8 +399,4 @@ private:
 	MapDatabase *dbase = nullptr;
 	MapDatabase *dbase_ro = nullptr;
 
-	// Map metrics
-	MetricGaugePtr m_loaded_blocks_gauge;
-	MetricCounterPtr m_save_time_counter;
-	MetricCounterPtr m_save_count_counter;
 };

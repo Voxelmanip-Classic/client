@@ -563,109 +563,6 @@ const luaL_Reg LuaItemStack::methods[] = {
 	ItemDefinition
 */
 
-// register_item_raw({lots of stuff})
-int ModApiItemMod::l_register_item_raw(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	luaL_checktype(L, 1, LUA_TTABLE);
-	int table = 1;
-
-	// Get the writable item and node definition managers from the server
-	IWritableItemDefManager *idef =
-			getServer(L)->getWritableItemDefManager();
-	NodeDefManager *ndef =
-			getServer(L)->getWritableNodeDefManager();
-
-	// Check if name is defined
-	std::string name;
-	lua_getfield(L, table, "name");
-	if(lua_isstring(L, -1)){
-		name = readParam<std::string>(L, -1);
-	} else {
-		throw LuaError("register_item_raw: name is not defined or not a string");
-	}
-
-	// Check if on_use is defined
-
-	ItemDefinition def;
-	// Set a distinctive default value to check if this is set
-	def.node_placement_prediction = "__default";
-
-	// Read the item definition
-	read_item_definition(L, table, def, def);
-
-	// Default to having client-side placement prediction for nodes
-	// ("" in item definition sets it off)
-	if(def.node_placement_prediction == "__default"){
-		if(def.type == ITEM_NODE)
-			def.node_placement_prediction = name;
-		else
-			def.node_placement_prediction.clear();
-	}
-
-	// Register item definition
-	idef->registerItem(def);
-
-	// Read the node definition (content features) and register it
-	if (def.type == ITEM_NODE) {
-		ContentFeatures f;
-		read_content_features(L, f, table);
-		// when a mod reregisters ignore, only texture changes and such should
-		// be done
-		if (f.name == "ignore")
-			return 0;
-		// This would break everything
-		if (f.name.empty())
-			throw LuaError("Cannot register node with empty name");
-
-		content_t id = ndef->set(f.name, f);
-
-		if (id > MAX_REGISTERED_CONTENT) {
-			throw LuaError("Number of registerable nodes ("
-					+ itos(MAX_REGISTERED_CONTENT+1)
-					+ ") exceeded (" + name + ")");
-		}
-	}
-
-	return 0; /* number of results */
-}
-
-// unregister_item(name)
-int ModApiItemMod::l_unregister_item_raw(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-
-	IWritableItemDefManager *idef =
-			getServer(L)->getWritableItemDefManager();
-
-	// Unregister the node
-	if (idef->get(name).type == ITEM_NODE) {
-		NodeDefManager *ndef =
-			getServer(L)->getWritableNodeDefManager();
-		ndef->removeNode(name);
-	}
-
-	idef->unregisterItem(name);
-
-	return 0; /* number of results */
-}
-
-// register_alias_raw(name, convert_to_name)
-int ModApiItemMod::l_register_alias_raw(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-	std::string convert_to = luaL_checkstring(L, 2);
-
-	// Get the writable item definition manager from the server
-	IWritableItemDefManager *idef =
-			getServer(L)->getWritableItemDefManager();
-
-	idef->registerAlias(name, convert_to);
-
-	return 0; /* number of results */
-}
 
 // get_content_id(name)
 int ModApiItemMod::l_get_content_id(lua_State *L)
@@ -704,22 +601,6 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 
 	lua_pushstring(L, name);
 	return 1; /* number of results */
-}
-
-void ModApiItemMod::Initialize(lua_State *L, int top)
-{
-	API_FCT(register_item_raw);
-	API_FCT(unregister_item_raw);
-	API_FCT(register_alias_raw);
-	API_FCT(get_content_id);
-	API_FCT(get_name_from_content_id);
-}
-
-void ModApiItemMod::InitializeAsync(lua_State *L, int top)
-{
-	// all read-only functions
-	API_FCT(get_content_id);
-	API_FCT(get_name_from_content_id);
 }
 
 void ModApiItemMod::InitializeClient(lua_State *L, int top)

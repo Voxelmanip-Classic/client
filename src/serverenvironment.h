@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
-#include "util/metricsbackend.h"
 #include <set>
 #include <random>
 
@@ -58,7 +57,7 @@ class ServerEnvironment final : public Environment
 {
 public:
 	ServerEnvironment(ServerMap *map, ServerScripting *script_iface,
-		Server *server, const std::string &path_world, MetricsBackend *mb);
+		Server *server, const std::string &path_world);
 	~ServerEnvironment();
 
 	void init();

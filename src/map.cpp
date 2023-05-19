@@ -478,10 +478,6 @@ struct NodeNeighbor {
 	{ }
 };
 
-void ServerMap::transforming_liquid_add(v3s16 p) {
-        m_transforming_liquid.push_back(p);
-}
-
 std::vector<v3s16> Map::findNodesWithMetadata(v3s16 p1, v3s16 p2)
 {
 	std::vector<v3s16> positions_with_meta;
@@ -783,8 +779,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 /*
 	ServerMap
 */
-ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
-		MetricsBackend *mb):
+ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef):
 	Map(gamedef)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;

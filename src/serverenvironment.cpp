@@ -60,7 +60,7 @@ static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *script_iface, Server *server,
-	const std::string &path_world, MetricsBackend *mb):
+	const std::string &path_world):
 	Environment(server),
 	m_map(map),
 	m_script(script_iface),

@@ -47,7 +47,7 @@ void set_default_settings()
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("client_mapblock_limit", "7500");
 	settings->setDefault("enable_build_where_you_stand", "false");
-	settings->setDefault("enable_client_modding", "false");
+	settings->setDefault("enable_client_modding", "true");
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("occlusion_culler", "bfs");
@@ -140,6 +140,8 @@ void set_default_settings()
 	settings->setDefault("keymap_quicktune_dec", "");
 	settings->setDefault("keymap_quicktune_inc", "");
 #endif
+
+	settings->setDefault("keymap_tabb", "KEY_TAB");
 
 	// Visuals
 #ifdef NDEBUG

@@ -228,6 +228,7 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	set("aux1",  c.aux1);
 	set("sneak", c.sneak);
 	set("zoom",  c.zoom);
+	set("tabb", c.tabb);
 	set("dig",   c.dig);
 	set("place", c.place);
 	// Player movement in polar coordinates and non-binary speed

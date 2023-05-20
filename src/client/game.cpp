@@ -2531,6 +2531,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::AUX1),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
+		isKeyDown(KeyType::TABB),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,

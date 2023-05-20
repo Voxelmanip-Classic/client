@@ -80,49 +80,6 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 
 }
 
-void ScriptApiEnv::check_for_falling(v3s16 p)
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "check_for_falling");
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	push_v3s16(L, p);
-	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
-}
-
-void ScriptApiEnv::on_liquid_transformed(
-	const std::vector<std::pair<v3s16, MapNode>> &list)
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	// Get core.registered_on_liquid_transformed
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_liquid_transformed");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_remove(L, -2);
-
-	// Skip converting list and calling hook if there are
-	// no registered callbacks.
-	if(lua_objlen(L, -1) < 1) return;
-
-	// Convert the list to a pos array and a node array for lua
-	int index = 1;
-	lua_createtable(L, list.size(), 0);
-	lua_createtable(L, list.size(), 0);
-	for(std::pair<v3s16, MapNode> p : list) {
-		lua_pushnumber(L, index);
-		push_v3s16(L, p.first);
-		lua_rawset(L, -4);
-		lua_pushnumber(L, index++);
-		pushnode(L, p.second);
-		lua_rawset(L, -3);
-	}
-
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
-}
-
 void ScriptApiEnv::on_mapblocks_changed(const std::unordered_set<v3s16> &set)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -143,15 +100,4 @@ void ScriptApiEnv::on_mapblocks_changed(const std::unordered_set<v3s16> &set)
 	lua_pushinteger(L, set.size());
 
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
-}
-
-bool ScriptApiEnv::has_on_mapblocks_changed()
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	// Get core.registered_on_mapblocks_changed
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_mapblocks_changed");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	return lua_objlen(L, -1) > 0;
 }

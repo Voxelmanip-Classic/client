@@ -424,29 +424,6 @@ void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 	lua_settable(L, objectstable);
 }
 
-void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
-{
-	SCRIPTAPI_PRECHECKHEADER
-	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
-
-	// Get core.object_refs table
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-
-	// Get object_refs[id]
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_gettable(L, objectstable);
-	// Set object reference to NULL
-	ObjectRef::set_null(L);
-	lua_pop(L, 1); // pop object
-
-	// Set object_refs[id] = nil
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_pushnil(L);
-	lua_settable(L, objectstable);
-}
 
 // Creates a new anonymous reference if cobj=NULL or id=0
 void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
@@ -460,37 +437,6 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 			warningstream << "ScriptApiBase::objectrefGetOrCreate(): "
 					<< "Pushing ObjectRef to removed/deactivated object"
 					<< ", this is probably a bug." << std::endl;
-	}
-}
-
-void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
-{
-	if (reason.hasLuaReference())
-		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
-	else
-		lua_newtable(L);
-
-	lua_getfield(L, -1, "type");
-	bool has_type = (bool)lua_isstring(L, -1);
-	lua_pop(L, 1);
-	if (!has_type) {
-		lua_pushstring(L, reason.getTypeAsString().c_str());
-		lua_setfield(L, -2, "type");
-	}
-
-	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
-	lua_setfield(L, -2, "from");
-
-	if (reason.object) {
-		objectrefGetOrCreate(L, reason.object);
-		lua_setfield(L, -2, "object");
-	}
-	if (!reason.node.empty()) {
-		lua_pushstring(L, reason.node.c_str());
-		lua_setfield(L, -2, "node");
-
-		push_v3s16(L, reason.node_pos);
-		lua_setfield(L, -2, "node_pos");
 	}
 }
 

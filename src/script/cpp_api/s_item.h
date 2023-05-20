@@ -45,26 +45,11 @@ public:
 
 	bool item_OnDrop(ItemStack &item,
 			ServerActiveObject *dropper, v3f pos);
-	bool item_OnPlace(Optional<ItemStack> &item,
-			ServerActiveObject *placer, const PointedThing &pointed);
-	bool item_OnUse(Optional<ItemStack> &item,
-			ServerActiveObject *user, const PointedThing &pointed);
-	bool item_OnSecondaryUse(Optional<ItemStack> &item,
-			ServerActiveObject *user, const PointedThing &pointed);
-	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
-			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
-	bool item_CraftPredict(ItemStack &item, ServerActiveObject *user,
-			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
 
 protected:
 	friend class LuaItemStack;
 	friend class ModApiItemMod;
 
 	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = nullptr);
-	/*!
-	 * Pushes a `pointed_thing` tabe to the stack.
-	 * \param hitpoint If true, the exact pointing location is also pushed
-	 */
-	void pushPointedThing(const PointedThing &pointed, bool hitpoint = false);
 
 };

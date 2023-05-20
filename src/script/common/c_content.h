@@ -69,8 +69,6 @@ struct collisionMoveResult;
 
 extern struct EnumString es_TileAnimationType[];
 
-void               read_content_features     (lua_State *L, ContentFeatures &f,
-                                              int index);
 void               push_content_features     (lua_State *L,
                                               const ContentFeatures &c);
 
@@ -81,9 +79,6 @@ void               push_box                  (lua_State *L,
 
 void               push_palette              (lua_State *L,
                                               const std::vector<video::SColor> *palette);
-
-TileDef            read_tiledef              (lua_State *L, int index,
-                                              u8 drawtype, bool special);
 
 void               read_soundspec            (lua_State *L, int index,
                                               SimpleSoundSpec &spec);
@@ -97,8 +92,6 @@ ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,
                                               const ToolCapabilities &prop);
 
-void read_item_definition (lua_State *L, int index, const ItemDefinition &default_def,
-		ItemDefinition &def);
 void               push_item_definition      (lua_State *L,
                                               const ItemDefinition &i);
 void               push_item_definition_full (lua_State *L,
@@ -122,10 +115,6 @@ void               read_inventory_list       (lua_State *L, int tableindex,
 MapNode            readnode                  (lua_State *L, int index);
 void               pushnode                  (lua_State *L, const MapNode &n);
 
-
-void               read_groups               (lua_State *L, int index,
-                                              ItemGroupList &result);
-
 void               push_groups               (lua_State *L,
                                               const ItemGroupList &groups);
 
@@ -134,21 +123,6 @@ int                getenumfield              (lua_State *L, int table,
                                               const char *fieldname,
                                               const EnumString *spec,
                                               int default_);
-
-bool               getflagsfield             (lua_State *L, int table,
-                                              const char *fieldname,
-                                              FlagDesc *flagdesc,
-                                              u32 *flags, u32 *flagmask);
-
-bool               read_flags                (lua_State *L, int index,
-                                              FlagDesc *flagdesc,
-                                              u32 *flags, u32 *flagmask);
-
-void               push_flags_string         (lua_State *L, FlagDesc *flagdesc,
-                                              u32 flags, u32 flagmask);
-
-u32                read_flags_table          (lua_State *L, int table,
-                                              FlagDesc *flagdesc, u32 *flagmask);
 
 void               push_items                (lua_State *L,
                                               const std::vector<ItemStack> &items);
@@ -189,5 +163,3 @@ void push_hud_element          (lua_State *L, HudElement *elem);
 bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *elem, void **value);
 
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res);
-
-void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied);

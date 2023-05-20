@@ -25,53 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ModApiEnvMod : public ModApiBase {
 private:
-	// set_node(pos, node)
-	// pos = {x=num, y=num, z=num}
-	static int l_set_node(lua_State *L);
-
-	// bulk_set_node([pos1, pos2, ...], node)
-	// pos = {x=num, y=num, z=num}
-	static int l_bulk_set_node(lua_State *L);
-
-	static int l_add_node(lua_State *L);
-
-	// remove_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_remove_node(lua_State *L);
-
-	// swap_node(pos, node)
-	// pos = {x=num, y=num, z=num}
-	static int l_swap_node(lua_State *L);
-
-	// get_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_get_node(lua_State *L);
-
-	// get_node_or_nil(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_get_node_or_nil(lua_State *L);
-
 	// get_node_light(pos, timeofday)
 	// pos = {x=num, y=num, z=num}
 	// timeofday: nil = current time, 0 = night, 0.5 = day
 	static int l_get_node_light(lua_State *L);
-
-	// get_natural_light(pos, timeofday)
-	// pos = {x=num, y=num, z=num}
-	// timeofday: nil = current time, 0 = night, 0.5 = day
-	static int l_get_natural_light(lua_State *L);
-
-	// place_node(pos, node)
-	// pos = {x=num, y=num, z=num}
-	static int l_place_node(lua_State *L);
-
-	// dig_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_dig_node(lua_State *L);
-
-	// punch_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_punch_node(lua_State *L);
 
 	// get_node_max_level(pos)
 	// pos = {x=num, y=num, z=num}
@@ -81,46 +38,11 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node_level(lua_State *L);
 
-	// set_node_level(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_set_node_level(lua_State *L);
-
-	// add_node_level(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_add_node_level(lua_State *L);
-
 	// find_nodes_with_meta(pos1, pos2)
 	static int l_find_nodes_with_meta(lua_State *L);
 
-	// get_meta(pos)
-	static int l_get_meta(lua_State *L);
-
-	// add_entity(pos, entityname) -> ObjectRef or nil
-	// pos = {x=num, y=num, z=num}
-	static int l_add_entity(lua_State *L);
-
-	// add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
-	// pos = {x=num, y=num, z=num}
-	static int l_add_item(lua_State *L);
-
-	// get_objects_inside_radius(pos, radius)
-	static int l_get_objects_inside_radius(lua_State *L);
-
-	// get_objects_in_area(pos, minp, maxp)
-	static int l_get_objects_in_area(lua_State *L);
-
-	// set_timeofday(val)
-	// val = 0...1
-	static int l_set_timeofday(lua_State *L);
-
 	// get_timeofday() -> 0...1
 	static int l_get_timeofday(lua_State *L);
-
-	// get_gametime()
-	static int l_get_gametime(lua_State *L);
-
-	// get_day_count() -> int
-	static int l_get_day_count(lua_State *L);
 
 	// find_node_near(pos, radius, nodenames, search_center) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"

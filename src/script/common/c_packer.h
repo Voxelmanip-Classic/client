@@ -121,6 +121,3 @@ PackedValue *script_pack(lua_State *L, int idx);
 // Unpack a Lua value (left on top of stack)
 // Note that this may modify the PackedValue, reusability is not guaranteed!
 void script_unpack(lua_State *L, PackedValue *val);
-
-// Dump contents of PackedValue to stdout for debugging
-void script_dump_packed(const PackedValue *val);

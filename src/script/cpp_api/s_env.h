@@ -40,16 +40,8 @@ public:
 	// Called on player event
 	void player_event(ServerActiveObject *player, const std::string &type);
 
-	void check_for_falling(v3s16 p);
-
-	// Called after liquid transform changes
-	void on_liquid_transformed(const std::vector<std::pair<v3s16, MapNode>> &list);
-
 	// Called after mapblock changes
 	void on_mapblocks_changed(const std::unordered_set<v3s16> &set);
-
-	// Determines whether there are any on_mapblocks_changed callbacks
-	bool has_on_mapblocks_changed();
 
 	void initializeEnvironment(ServerEnvironment *env);
 };

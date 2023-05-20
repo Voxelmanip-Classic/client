@@ -35,25 +35,6 @@ class ScriptApiPlayer : virtual public ScriptApiBase
 public:
 	virtual ~ScriptApiPlayer() = default;
 
-	void on_newplayer(ServerActiveObject *player);
-	void on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason);
-	bool on_respawnplayer(ServerActiveObject *player);
-	bool on_prejoinplayer(const std::string &name, const std::string &ip,
-			std::string *reason);
-	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
-	void on_joinplayer(ServerActiveObject *player, s64 last_login);
-	void on_leaveplayer(ServerActiveObject *player, bool timeout);
-	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
-	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
-			float time_from_last_punch, const ToolCapabilities *toolcap,
-			v3f dir, s32 damage);
-	void on_rightclickplayer(ServerActiveObject *player, ServerActiveObject *clicker);
-	s32 on_player_hpchange(ServerActiveObject *player, s32 hp_change,
-			const PlayerHPChangeReason &reason);
-	void on_playerReceiveFields(ServerActiveObject *player,
-			const std::string &formname, const StringMap &fields);
-	void on_authplayer(const std::string &name, const std::string &ip, bool is_success);
-
 	// Player inventory callbacks
 	// Return number of accepted items to be moved
 	int player_inventory_AllowMove(

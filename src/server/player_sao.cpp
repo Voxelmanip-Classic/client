@@ -425,81 +425,17 @@ u32 PlayerSAO::punch(v3f dir,
 	float time_from_last_punch,
 	u16 initial_wear)
 {
-	if (!toolcap)
-		return 0;
-
-	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
-
-	// No effect if PvP disabled or if immortal
-	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// create message and add to list
-			sendPunchCommand();
-			return 0;
-		}
-	}
-
-	s32 old_hp = getHP();
-	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
-			time_from_last_punch, initial_wear);
-
-	PlayerSAO *playersao = m_player->getPlayerSAO();
-
-	bool damage_handled = m_env->getScriptIface()->on_punchplayer(playersao,
-				puncher, time_from_last_punch, toolcap, dir,
-				hitparams.hp);
-
-	if (!damage_handled) {
-		setHP((s32)getHP() - (s32)hitparams.hp,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
-	} else { // override client prediction
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// create message and add to list
-			sendPunchCommand();
-		}
-	}
-
-	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-		", hp=" << puncher->getHP() << ") punched " <<
-		getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-		"), damage=" << (old_hp - (s32)getHP()) <<
-		(damage_handled ? " (handled by Lua)" : "") << std::endl;
-
-	return hitparams.wear;
+	return 0;
 }
 
 void PlayerSAO::rightClick(ServerActiveObject *clicker)
 {
-	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
+
 }
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	target_hp = rangelim(target_hp, 0, U16_MAX);
 
-	if (target_hp == m_hp)
-		return; // Nothing to do
-
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
-
-	s32 hp = (s32)m_hp + std::min(hp_change, U16_MAX); // Protection against s32 overflow
-	hp = rangelim(hp, 0, U16_MAX);
-
-	if (hp > m_prop.hp_max)
-		hp = m_prop.hp_max;
-
-	if (hp < m_hp && isImmortal())
-		hp = m_hp; // Do not allow immortal players to be damaged
-
-	// Update properties on death
-	if ((hp == 0) != (m_hp == 0))
-		m_properties_sent = false;
-
-	if (hp != m_hp) {
-		m_hp = hp;
-		m_env->getGameDef()->HandlePlayerHPChange(this, reason);
-	} else if (from_client)
-		m_env->getGameDef()->SendPlayerHP(this, true);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)

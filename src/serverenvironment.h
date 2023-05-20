@@ -195,8 +195,6 @@ private:
 	Server *m_server;
 	// Active Object Manager
 	server::ActiveObjectMgr m_ao_manager;
-	// on_mapblocks_changed map event receiver
-	OnMapblocksChangedReceiver m_on_mapblocks_changed_receiver;
 	// World path
 	const std::string m_path_world;
 	// Outgoing network message buffer for active objects

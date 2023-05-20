@@ -70,8 +70,6 @@ bool               getstringfield(lua_State *L, int table,
 size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
                              std::vector<std::string> *result);
-void               read_groups(lua_State *L, int index,
-                             std::unordered_map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,
@@ -114,13 +112,6 @@ void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);
-
-void                warn_if_field_exists(lua_State *L, int table,
-                                         const char *fieldname,
-                                         const std::string &message);
-
-size_t write_array_slice_float(lua_State *L, int table_index, float *data,
-	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
 
 // This must match the implementation in builtin/game/misc_s.lua
 // Note that this returns a floating point result as Lua integers are 32-bit

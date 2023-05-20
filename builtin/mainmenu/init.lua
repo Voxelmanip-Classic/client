@@ -34,7 +34,7 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
-dofile(menupath .. DIR_DELIM .. "common.lua")
+menudata = {}
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
 dofile(menupath .. DIR_DELIM .. "game_theme.lua")
 
@@ -59,22 +59,6 @@ end
 local function init_globals()
 	-- Init gamedata
 	gamedata.worldindex = 0
-
-	menudata.worldlist = filterlist.create(
-		core.get_worlds,
-		compare_worlds,
-		-- Unique id comparison function
-		function(element, uid)
-			return element.name == uid
-		end,
-		-- Filter function
-		function(element, gameid)
-			return element.gameid == gameid
-		end
-	)
-
-	menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
-	menudata.worldlist:set_sortmode("alphabetic")
 
 	local gameid = core.settings:get("menu_last_game")
 	local game = gameid and pkgmgr.find_by_gameid(gameid)

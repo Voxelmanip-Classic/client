@@ -221,35 +221,6 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
-	if setting_type == "flags" then
-		local default, possible = remaining_line:match("^"
-				-- first value (default) may be empty (i.e. is optional)
-				-- this is implemented by making the last value optional, and
-				-- swapping them around if it turns out empty.
-				.. "(" .. CHAR_CLASSES.FLAGS .. "+)" .. CHAR_CLASSES.SPACE .. "*"
-				.. "(" .. CHAR_CLASSES.FLAGS .. "*)"
-				.. "$")
-
-		if not default or not possible then
-			return "Invalid flags setting"
-		end
-
-		if possible == "" then
-			possible = default
-			default = ""
-		end
-
-		table.insert(settings, {
-			name = name,
-			readable_name = readable_name,
-			type = "flags",
-			default = default,
-			possible = flags_to_table(possible),
-			comment = current_comment,
-		})
-		return
-	end
-
 	return "Invalid setting type \"" .. setting_type .. "\""
 end
 
@@ -602,31 +573,6 @@ local function handle_change_setting_buttons(this, fields)
 				return true
 			end
 			core.settings:set(setting.name, new_value)
-
-		elseif setting.type == "flags" then
-			local values = {}
-			for _, name in ipairs(setting.possible) do
-				if name:sub(1, 2) ~= "no" then
-					if checkboxes["cb_" .. name] then
-						table.insert(values, name)
-					else
-						table.insert(values, "no" .. name)
-					end
-				end
-			end
-
-			checkboxes = {}
-
-			local new_value = table.concat(values, ", ")
-			core.settings:set(setting.name, new_value)
-
-		elseif setting.type == "v3f" then
-			local new_value = "("
-					.. fields["te_x"] .. ", "
-					.. fields["te_y"] .. ", "
-					.. fields["te_z"] .. ")"
-			core.settings:set(setting.name, new_value)
-
 		else
 			local new_value = fields["te_setting_value"]
 			core.settings:set(setting.name, new_value)
@@ -639,19 +585,6 @@ local function handle_change_setting_buttons(this, fields)
 	if fields["btn_cancel"] then
 		this:delete()
 		return true
-	end
-
-	if fields["dlg_browse_path_accepted"] then
-		this.data.selected_path = fields["dlg_browse_path_accepted"]
-		core.update_formspec(this:get_formspec())
-	end
-
-	if setting.type == "flags" then
-		for name, value in pairs(fields) do
-			if name:sub(1, 3) == "cb_" then
-				checkboxes[name] = value == "true"
-			end
-		end
 	end
 
 	return false

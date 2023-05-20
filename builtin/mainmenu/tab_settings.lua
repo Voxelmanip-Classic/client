@@ -153,11 +153,9 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.settings:get_bool("enable_particles")) .. "]" ..
 		"checkbox[0.25,1;cb_3d_clouds;" .. fgettext("3D Clouds") .. ";"
 				.. dump(core.settings:get_bool("enable_3d_clouds")) .. "]" ..
-		"checkbox[0.25,1.5;cb_opaque_water;" .. fgettext("Opaque Water") .. ";"
-				.. dump(core.settings:get_bool("opaque_water")) .. "]" ..
-		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
+		"checkbox[0.25,1.5;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
 				.. dump(core.settings:get_bool("connected_glass")) .. "]" ..
-		"dropdown[0.25,2.8;3.5;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
+		"dropdown[0.25,2.5;3.5;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
 				.. getSettingIndex.Leaves() .. "]" ..
 		"box[4,0;3.75,4.9;#999999]" ..
 		"label[4.25,0.1;" .. fgettext("Texturing:") .. "]" ..
@@ -276,10 +274,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.settings:set("enable_3d_clouds", fields["cb_3d_clouds"])
 		return true
 	end
-	if fields["cb_opaque_water"] then
-		core.settings:set("opaque_water", fields["cb_opaque_water"])
-		return true
-	end
 	if fields["cb_connected_glass"] then
 		core.settings:set("connected_glass", fields["cb_connected_glass"])
 		return true
@@ -309,7 +303,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["btn_change_keys"] then
 		core.show_keys_menu()
-		core.open_url("https://nodecore.voxelmanip.se/privacy.html")
 		return true
 	end
 

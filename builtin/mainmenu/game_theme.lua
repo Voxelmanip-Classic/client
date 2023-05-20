@@ -80,9 +80,9 @@ function mm_game_theme.update_game(gamedetails)
 	local have_bg      = false
 	local have_overlay = mm_game_theme.set_game("overlay",gamedetails)
 
-	if not have_overlay then
+	--if not have_overlay then
 		--have_bg = mm_game_theme.set_game("background",gamedetails)
-	end
+	--end
 
 	mm_game_theme.clear("header")
 	mm_game_theme.clear("footer")

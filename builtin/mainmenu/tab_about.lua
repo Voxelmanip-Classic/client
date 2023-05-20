@@ -180,7 +180,6 @@ return {
 			"style[label_button;border=false]",
 			"button[0.1,3.4;5.3,0.5;label_button;Voxelmanip Classic]",
 			"button[0.1,4.0;5.3,0.5;label_button;v", version.string, "]",
-			"button[0.1,4.6;5.3,0.5;label_button;(Based on MT 5.7.0-dev)]",
 			"button[0.5,5.1;4.5,0.8;homepage;classic.voxelmanip.se]",
 			"scroll_container[5.5,0.1;9.5,6.9;scroll_credits;vertical;",
 			tostring(scroll_height / 1000), "]", credit_fs,
@@ -194,10 +193,8 @@ return {
 		return table.concat(fs), "size[15.5,7.1,false]position[0.5,0.65]real_coordinates[true]"
 	end,
 	cbf_button_handler = function(this, fields, name, tabdata)
-		if settings_btn_handler(this, fields) then return true end
-
 		if fields.homepage then
-			core.open_url("https://nodecore.mine.nu")
+			core.open_url("https://classic.voxelmanip.se")
 		end
 
 		if fields.privacy then

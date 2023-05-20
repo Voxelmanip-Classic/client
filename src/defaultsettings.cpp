@@ -79,8 +79,6 @@ void set_default_settings()
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
 	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
 	settings->setDefault("keymap_mute", "KEY_KEY_M");
-	settings->setDefault("keymap_increase_volume", "");
-	settings->setDefault("keymap_decrease_volume", "");
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_block_bounds", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
@@ -291,30 +289,23 @@ void set_default_settings()
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("max_packets_per_iteration","1024");
 	settings->setDefault("port", "30000");
-	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
 
 	settings->setDefault("default_game", "nodecore");
-	settings->setDefault("max_users", "15");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
 	settings->setDefault("enable_pvp", "true");
-	settings->setDefault("enable_mod_channels", "false");
 	settings->setDefault("deprecated_lua_api_handling", "log");
 
 	settings->setDefault("profiler_print_interval", "0");
-	settings->setDefault("active_object_send_range_blocks", "8");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_block_send_distance", "12");
-	settings->setDefault("csm_restriction_flags", "62");
-	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "6125");
 	settings->setDefault("map_compression_level_disk", "-1");
 	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
-	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
@@ -338,7 +329,6 @@ void set_default_settings()
 	settings->setDefault("movement_gravity", "9.81");
 
 	// Mapgen
-	settings->setDefault("chunksize", "5");
 	settings->setDefault("max_block_generate_distance", "10");
 
 	settings->setDefault("screen_dpi", "72");

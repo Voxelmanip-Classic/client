@@ -212,7 +212,6 @@ set(common_SRCS
 	${server_SRCS}
 	${content_SRCS}
 	chat.cpp
-	clientiface.cpp
 	collision.cpp
 	convert_json.cpp
 	debug.cpp

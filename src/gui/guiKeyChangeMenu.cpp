@@ -52,8 +52,6 @@ enum
 	GUI_ID_KEY_JUMP_BUTTON,
 	GUI_ID_KEY_NOCLIP_BUTTON,
 	GUI_ID_KEY_CHAT_BUTTON,
-	GUI_ID_KEY_CMD_BUTTON,
-	GUI_ID_KEY_CMD_LOCAL_BUTTON,
 	GUI_ID_KEY_CONSOLE_BUTTON,
 	GUI_ID_KEY_SNEAK_BUTTON,
 	GUI_ID_KEY_DROP_BUTTON,
@@ -61,8 +59,6 @@ enum
 	GUI_ID_KEY_HOTBAR_PREV_BUTTON,
 	GUI_ID_KEY_HOTBAR_NEXT_BUTTON,
 	GUI_ID_KEY_MUTE_BUTTON,
-	GUI_ID_KEY_DEC_VOLUME_BUTTON,
-	GUI_ID_KEY_INC_VOLUME_BUTTON,
 	GUI_ID_KEY_RANGE_BUTTON,
 	GUI_ID_KEY_ZOOM_BUTTON,
 	GUI_ID_KEY_CAMERA_BUTTON,
@@ -403,16 +399,12 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_FAST_BUTTON,         wstrgettext("Toggle fast"),      "keymap_fastmove");
 	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,       wstrgettext("Toggle noclip"),    "keymap_noclip");
 	this->add_key(GUI_ID_KEY_MUTE_BUTTON,         wstrgettext("Mute"),             "keymap_mute");
-	this->add_key(GUI_ID_KEY_DEC_VOLUME_BUTTON,   wstrgettext("Dec. volume"),      "keymap_decrease_volume");
-	this->add_key(GUI_ID_KEY_INC_VOLUME_BUTTON,   wstrgettext("Inc. volume"),      "keymap_increase_volume");
 	this->add_key(GUI_ID_KEY_CHAT_BUTTON,         wstrgettext("Chat"),             "keymap_chat");
 	this->add_key(GUI_ID_KEY_SCREENSHOT_BUTTON,   wstrgettext("Screenshot"),       "keymap_screenshot");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON,        wstrgettext("Range select"),     "keymap_rangeselect");
 	this->add_key(GUI_ID_KEY_DEC_RANGE_BUTTON,    wstrgettext("Dec. range"),       "keymap_decrease_viewing_range_min");
 	this->add_key(GUI_ID_KEY_INC_RANGE_BUTTON,    wstrgettext("Inc. range"),       "keymap_increase_viewing_range_min");
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,      wstrgettext("Console"),          "keymap_console");
-	this->add_key(GUI_ID_KEY_CMD_BUTTON,          wstrgettext("Command"),          "keymap_cmd");
-	this->add_key(GUI_ID_KEY_CMD_LOCAL_BUTTON,    wstrgettext("Local command"),    "keymap_cmd_local");
 	this->add_key(GUI_ID_KEY_BLOCK_BOUNDS_BUTTON, wstrgettext("Block bounds"),     "keymap_toggle_block_bounds");
 	this->add_key(GUI_ID_KEY_HUD_BUTTON,          wstrgettext("Toggle HUD"),       "keymap_toggle_hud");
 	this->add_key(GUI_ID_KEY_CHATLOG_BUTTON,      wstrgettext("Toggle chat log"),  "keymap_toggle_chat");

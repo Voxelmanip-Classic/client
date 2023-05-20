@@ -79,9 +79,6 @@ struct PlayerControl
 	inline bool isMoving() const { return movement_speed > 0.001f; }
 #endif
 
-	// For server use
-	void unpackKeysPressed(u32 keypress_bits);
-
 	u8 direction_keys = 0;
 	bool jump = false;
 	bool aux1 = false;

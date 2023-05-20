@@ -203,17 +203,6 @@ u32 PlayerControl::getKeysPressed() const
 
 #endif
 
-void PlayerControl::unpackKeysPressed(u32 keypress_bits)
-{
-	direction_keys = keypress_bits & 0xf;
-	jump  = keypress_bits & (1 << 4);
-	aux1  = keypress_bits & (1 << 5);
-	sneak = keypress_bits & (1 << 6);
-	dig   = keypress_bits & (1 << 7);
-	place = keypress_bits & (1 << 8);
-	zoom  = keypress_bits & (1 << 9);
-}
-
 void PlayerSettings::readGlobalSettings()
 {
 	free_move = g_settings->getBool("free_move");

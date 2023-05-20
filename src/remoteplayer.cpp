@@ -55,23 +55,4 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	movement_liquid_sink            = g_settings->getFloat("movement_liquid_sink")            * BS;
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
 
-	// Skybox defaults:
-	m_cloud_params  = SkyboxDefaults::getCloudDefaults();
-	m_skybox_params = SkyboxDefaults::getSkyDefaults();
-	m_sun_params    = SkyboxDefaults::getSunDefaults();
-	m_moon_params   = SkyboxDefaults::getMoonDefaults();
-	m_star_params   = SkyboxDefaults::getStarDefaults();
-}
-
-
-RemotePlayerChatResult RemotePlayer::canSendChatMessage()
-{
-	return RPLAYER_CHATRESULT_OK;
-}
-
-void RemotePlayer::onSuccessfulSave()
-{
-	setModified(false);
-	if (m_sao)
-		m_sao->getMeta().setModified(false);
 }

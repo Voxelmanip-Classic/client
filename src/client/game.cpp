@@ -1963,8 +1963,6 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
 		if (client->modsLoaded())
 			openConsole(0.2, L".");
-		else
-			m_game_ui->showTranslatedStatusText("Client side scripting is disabled");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(0.6f);
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
@@ -1983,20 +1981,6 @@ void Game::processKeyInput()
 			m_game_ui->showTranslatedStatusText("Sound muted");
 		else
 			m_game_ui->showTranslatedStatusText("Sound unmuted");
-	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
-		g_settings->setFloat("sound_volume", new_volume);
-		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-		m_game_ui->showStatusText(msg);
-	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
-		g_settings->setFloat("sound_volume", new_volume);
-		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-		m_game_ui->showStatusText(msg);
-#else
-	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
-			|| wasKeyDown(KeyType::DEC_VOLUME)) {
-		m_game_ui->showTranslatedStatusText("Sound system is not supported on this build");
 #endif
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();

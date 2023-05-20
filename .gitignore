@@ -128,3 +128,6 @@ client/mod_storage.sqlite
 #whatever
 .git_/
 po
+winbuild64/
+winbuild32/
+voxelmanip_classic.conf

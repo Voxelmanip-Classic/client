@@ -84,7 +84,6 @@ Server::Server(
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
 	m_gamespec(gamespec),
-	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_async_fatal_error(""),
 	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
@@ -94,7 +93,6 @@ Server::Server(
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_thread(new ServerThread(this)),
-	m_clients(m_con),
 	m_modchannel_mgr(new ModChannelMgr()) {}
 
 Server::~Server() {}
@@ -114,8 +112,6 @@ void Server::AsyncRunStep(bool initial_step)
 }
 
 void Server::Receive() {}
-
-void Server::ProcessData(NetworkPacket *pkt) {}
 
 void Server::setTimeOfDay(u32 time) {}
 
@@ -151,22 +147,6 @@ bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 	Something random
 */
 
-
-void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect) {}
-
-RemoteClient *Server::getClient(session_t peer_id, ClientState state_min)
-{
-	RemoteClient *client = getClientNoEx(peer_id,state_min);
-	if(!client)
-		throw ClientNotFoundException("Client not found");
-
-	return client;
-}
-RemoteClient *Server::getClientNoEx(session_t peer_id, ClientState state_min)
-{
-	return m_clients.getClientNoEx(peer_id, state_min);
-}
 
 PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 {
@@ -228,11 +208,6 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
-}
-
-v3f Server::findSpawnPos()
-{
-	return v3f(0.0f, 0.0f, 0.0f);
 }
 
 /*

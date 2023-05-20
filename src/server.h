@@ -24,18 +24,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "gamedef.h"
 #include "content/subgames.h"
+#include "serialization.h"             // for SER_FMT_VER_INVALID
+#include "network/networkpacket.h"
+#include "network/networkprotocol.h"
 #include "network/peerhandler.h"
 #include "network/address.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
 #include "serverenvironment.h"
-#include "clientiface.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include <string>
 #include <vector>
 #include <unordered_set>
+
+namespace con {
+	class Connection;
+}
 
 class ChatEvent;
 struct ChatEventChat;
@@ -70,40 +76,6 @@ enum ClientDeletionReason {
 	CDR_DENY
 };
 
-struct MediaInfo
-{
-	std::string path;
-	std::string sha1_digest; // base64-encoded
-	bool no_announce; // true: not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
-
-	MediaInfo(const std::string &path_="",
-	          const std::string &sha1_digest_=""):
-		path(path_),
-		sha1_digest(sha1_digest_),
-		no_announce(false)
-	{
-	}
-};
-
-struct MinimapMode {
-	MinimapType type = MINIMAP_TYPE_OFF;
-	std::string label;
-	u16 size = 0;
-	std::string texture;
-	u16 scale = 1;
-};
-
-// structure for everything getClientInfo returns, for convenience
-struct ClientInfo {
-	ClientState state;
-	Address addr;
-	u32 uptime;
-	u8 ser_vers;
-	u16 prot_vers;
-	u8 major, minor, patch;
-	std::string vers_string, lang_code;
-};
-
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public IGameDef
 {
@@ -136,10 +108,6 @@ public:
 	/*
 	 * Command Handlers
 	 */
-
-	void handleCommand_Null(NetworkPacket* pkt) {};
-
-	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket *pkt);
 	void Send(session_t peer_id, NetworkPacket *pkt);
@@ -188,9 +156,6 @@ public:
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
 
-	inline bool isSingleplayer() const
-			{ return m_simple_singleplayer_mode; }
-
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
 	inline void setAsyncFatalError(const LuaError &e)
@@ -200,14 +165,10 @@ public:
 
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
-	v3f findSpawnPos();
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
-
-	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason = "", bool reconnect = false);
 
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
 	void SendPlayerHP(PlayerSAO *sao, bool effect);
@@ -232,17 +193,12 @@ public:
 	Address m_bind_addr;
 
 private:
-	friend class RemoteClient;
 
 	void init();
 
 	/*
 		Something random
 	*/
-
-	// When called, connection mutex should be locked
-	RemoteClient* getClient(session_t peer_id, ClientState state_min = CS_Active);
-	RemoteClient* getClientNoEx(session_t peer_id, ClientState state_min = CS_Active);
 
 	// When called, environment mutex should be locked
 	PlayerSAO *getPlayerSAO(session_t peer_id);
@@ -254,9 +210,6 @@ private:
 	std::string m_path_world;
 	// Subgame specification
 	SubgameSpec m_gamespec;
-	// If true, do not allow multiple players and hide some multiplayer
-	// functionality
-	bool m_simple_singleplayer_mode;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
@@ -282,28 +235,6 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
-
-	/*
-	 	Client interface
-	*/
-	ClientInterface m_clients;
-
-	/*
-		Random stuff
-	*/
-
-	/*
-		Map edit event queue. Automatically receives all map edits.
-		The constructor of this class registers us to receive them through
-		onMapEditEvent
-
-		NOTE: Should these be moved to actually be members of
-		ServerEnvironment?
-	*/
-
-	// CSM restrictions byteflag
-	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
-	u32 m_csm_restriction_noderange = 8;
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;

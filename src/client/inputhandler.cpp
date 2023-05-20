@@ -53,8 +53,6 @@ void KeyCache::populate()
 	key[KeyType::HOTBAR_PREV] = getKeySetting("keymap_hotbar_previous");
 	key[KeyType::HOTBAR_NEXT] = getKeySetting("keymap_hotbar_next");
 	key[KeyType::MUTE] = getKeySetting("keymap_mute");
-	key[KeyType::INC_VOLUME] = getKeySetting("keymap_increase_volume");
-	key[KeyType::DEC_VOLUME] = getKeySetting("keymap_decrease_volume");
 	key[KeyType::CINEMATIC] = getKeySetting("keymap_cinematic");
 	key[KeyType::SCREENSHOT] = getKeySetting("keymap_screenshot");
 	key[KeyType::TOGGLE_BLOCK_BOUNDS] = getKeySetting("keymap_toggle_block_bounds");

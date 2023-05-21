@@ -13,3 +13,4 @@ dofile(clientpath .. "misc.lua")
 assert(loadfile(commonpath .. "item_s.lua"))({}) -- Just for push/read node functions
 
 dofile(clientpath .. "tab_playerlist.lua")
+dofile(clientpath .. "esc.lua")

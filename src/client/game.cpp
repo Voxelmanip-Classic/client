@@ -143,33 +143,6 @@ struct LocalFormspecHandler : public TextDest
 
 	void gotText(const StringMap &fields)
 	{
-		if (m_formname == "MT_PAUSE_MENU") {
-			if (fields.find("btn_key_config") != fields.end()) {
-				g_gamecallback->keyConfig();
-				return;
-			}
-
-			if (fields.find("btn_exit_menu") != fields.end()) {
-				g_gamecallback->disconnect();
-				return;
-			}
-
-			if (fields.find("btn_exit_os") != fields.end()) {
-				g_gamecallback->exitToOS();
-#ifndef __ANDROID__
-				RenderingEngine::get_raw_device()->closeDevice();
-#endif
-				return;
-			}
-
-			if (fields.find("btn_change_password") != fields.end()) {
-				g_gamecallback->changePassword();
-				return;
-			}
-
-			return;
-		}
-
 		if (m_formname == "MT_DEATH_SCREEN") {
 			assert(m_client != 0);
 			m_client->sendRespawn();
@@ -2700,11 +2673,19 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 
 void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam)
 {
-	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
-	LocalFormspecHandler *txt_dst =
-		new LocalFormspecHandler(*event->show_formspec.formname, client);
-	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound_manager.get());
+	if (event->show_formspec.formspec->empty()) {
+		auto formspec = m_game_ui->getFormspecGUI();
+		if (formspec && (event->show_formspec.formname->empty()
+				|| *(event->show_formspec.formname) == m_game_ui->getFormspecName())) {
+			formspec->quitMenu();
+		}
+	} else {
+		FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
+		LocalFormspecHandler *txt_dst =
+			new LocalFormspecHandler(*event->show_formspec.formname, client);
+		GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, m_rendering_engine->get_gui_env(),
+				&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound_manager.get());
+	}
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -4208,38 +4189,13 @@ void Game::showDeathFormspec()
 
 void Game::showPauseMenu()
 {
-	float ypos = 0.7f;
-	std::ostringstream os;
+	// REGRESSION: Game is no longer "paused", this doesn't matter
+	// as much in multiplayer but the FPS will never wind down.
+	if (client->modsLoaded()) {
+		client->getScript()->on_esc();
 
-	os	<< "formspec_version[1]"
-		<< "size[11,5.5,true]"
-		<< "no_prepend[]"
-		<< "bgcolor[#320000b4;true]"
-		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
-			<< strgettext("Continue") << "]";
-	os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
-			<< strgettext("Change Password") << "]";
-
-#ifndef __ANDROID__
-	os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-			<< strgettext("Change Keys")  << "]";
-#endif
-	os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
-			<< strgettext("Exit to Menu") << "]";
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler  *
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
-
-	auto *&formspec = m_game_ui->getFormspecGUI();
-	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
-			sound_manager.get());
-	formspec->setFocus("btn_continue");
-	// game will be paused in next step, if in singleplayer (see m_is_paused)
-	formspec->doPause = true;
+		return;
+	}
 }
 
 /****************************************************************************/

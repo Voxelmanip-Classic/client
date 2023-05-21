@@ -25,10 +25,6 @@ local CHAR_CLASSES = {
 	FLAGS = "[%w_%-%.,]",
 }
 
-local function flags_to_table(flags)
-	return flags:gsub("%s+", ""):split(",", true) -- Remove all spaces and split
-end
-
 -- returns error message, or nil
 local function parse_setting_line(settings, line, read_all, base_level, allow_secure)
 
@@ -407,8 +403,6 @@ local function get_current_value(setting)
 	return value
 end
 
-local checkboxes = {} -- handle checkboxes events
-
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
 	-- Final formspec will be created at the end of this function
@@ -416,7 +410,7 @@ local function create_change_setting_formspec(dialogdata)
 	local width = 10
 	local height = 3.5
 	local description_height = 3
-	local formspec = ""
+	local formspec
 
 	-- Setting-specific formspec elements
 	if setting.type == "bool" then

@@ -171,7 +171,7 @@ void set_default_settings()
 	settings->setDefault("vsync", "false");
 	settings->setDefault("fov", "72");
 	settings->setDefault("leaves_style", "fancy");
-	settings->setDefault("connected_glass", "false");
+	settings->setDefault("connected_glass", "true");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("performance_tradeoffs", "false");
 	settings->setDefault("lighting_alpha", "0.0");
@@ -189,7 +189,7 @@ void set_default_settings()
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
-	settings->setDefault("enable_3d_clouds", "true");
+	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
@@ -213,8 +213,8 @@ void set_default_settings()
 	// Effects
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "true");
-	settings->setDefault("mip_map", "false");
-	settings->setDefault("anisotropic_filter", "false");
+	settings->setDefault("mip_map", "true");
+	settings->setDefault("anisotropic_filter", "true");
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("tone_mapping", "false");

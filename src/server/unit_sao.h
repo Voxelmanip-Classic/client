@@ -31,13 +31,9 @@ public:
 	UnitSAO(ServerEnvironment *env, v3f pos);
 	virtual ~UnitSAO() = default;
 
-	// Attachments
-	ServerActiveObject *getParent() const;
-
 protected:
 
 	// Object properties
 	ObjectProperties m_prop;
 
-	int m_attachment_parent_id = 0;
 };

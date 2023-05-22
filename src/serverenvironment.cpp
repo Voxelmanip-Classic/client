@@ -59,13 +59,11 @@ void OnMapblocksChangedReceiver::onMapEditEvent(const MapEditEvent &event)
 static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	ServerScripting *script_iface, Server *server,
-	const std::string &path_world):
+	ServerScripting *script_iface, Server *server):
 	Environment(server),
 	m_map(map),
 	m_script(script_iface),
-	m_server(server),
-	m_path_world(path_world)
+	m_server(server)
 {
 
 }
@@ -102,13 +100,6 @@ RemotePlayer *ServerEnvironment::getPlayer(const char* name)
 	}
 	return NULL;
 }
-
-bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
-{
-
-	return true;
-}
-
 
 void ServerEnvironment::step(float dtime)
 {

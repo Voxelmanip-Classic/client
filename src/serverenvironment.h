@@ -55,7 +55,7 @@ class ServerEnvironment final : public Environment
 {
 public:
 	ServerEnvironment(ServerMap *map, ServerScripting *script_iface,
-		Server *server, const std::string &path_world);
+		Server *server);
 	~ServerEnvironment();
 
 	void init();
@@ -84,9 +84,6 @@ public:
 		-------------------------------------------
 	*/
 
-	// Script-aware node setters
-	bool setNode(v3s16 p, const MapNode &n);
-
 	// This makes stuff happen
 	void step(f32 dtime);
 
@@ -112,8 +109,6 @@ private:
 	Server *m_server;
 	// Active Object Manager
 	server::ActiveObjectMgr m_ao_manager;
-	// World path
-	const std::string m_path_world;
 
 
 	// peer_ids in here should be unique, except that there may be many 0s

@@ -21,20 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "unit_sao.h"
 #include "scripting_server.h"
 #include "serverenvironment.h"
-#include "util/serialize.h"
 
 UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos) : ServerActiveObject(env, pos)
 {
 
 }
-
-ServerActiveObject *UnitSAO::getParent() const
-{
-	if (!m_attachment_parent_id)
-		return nullptr;
-	// Check if the parent still exists
-	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-
-	return obj;
-}
-

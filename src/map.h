@@ -340,21 +340,6 @@ public:
 	~ServerMap();
 
 	/*
-		Get a sector from somewhere.
-		- Check memory
-		- Check disk (doesn't load blocks)
-		- Create blank one
-	*/
-	MapSector *createSector(v2s16 p);
-
-	/*
-		Get a block from somewhere.
-		- Memory
-		- Create blank
-	*/
-	MapBlock *createBlock(v3s16 p);
-
-	/*
 		Forcefully get a block from somewhere.
 		- Memory
 		- Load from disk

@@ -60,7 +60,6 @@ public:
 	*/
 
 	Server(
-		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
 		Address bind_addr,
@@ -77,30 +76,12 @@ public:
 	// Actual processing is done in another thread.
 	void step(float dtime);
 
-	void Receive();
-
-	/*
-	 * Command Handlers
-	 */
-
-	void Send(NetworkPacket *pkt);
-	void Send(session_t peer_id, NetworkPacket *pkt);
-
-	// Both setter and getter need no envlock,
-	// can be called freely from threads
-	void setTimeOfDay(u32 time);
-
 	/*
 		Shall be called with the environment locked.
 		This is accessed by the map, which is inside the environment,
 		so it shouldn't be a problem.
 	*/
 	void onMapEditEvent(const MapEditEvent &event);
-
-	// Returns -1 if failed, sound handle on success
-	// Envlock
-	void stopSound(s32 handle);
-	void fadeSound(s32 handle, float step, float gain);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 
@@ -128,10 +109,6 @@ public:
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
 
-	/* con::PeerHandler implementation. */
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
-
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
@@ -142,9 +119,6 @@ public:
 
 	// Data transferred into async envs at init time
 	std::unique_ptr<PackedValue> m_async_globals_data;
-
-	// Bind address
-	Address m_bind_addr;
 
 private:
 
@@ -160,8 +134,6 @@ private:
 	/*
 		Variables
 	*/
-	// World directory
-	std::string m_path_world;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 
@@ -170,9 +142,6 @@ private:
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
-
-	// server connection
-	std::shared_ptr<con::Connection> m_con;
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
@@ -186,9 +155,6 @@ private:
 
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
-
-	// The server mainly operates in this thread
-	ServerThread *m_thread = nullptr;
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;

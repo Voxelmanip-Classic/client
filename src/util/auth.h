@@ -40,8 +40,3 @@ std::string get_encoded_srp_verifier(const std::string &name,
 /// Converts the passed SRP verifier into a DB-ready format.
 std::string encode_srp_verifier(const std::string &verifier,
 	const std::string &salt);
-
-/// Reads the DB-formatted SRP verifier and gets the verifier
-/// and salt components.
-bool decode_srp_verifier_and_salt(const std::string &encoded,
-	std::string *verifier, std::string *salt);

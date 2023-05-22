@@ -792,17 +792,6 @@ ServerMap::~ServerMap()
 
 }
 
-
-MapSector *ServerMap::createSector(v2s16 p2d)
-{
-	return NULL;
-}
-
-MapBlock * ServerMap::createBlock(v3s16 p)
-{
-	return NULL;
-}
-
 MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
 

@@ -72,7 +72,6 @@ class IGameDef;
 class Environment;
 class GUIEngine;
 class ServerActiveObject;
-struct PlayerHPChangeReason;
 
 class ScriptApiBase : protected LuaHelper {
 public:

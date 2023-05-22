@@ -46,7 +46,6 @@ class ServerEnvironment;
 struct ItemStack;
 struct ToolCapabilities;
 struct ObjectProperties;
-struct PlayerHPChangeReason;
 class Inventory;
 struct InventoryLocation;
 
@@ -106,15 +105,9 @@ public:
 	virtual bool isStaticAllowed() const
 	{return true;}
 
-	virtual ServerActiveObject *getParent() const { return nullptr; }
-
 	// Inventory and wielded item
 	virtual Inventory *getInventory() const
 	{ return NULL; }
-	virtual void setInventoryModified()
-	{}
-	virtual u16 getWieldIndex() const
-	{ return 0; }
 
 	/*
 		A getter that unifies the above to answer the question:

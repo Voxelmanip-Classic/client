@@ -116,22 +116,3 @@ std::string encode_srp_verifier(const std::string &verifier,
 		<< base64_encode((unsigned char *)verifier.c_str(), verifier.size());
 	return ret_str.str();
 }
-
-/// Reads the DB-formatted SRP verifier and gets the verifier
-/// and salt components.
-bool decode_srp_verifier_and_salt(const std::string &encoded,
-	std::string *verifier, std::string *salt)
-{
-	std::vector<std::string> components = str_split(encoded, '#');
-
-	if ((components.size() != 4)
-			|| (components[1] != "1") // 1 means srp
-			|| !base64_is_valid(components[2])
-			|| !base64_is_valid(components[3]))
-		return false;
-
-	*salt = base64_decode(components[2]);
-	*verifier = base64_decode(components[3]);
-	return true;
-
-}

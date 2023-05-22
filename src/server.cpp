@@ -39,14 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-files.h"
 #include "database/database-dummy.h"
 
-class ClientNotFoundException : public BaseException
-{
-public:
-	ClientNotFoundException(const char *s):
-		BaseException(s)
-	{}
-};
-
 class ServerThread : public Thread
 {
 public:
@@ -73,7 +65,6 @@ void *ServerThread::run()
 */
 
 Server::Server(
-		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
 		Address bind_addr,
@@ -81,18 +72,10 @@ Server::Server(
 		ChatInterface *iface,
 		std::string *on_shutdown_errmsg
 	):
-	m_bind_addr(bind_addr),
-	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
-	m_thread(new ServerThread(this)),
 	m_modchannel_mgr(new ModChannelMgr()) {}
 
 Server::~Server() {}
@@ -105,23 +88,7 @@ void Server::stop() {}
 
 void Server::step(float dtime) {}
 
-void Server::Receive() {}
-
-void Server::setTimeOfDay(u32 time) {}
-
 void Server::onMapEditEvent(const MapEditEvent &event) {}
-
-void Server::peerAdded(con::Peer *peer) {}
-
-void Server::deletingPeer(con::Peer *peer, bool timeout) {}
-
-void Server::Send(NetworkPacket *pkt) {}
-
-void Server::Send(session_t peer_id, NetworkPacket *pkt) {}
-
-void Server::stopSound(s32 handle) {}
-
-void Server::fadeSound(s32 handle, float step, float gain) {}
 
 /*
 	Something random

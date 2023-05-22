@@ -50,8 +50,3 @@ Inventory *PlayerSAO::getInventory() const
 {
 	return m_player ? &m_player->inventory : nullptr;
 }
-
-u16 PlayerSAO::getWieldIndex() const
-{
-	return m_player->getWieldIndex();
-}

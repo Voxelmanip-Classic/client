@@ -42,11 +42,8 @@ local function playerlist()
 	end
 end
 
-local init = 0
 minetest.register_globalstep(function(dtime)
-	if init > 0.1 then
+	if minetest.localplayer then
 		playerlist()
-	else
-		init = init + dtime
 	end
 end)

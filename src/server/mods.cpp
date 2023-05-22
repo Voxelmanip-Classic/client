@@ -49,32 +49,6 @@ ServerModManager::ServerModManager(const std::string &worldpath):
 	configuration.checkConflictsAndDeps();
 }
 
-// clang-format off
-// This function cannot be currenctly easily tested but it should be ASAP
-void ServerModManager::loadMods(ServerScripting *script)
-{
-	// Print mods
-	infostream << "Server: Loading mods: ";
-	for (const ModSpec &mod : configuration.getMods()) {
-		infostream << mod.name << " ";
-	}
-
-	infostream << std::endl;
-	// Load and run "mod" scripts
-	for (const ModSpec &mod : configuration.getMods()) {
-		mod.checkAndLog();
-
-		std::string script_path = mod.path + DIR_DELIM + "init.lua";
-		auto t = porting::getTimeMs();
-		script->loadMod(script_path, mod.name);
-		infostream << "Mod \"" << mod.name << "\" loaded after "
-			<< (porting::getTimeMs() - t) << " ms" << std::endl;
-	}
-
-	// Run a callback when mods are loaded
-	script->on_mods_loaded();
-}
-
 // clang-format on
 const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
 {
@@ -84,10 +58,4 @@ const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
 	}
 
 	return nullptr;
-}
-
-void ServerModManager::getModNames(std::vector<std::string> &modlist) const
-{
-	for (const ModSpec &spec : configuration.getMods())
-		modlist.push_back(spec.name);
 }

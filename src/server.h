@@ -19,62 +19,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irr_v3d.h"
-#include "map.h"
-#include "hud.h"
-#include "gamedef.h"
-#include "content/subgames.h"
-#include "serialization.h"             // for SER_FMT_VER_INVALID
-#include "network/networkpacket.h"
-#include "network/networkprotocol.h"
-#include "network/peerhandler.h"
-#include "network/address.h"
-#include "util/numeric.h"
-#include "util/thread.h"
-#include "util/basic_macros.h"
-#include "serverenvironment.h"
-#include "chatmessage.h"
-#include "sound.h"
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
-#include <unordered_set>
+#include "common/c_types.h"
+#include "content/subgames.h"
+#include "gamedef.h"
+#include "irrTypes.h"
+#include "map.h"
+#include "network/address.h"
+#include "network/peerhandler.h"
+#include "serverenvironment.h"
+#include "util/basic_macros.h"
+#include "util/thread.h"
 
-namespace con {
-	class Connection;
-}
-
-class ChatEvent;
-struct ChatEventChat;
-struct ChatInterface;
+class IItemDefManager;
 class IWritableItemDefManager;
-class NodeDefManager;
-class EventManager;
-class Inventory;
+class ModChannel;
 class ModChannelMgr;
-class RemotePlayer;
+class NetworkPacket;
+class NodeDefManager;
 class PlayerSAO;
-struct PlayerHPChangeReason;
-class ServerScripting;
-class ServerEnvironment;
-struct SimpleSoundSpec;
-struct CloudParams;
-struct SkyboxParams;
-struct SunParams;
-struct MoonParams;
-struct StarParams;
-struct Lighting;
-class ServerThread;
-class ServerModManager;
 class ServerInventoryManager;
+class ServerModManager;
+class ServerScripting;
+class ServerThread;
+namespace con { class Connection; }
+namespace con { class Peer; }
+struct ChatInterface;
+struct ModSpec;
 struct PackedValue;
-struct ParticleParameters;
-struct ParticleSpawnerParameters;
-
-enum ClientDeletionReason {
-	CDR_LEAVE,
-	CDR_TIMEOUT,
-	CDR_DENY
-};
 
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public IGameDef
@@ -101,8 +76,7 @@ public:
 	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in another thread.
 	void step(float dtime);
-	// This is run by ServerThread and does the actual processing
-	void AsyncRunStep(bool initial_step=false);
+
 	void Receive();
 
 	/*
@@ -128,14 +102,6 @@ public:
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
-	void spawnParticle(const std::string &playername,
-		const ParticleParameters &p);
-
-	u32 addParticleSpawner(const ParticleSpawnerParameters &p,
-		ServerActiveObject *attached, const std::string &playername);
-
-	void deleteParticleSpawner(const std::string &playername, u32 id);
-
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 
 	// Envlock and conlock should be locked when using scriptapi
@@ -147,14 +113,10 @@ public:
 	virtual const NodeDefManager* getNodeDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 
-	IWritableItemDefManager* getWritableItemDefManager();
-	NodeDefManager* getWritableNodeDefManager();
-
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
-	virtual std::string getWorldPath() const { return m_path_world; }
 
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
@@ -170,18 +132,10 @@ public:
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 
-	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
-	void SendPlayerHP(PlayerSAO *sao, bool effect);
-	void SendPlayerBreath(PlayerSAO *sao);
-	void SendMovePlayer(session_t peer_id);
-
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
-
-	// Send block to specific player only
-	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;

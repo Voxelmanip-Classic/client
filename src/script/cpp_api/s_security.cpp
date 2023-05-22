@@ -603,25 +603,6 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		}
 	}
 
-	str = fs::AbsolutePath(gamedef->getWorldPath());
-	if (!str.empty()) {
-		// Don't allow access to other paths in the world mod/game path.
-		// These have to be blocked so you can't override a trusted mod
-		// by creating a mod with the same name in a world mod directory.
-		// We add to the absolute path of the world instead of getting
-		// the absolute paths directly because that won't work if they
-		// don't exist.
-		if (fs::PathStartsWith(abs_path, str + DIR_DELIM + "worldmods") ||
-				fs::PathStartsWith(abs_path, str + DIR_DELIM + "game")) {
-			return false;
-		}
-		// Allow all other paths in world path
-		if (fs::PathStartsWith(abs_path, str)) {
-			if (write_allowed) *write_allowed = true;
-			return true;
-		}
-	}
-
 	// Default to disallowing
 	return false;
 }

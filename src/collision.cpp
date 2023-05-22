@@ -372,7 +372,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		/* add object boxes to cinfo */
 
 		std::vector<ActiveObject*> objects;
-#ifndef SERVER
 		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
 		if (c_env != 0) {
 			// Calculate distance by speed, add own extent and 1.5m of tolerance
@@ -389,29 +388,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				}
 			}
 		}
-		else
-#endif
-		{
-			if (s_env != NULL) {
-				// Calculate distance by speed, add own extent and 1.5m of tolerance
-				f32 distance = speed_f->getLength() * dtime +
-					box_0.getExtent().getLength() + 1.5f * BS;
 
-				// search for objects which are not us, or we are not its parent
-				// we directly use the callback to populate the result to prevent
-				// a useless result loop here
-				auto include_obj_cb = [self, &objects] (ServerActiveObject *obj) {
-					if (!obj->isGone() &&
-						(!self || (self != obj && self != obj->getParent()))) {
-						objects.push_back((ActiveObject *)obj);
-					}
-					return false;
-				};
-
-				std::vector<ServerActiveObject *> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance, include_obj_cb);
-			}
-		}
 
 		for (std::vector<ActiveObject*>::const_iterator iter = objects.begin();
 				iter != objects.end(); ++iter) {
@@ -423,7 +400,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 					cinfo.emplace_back(object, 0, object_collisionbox);
 			}
 		}
-#ifndef SERVER
+
 		if (self && c_env) {
 			LocalPlayer *lplayer = c_env->getLocalPlayer();
 			if (lplayer->getParent() == nullptr) {
@@ -435,7 +412,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				cinfo.emplace_back(obj, 0, lplayer_collisionbox);
 			}
 		}
-#endif
 	} //tt3
 
 	/*

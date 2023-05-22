@@ -105,12 +105,6 @@ void Server::stop() {}
 
 void Server::step(float dtime) {}
 
-void Server::AsyncRunStep(bool initial_step)
-{
-
-
-}
-
 void Server::Receive() {}
 
 void Server::setTimeOfDay(u32 time) {}
@@ -125,23 +119,9 @@ void Server::Send(NetworkPacket *pkt) {}
 
 void Server::Send(session_t peer_id, NetworkPacket *pkt) {}
 
-void Server::HandlePlayerHPChange(PlayerSAO *playersao, const PlayerHPChangeReason &reason) {}
-
-void Server::SendPlayerHP(PlayerSAO *playersao, bool effect) {}
-
-void Server::SendPlayerBreath(PlayerSAO *sao) {}
-
-void Server::SendMovePlayer(session_t peer_id) {}
-
 void Server::stopSound(s32 handle) {}
 
 void Server::fadeSound(s32 handle, float step, float gain) {}
-
-bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
-{
-	return true;
-}
-
 
 /*
 	Something random
@@ -155,18 +135,6 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 		return NULL;
 	return player->getPlayerSAO();
 }
-
-void Server::spawnParticle(const std::string &playername,
-	const ParticleParameters &p) {}
-
-u32 Server::addParticleSpawner(const ParticleSpawnerParameters &p,
-	ServerActiveObject *attached, const std::string &playername)
-{
-	return -1;
-
-}
-
-void Server::deleteParticleSpawner(const std::string &playername, u32 id) {}
 
 // IGameDef interface
 // Under envlock
@@ -183,16 +151,6 @@ const NodeDefManager *Server::getNodeDefManager()
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
 	return m_nodedef->allocateDummy(name);
-}
-
-IWritableItemDefManager *Server::getWritableItemDefManager()
-{
-	return m_itemdef;
-}
-
-NodeDefManager *Server::getWritableNodeDefManager()
-{
-	return m_nodedef;
 }
 
 const std::vector<ModSpec> & Server::getMods() const

@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include "cpp_api/s_base.h"
-#include "cpp_api/s_entity.h"
 #include "cpp_api/s_env.h"
 #include "cpp_api/s_inventory.h"
 #include "cpp_api/s_modchannels.h"
@@ -38,7 +37,6 @@ struct PackedValue;
 class ServerScripting:
 		virtual public ScriptApiBase,
 		public ScriptApiDetached,
-		public ScriptApiEntity,
 		public ScriptApiEnv,
 		public ScriptApiModChannels,
 		public ScriptApiNode,

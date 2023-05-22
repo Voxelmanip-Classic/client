@@ -41,8 +41,6 @@ public:
 	// Not callable from Lua; all references are created on the C side.
 	static void create(lua_State *L, ServerActiveObject *object);
 
-	static void set_null(lua_State *L);
-
 	static void Register(lua_State *L);
 
 	static ServerActiveObject* getobject(ObjectRef *ref);
@@ -52,13 +50,6 @@ private:
 	ServerActiveObject *m_object = nullptr;
 	static luaL_Reg methods[];
 
-
-	static LuaEntitySAO* getluaobject(ObjectRef *ref);
-
-	static PlayerSAO* getplayersao(ObjectRef *ref);
-
-	static RemotePlayer *getplayer(ObjectRef *ref);
-
 	// Exported functions
 
 	// garbage collector
@@ -66,11 +57,5 @@ private:
 
 	// remove(self)
 	static int l_remove(lua_State *L);
-
-	// get_pos(self)
-	static int l_get_pos(lua_State *L);
-
-	// set_pos(self, pos)
-	static int l_set_pos(lua_State *L);
 
 };

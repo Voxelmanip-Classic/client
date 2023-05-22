@@ -47,34 +47,6 @@ ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
 	return sao;
 }
 
-LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
-{
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return nullptr;
-	if (sao->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
-		return nullptr;
-	return (LuaEntitySAO*)sao;
-}
-
-PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
-{
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return nullptr;
-	if (sao->getType() != ACTIVEOBJECT_TYPE_PLAYER)
-		return nullptr;
-	return (PlayerSAO*)sao;
-}
-
-RemotePlayer *ObjectRef::getplayer(ObjectRef *ref)
-{
-	PlayerSAO *playersao = getplayersao(ref);
-	if (playersao == nullptr)
-		return nullptr;
-	return playersao->getPlayer();
-}
-
 // Exported functions
 
 // garbage collector
@@ -89,49 +61,8 @@ int ObjectRef::l_remove(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return 0;
-	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		return 0;
-
-	sao->clearChildAttachments();
-	sao->clearParentAttachment();
-
-	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
-	sao->markForRemoval();
 	return 0;
 }
-
-// get_pos(self)
-int ObjectRef::l_get_pos(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return 0;
-
-	push_v3f(L, sao->getBasePosition() / BS);
-	return 1;
-}
-
-// set_pos(self, pos)
-int ObjectRef::l_set_pos(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return 0;
-
-	v3f pos = checkFloatPos(L, 2);
-
-	sao->setPos(pos);
-	return 0;
-}
-
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
@@ -147,12 +78,6 @@ void ObjectRef::create(lua_State *L, ServerActiveObject *object)
 	lua_setmetatable(L, -2);
 }
 
-void ObjectRef::set_null(lua_State *L)
-{
-	ObjectRef *obj = checkObject<ObjectRef>(L, -1);
-	obj->m_object = nullptr;
-}
-
 void ObjectRef::Register(lua_State *L)
 {
 	static const luaL_Reg metamethods[] = {
@@ -166,8 +91,6 @@ const char ObjectRef::className[] = "ObjectRef";
 luaL_Reg ObjectRef::methods[] = {
 	// ServerActiveObject
 	luamethod(ObjectRef, remove),
-	luamethod_aliased(ObjectRef, get_pos, getpos),
-	luamethod_aliased(ObjectRef, set_pos, setpos),
 
 	{0,0}
 };

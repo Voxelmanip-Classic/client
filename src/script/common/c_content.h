@@ -97,13 +97,6 @@ void               push_item_definition      (lua_State *L,
 void               push_item_definition_full (lua_State *L,
                                               const ItemDefinition &i);
 
-void               read_object_properties    (lua_State *L, int index,
-                                              ServerActiveObject *sao,
-                                              ObjectProperties *prop,
-                                              IItemDefManager *idef);
-void               push_object_properties    (lua_State *L,
-                                              ObjectProperties *prop);
-
 void               push_inventory_list       (lua_State *L,
                                               const InventoryList &invlist);
 void               push_inventory_lists      (lua_State *L,

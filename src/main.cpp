@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "porting.h"
 #include "network/socket.h"
+#include "serialization.h"
 
 #ifndef SERVER
 #include "gui/guiMainMenu.h"

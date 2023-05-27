@@ -114,7 +114,6 @@ public:
 	void checkSetByBuiltin();
 
 protected:
-	friend class InvRef;
 	friend class ObjectRef;
 	friend class NodeMetaRef;
 	friend class ModApiBase;

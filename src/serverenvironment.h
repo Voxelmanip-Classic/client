@@ -53,17 +53,13 @@ struct OnMapblocksChangedReceiver : public MapEventReceiver {
 class ServerEnvironment final : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, ServerScripting *script_iface,
+	ServerEnvironment(ServerMap *map,
 		Server *server);
 	~ServerEnvironment();
 
 	void init();
 
 	Map & getMap();
-
-	//TODO find way to remove this fct!
-	ServerScripting* getScriptIface()
-	{ return m_script; }
 
 	Server *getGameDef()
 	{ return m_server; }
@@ -89,12 +85,7 @@ private:
 
 	// The map
 	ServerMap *m_map;
-	// Lua state
-	ServerScripting* m_script;
 	// Server definition
 	Server *m_server;
-
-	// peer_ids in here should be unique, except that there may be many 0s
-	std::vector<RemotePlayer*> m_players;
 
 };

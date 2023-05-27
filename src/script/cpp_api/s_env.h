@@ -31,17 +31,6 @@ struct ScriptCallbackState;
 class ScriptApiEnv : virtual public ScriptApiBase
 {
 public:
-	// Called on environment step
-	void environment_Step(float dtime);
-
-	// Called after generating a piece of map
-	void environment_OnGenerated(v3s16 minp, v3s16 maxp, u32 blockseed);
-
-	// Called on player event
-	void player_event(ServerActiveObject *player, const std::string &type);
-
-	// Called after mapblock changes
-	void on_mapblocks_changed(const std::unordered_set<v3s16> &set);
 
 	void initializeEnvironment(ServerEnvironment *env);
 };

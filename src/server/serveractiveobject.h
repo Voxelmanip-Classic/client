@@ -52,40 +52,9 @@ struct InventoryLocation;
 class ServerActiveObject : public ActiveObject
 {
 public:
-	/*
-		NOTE: m_env can be NULL, but step() isn't called if it is.
-		Prototypes are used that way.
-	*/
-	ServerActiveObject(ServerEnvironment *env, v3f pos);
+
+	ServerActiveObject();
 	virtual ~ServerActiveObject() = default;
-
-	// Returns true if object's deletion is the job of the
-	// environment
-	virtual bool environmentDeletes() const
-	{ return true; }
-
-	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(ActiveObjectType type,
-			ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-
-	/*
-		Some simple getters/setters
-	*/
-	v3f getBasePosition() const { return m_base_position; }
-	ServerEnvironment* getEnv(){ return m_env; }
-
-	/*
-		Step object in time.
-		Messages added to messages are sent to client over network.
-
-		send_recommended:
-			True at around 5-10 times a second, same for all objects.
-			This is used to let objects send most of the data at the
-			same time so that the data can be combined in a single
-			packet.
-	*/
-	virtual void step(float dtime, bool send_recommended){}
 
 	/*
 		The return value of this is passed to the server-side object
@@ -114,27 +83,7 @@ public:
 
 protected:
 
-	ServerEnvironment *m_env;
-	v3f m_base_position;
-
-	/*
-		Same purpose as m_pending_removal but for deactivation.
-		deactvation = save static data in block, remove active object
-
-		If this is set alongside with m_pending_removal, removal takes
-		priority.
-		Note: Do not assign this directly, use markForDeactivation() instead.
-	*/
 	bool m_pending_deactivation = false;
 
-	/*
-		- Whether this object is to be removed when nobody knows about
-		  it anymore.
-		- Removal is delayed to preserve the id for the time during which
-		  it could be confused to some other object by some client.
-		- This is usually set to true by the step() method when the object wants
-		  to be deleted but can be set by anything else too.
-		Note: Do not assign this directly, use markForRemoval() instead.
-	*/
 	bool m_pending_removal = false;
 };

@@ -81,9 +81,6 @@ public:
 	*/
 	void onMapEditEvent(const MapEditEvent &event);
 
-	// Envlock and conlock should be locked when using scriptapi
-	ServerScripting *getScriptIface(){ return m_script; }
-
 	// IGameDef interface
 	// Under envlock
 	virtual IItemDefManager* getItemDefManager();
@@ -131,10 +128,6 @@ private:
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
-
-	// Scripting
-	// Envlock and conlock should be locked when using Lua
-	ServerScripting *m_script = nullptr;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;

@@ -21,15 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irr_v3d.h"
 #include "cpp_api/s_base.h"
-#include "cpp_api/s_nodemeta.h"
 #include "util/string.h"
 
 struct MapNode;
 class ServerActiveObject;
 
 class ScriptApiNode
-		: virtual public ScriptApiBase,
-		  public ScriptApiNodemeta
+		: virtual public ScriptApiBase
 {
 public:
 	ScriptApiNode() = default;

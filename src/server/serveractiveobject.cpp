@@ -22,9 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "inventorymanager.h"
 
-ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
-	ActiveObject(0),
-	m_env(env),
-	m_base_position(pos)
+ServerActiveObject::ServerActiveObject():
+	ActiveObject(0)
 {
 }

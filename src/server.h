@@ -42,7 +42,6 @@ class NetworkPacket;
 class NodeDefManager;
 class ServerModManager;
 class ServerScripting;
-class ServerThread;
 namespace con { class Connection; }
 namespace con { class Peer; }
 struct ChatInterface;
@@ -99,7 +98,6 @@ public:
 		setAsyncFatalError(std::string("Lua: ") + e.what());
 	}
 
-	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
 
 	bool joinModChannel(const std::string &channel);

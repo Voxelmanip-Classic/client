@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "map.h"
 #include "raycast.h"
-#include "remoteplayer.h"
 #include "scripting_server.h"
 #include "server.h"
 #include "util/basic_macros.h"

@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "database-files.h"
 #include "convert_json.h"
-#include "remoteplayer.h"
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"

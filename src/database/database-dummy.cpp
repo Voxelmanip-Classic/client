@@ -22,7 +22,6 @@ Dummy database class
 */
 
 #include "database-dummy.h"
-#include "remoteplayer.h"
 
 void Database_Dummy::getModEntries(const std::string &modname, StringMap *storage)
 {

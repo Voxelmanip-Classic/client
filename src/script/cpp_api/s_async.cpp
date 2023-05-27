@@ -281,9 +281,6 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 
 	if (jobDispatcher->server) {
 		setGameDef(jobDispatcher->server);
-
-		if (g_settings->getBool("secure.enable_security"))
-			initializeSecurity();
 	}
 
 	// Prepare job lua environment

@@ -18,9 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serveractiveobject.h"
-#include <fstream>
-#include "inventory.h"
-#include "inventorymanager.h"
 
 ServerActiveObject::ServerActiveObject():
 	ActiveObject(0)

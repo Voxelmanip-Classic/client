@@ -39,8 +39,7 @@ extern "C" {
 }
 
 ServerScripting::ServerScripting(Server* server):
-		ScriptApiBase(ScriptingType::Server),
-		asyncEngine(server)
+		ScriptApiBase(ScriptingType::Server)
 {
 	setGameDef(server);
 
@@ -48,14 +47,6 @@ ServerScripting::ServerScripting(Server* server):
 	// once the environment has been created
 
 	SCRIPTAPI_PRECHECKHEADER
-
-	if (g_settings->getBool("secure.enable_security")) {
-		initializeSecurity();
-	} else {
-		warningstream << "\\!/ Mod security should never be disabled, as it allows any mod to "
-				<< "access the host machine."
-				<< "Mods should use minetest.request_insecure_environment() instead \\!/" << std::endl;
-	}
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
@@ -77,44 +68,6 @@ ServerScripting::ServerScripting(Server* server):
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
 }
 
-void ServerScripting::initAsync()
-{
-	// Save globals to transfer
-	{
-		lua_State *L = getStack();
-		lua_getglobal(L, "core");
-		luaL_checktype(L, -1, LUA_TTABLE);
-		lua_getfield(L, -1, "get_globals_to_transfer");
-		lua_call(L, 0, 1);
-		auto *data = script_pack(L, -1);
-		assert(!data->contains_userdata);
-		getServer()->m_async_globals_data.reset(data);
-		lua_pushnil(L);
-		lua_setfield(L, -3, "get_globals_to_transfer"); // unset function too
-		lua_pop(L, 2); // pop 'core', return value
-	}
-
-	infostream << "SCRIPTAPI: Initializing async engine" << std::endl;
-	asyncEngine.registerStateInitializer(InitializeAsync);
-	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
-	// not added: ModApiHttp async api can't really work together with our jobs
-	// not added: ModApiStorage is probably not thread safe(?)
-
-	asyncEngine.initialize(0);
-}
-
-void ServerScripting::stepAsync()
-{
-	asyncEngine.step(getStack());
-}
-
-u32 ServerScripting::queueAsync(std::string &&serialized_func,
-	PackedValue *param, const std::string &mod_origin)
-{
-	return asyncEngine.queueAsyncJob(std::move(serialized_func),
-			param, mod_origin);
-}
-
 void ServerScripting::InitializeModApi(lua_State *L, int top)
 {
 	// Register reference classes (userdata)
@@ -131,19 +84,4 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiUtil::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);
-}
-
-void ServerScripting::InitializeAsync(lua_State *L, int top)
-{
-	// classes
-	LuaItemStack::Register(L);
-	LuaSettings::Register(L);
-
-	// globals data
-	lua_getglobal(L, "core");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	auto *data = ModApiBase::getServer(L)->m_async_globals_data.get();
-	script_unpack(L, data);
-	lua_setfield(L, -2, "transferred_globals");
-	lua_pop(L, 1); // pop 'core'
 }

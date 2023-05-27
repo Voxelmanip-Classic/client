@@ -33,30 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/mods.h"
 #include "chatmessage.h"
 #include "chat_interface.h"
-#include "remoteplayer.h"
 #include "database/database-files.h"
 #include "database/database-dummy.h"
-
-class ServerThread : public Thread
-{
-public:
-
-	ServerThread(Server *server):
-		Thread("Server"),
-		m_server(server)
-	{}
-
-	void *run();
-
-private:
-	Server *m_server;
-};
-
-void *ServerThread::run()
-{
-
-	return nullptr;
-}
 
 /*
 	Server

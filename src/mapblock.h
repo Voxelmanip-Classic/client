@@ -24,9 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "exceptions.h"
 #include "constants.h"
-#include "staticobject.h"
 #include "nodemetadata.h"
-#include "nodetimer.h"
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
@@ -361,11 +359,6 @@ public:
 		return m_timestamp;
 	}
 
-	inline u32 getDiskTimestamp()
-	{
-		return m_disk_timestamp;
-	}
-
 	////
 	//// Usage timer (see m_usage_timer)
 	////
@@ -405,30 +398,6 @@ public:
 	}
 
 	////
-	//// Node Timers
-	////
-
-	inline NodeTimer getNodeTimer(v3s16 p)
-	{
-		return m_node_timers.get(p);
-	}
-
-	inline void removeNodeTimer(v3s16 p)
-	{
-		m_node_timers.remove(p);
-	}
-
-	inline void setNodeTimer(const NodeTimer &t)
-	{
-		m_node_timers.set(t);
-	}
-
-	inline void clearNodeTimers()
-	{
-		m_node_timers.clear();
-	}
-
-	////
 	//// Serialization
 	///
 
@@ -443,8 +412,6 @@ public:
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
 
-	bool storeActiveObject(u16 id);
-
 public:
 	/*
 		Public member variables
@@ -455,7 +422,6 @@ public:
 #endif
 
 	NodeMetadataList m_node_metadata;
-	StaticObjectList m_static_objects;
 
 	static const u32 ystride = MAP_BLOCKSIZE;
 	static const u32 zstride = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
@@ -547,7 +513,6 @@ private:
 	int m_refcount = 0;
 
 	MapNode data[nodecount];
-	NodeTimerList m_node_timers;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;

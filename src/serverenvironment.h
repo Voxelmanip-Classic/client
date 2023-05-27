@@ -29,13 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <random>
 
 struct GameParams;
-class RemotePlayer;
 class ServerEnvironment;
-struct StaticObject;
 class ServerActiveObject;
 class Server;
 class ServerScripting;
-enum AccessDeniedCode : u8;
 typedef u16 session_t;
 
 

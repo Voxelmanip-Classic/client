@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "daynightratio.h"
 #include "util/pointedthing.h"
 #include "face_position_cache.h"
-#include "remoteplayer.h"
 #include "util/string.h"
 #include "translation.h"
 #ifndef SERVER

@@ -571,60 +571,6 @@ void Map::removeNodeMetadata(v3s16 p)
 	block->m_node_metadata.remove(p_rel);
 }
 
-NodeTimer Map::getNodeTimer(v3s16 p)
-{
-	v3s16 blockpos = getNodeBlockPos(p);
-	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if(!block){
-		infostream<<"Map::getNodeTimer(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
-		block = emergeBlock(blockpos, false);
-	}
-	if(!block){
-		warningstream<<"Map::getNodeTimer(): Block not found"
-				<<std::endl;
-		return NodeTimer();
-	}
-	NodeTimer t = block->getNodeTimer(p_rel);
-	NodeTimer nt(t.timeout, t.elapsed, p);
-	return nt;
-}
-
-void Map::setNodeTimer(const NodeTimer &t)
-{
-	v3s16 p = t.position;
-	v3s16 blockpos = getNodeBlockPos(p);
-	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if(!block){
-		infostream<<"Map::setNodeTimer(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
-		block = emergeBlock(blockpos, false);
-	}
-	if(!block){
-		warningstream<<"Map::setNodeTimer(): Block not found"
-				<<std::endl;
-		return;
-	}
-	NodeTimer nt(t.timeout, t.elapsed, p_rel);
-	block->setNodeTimer(nt);
-}
-
-void Map::removeNodeTimer(v3s16 p)
-{
-	v3s16 blockpos = getNodeBlockPos(p);
-	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if(block == NULL)
-	{
-		warningstream<<"Map::removeNodeTimer(): Block not found"
-				<<std::endl;
-		return;
-	}
-	block->removeNodeTimer(p_rel);
-}
-
 bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 	const core::aabbox3d<s16> &block_bounds, v3s16 &check)
 {

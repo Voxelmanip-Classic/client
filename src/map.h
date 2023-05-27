@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "util/numeric.h"
-#include "nodetimer.h"
 #include "debug.h"
 
 class Settings;
@@ -251,15 +250,6 @@ public:
 	 */
 	bool setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
-
-	/*
-		Node Timers
-		These are basically coordinate wrappers to MapBlock
-	*/
-
-	NodeTimer getNodeTimer(v3s16 p);
-	void setNodeTimer(const NodeTimer &t);
-	void removeNodeTimer(v3s16 p);
 
 	/*
 		Utilities

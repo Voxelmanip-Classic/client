@@ -22,13 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 #include "irrlichttypes.h"
 
-class TestClientActiveObjectMgr;
-
 template <typename T>
 class ActiveObjectMgr
 {
-	friend class ::TestClientActiveObjectMgr;
-
 public:
 	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
 	virtual bool registerObject(T *obj) = 0;

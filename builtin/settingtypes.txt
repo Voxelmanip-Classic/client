@@ -1,3 +1,4 @@
+return [[
 # This file contains all settings displayed in the settings menu.
 #
 # General format:
@@ -684,3 +685,4 @@ screen_dpi (DPI) int 72 1
 
 #    Adjust the detected display density, used for scaling UI elements.
 display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0
+]]

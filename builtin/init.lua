@@ -35,6 +35,7 @@ local gamepath = scriptdir .. "game" .. DIR_DELIM
 local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
+print(commonpath)
 
 dofile(commonpath .. "vector.lua")
 dofile(commonpath .. "strict.lua")

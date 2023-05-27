@@ -24,8 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "skyparams.h"
 #include "lighting.h"
 
-class PlayerSAO;
-
 /*
 	Player on the server
 */
@@ -36,27 +34,8 @@ public:
 	RemotePlayer(const char *name, IItemDefManager *idef);
 	virtual ~RemotePlayer() = default;
 
-	PlayerSAO *getPlayerSAO() { return m_sao; }
-	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
-
-	inline void setModified(const bool x) { m_dirty = x; }
-
-	void setDirty(bool dirty) { m_dirty = true; }
-
-	u16 protocol_version = 0;
-	u16 formspec_version = 0;
-
 	session_t getPeerId() const { return m_peer_id; }
 
-	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
-
 private:
-	PlayerSAO *m_sao = nullptr;
-	bool m_dirty = false;
-
-	static bool m_setting_cache_loaded;
-
-	Lighting m_lighting;
-
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

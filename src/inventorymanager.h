@@ -133,8 +133,6 @@ struct InventoryAction
 
 	virtual IAction getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
-	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
-			IGameDef *gamedef) = 0;
 	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
 	virtual ~InventoryAction() = default;;
 };
@@ -185,8 +183,6 @@ struct IMoveAction : public InventoryAction, public MoveAction
 			os << " " << to_i;
 	}
 
-	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
-
 	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
 
 	void swapDirections();
@@ -224,8 +220,6 @@ struct IDropAction : public InventoryAction, public MoveAction
 		os<<from_list<<" ";
 		os<<from_i;
 	}
-
-	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
 
 	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
 };

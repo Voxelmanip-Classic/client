@@ -66,9 +66,6 @@ private:
 
 	// Exported functions
 
-	// mark_as_private(self, <string> or {<string>, <string>, ...})
-	static int l_mark_as_private(lua_State *L);
-
 public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);
 	NodeMetaRef(IMetadata *meta);

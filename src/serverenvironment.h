@@ -23,14 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "map.h"
 #include "settings.h"
-#include "server/activeobjectmgr.h"
+#include "server/serveractiveobject.h"
 #include "util/numeric.h"
 #include <set>
 #include <random>
 
 struct GameParams;
 class RemotePlayer;
-class PlayerSAO;
 class ServerEnvironment;
 struct StaticObject;
 class ServerActiveObject;
@@ -70,25 +69,12 @@ public:
 	{ return m_server; }
 
 	/*
-		External ActiveObject interface
-		-------------------------------------------
-	*/
-
-	ServerActiveObject* getActiveObject(u16 id)
-	{
-		return m_ao_manager.getActiveObject(id);
-	}
-
-	/*
 		Other stuff
 		-------------------------------------------
 	*/
 
 	// This makes stuff happen
 	void step(f32 dtime);
-
-	RemotePlayer *getPlayer(const session_t peer_id);
-	RemotePlayer *getPlayer(const char* name);
 
 private:
 
@@ -107,9 +93,6 @@ private:
 	ServerScripting* m_script;
 	// Server definition
 	Server *m_server;
-	// Active Object Manager
-	server::ActiveObjectMgr m_ao_manager;
-
 
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<RemotePlayer*> m_players;

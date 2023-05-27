@@ -33,11 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "database/database-dummy.h"
 #include "database/database-files.h"
-#include "server/luaentity_sao.h"
-#include "server/player_sao.h"
-
-// A number that is much smaller than the timeout for particle spawners should/could ever be
-#define PARTICLE_SPAWNER_NO_EXPIRY -1024.f
 
 /*
 	OnMapblocksChangedReceiver
@@ -81,24 +76,6 @@ ServerEnvironment::~ServerEnvironment()
 Map & ServerEnvironment::getMap()
 {
 	return *m_map;
-}
-
-RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
-{
-	for (RemotePlayer *player : m_players) {
-		if (player->getPeerId() == peer_id)
-			return player;
-	}
-	return NULL;
-}
-
-RemotePlayer *ServerEnvironment::getPlayer(const char* name)
-{
-	for (RemotePlayer *player : m_players) {
-		if (strcmp(player->getName(), name) == 0)
-			return player;
-	}
-	return NULL;
 }
 
 void ServerEnvironment::step(float dtime)

@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "porting.h"
 #include "noise.h"
-#include "server/player_sao.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>

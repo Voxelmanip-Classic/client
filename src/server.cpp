@@ -34,8 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "chat_interface.h"
 #include "remoteplayer.h"
-#include "server/player_sao.h"
-#include "server/serverinventorymgr.h"
 #include "database/database-files.h"
 #include "database/database-dummy.h"
 
@@ -94,14 +92,6 @@ void Server::onMapEditEvent(const MapEditEvent &event) {}
 	Something random
 */
 
-
-PlayerSAO *Server::getPlayerSAO(session_t peer_id)
-{
-	RemotePlayer *player = m_env->getPlayer(peer_id);
-	if (!player)
-		return NULL;
-	return player->getPlayerSAO();
-}
 
 // IGameDef interface
 // Under envlock

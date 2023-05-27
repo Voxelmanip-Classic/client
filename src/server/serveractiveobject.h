@@ -105,10 +105,6 @@ public:
 	virtual bool isStaticAllowed() const
 	{return true;}
 
-	// Inventory and wielded item
-	virtual Inventory *getInventory() const
-	{ return NULL; }
-
 	/*
 		A getter that unifies the above to answer the question:
 		"Can the environment still interact with this object?"

@@ -40,8 +40,6 @@ class ModChannel;
 class ModChannelMgr;
 class NetworkPacket;
 class NodeDefManager;
-class PlayerSAO;
-class ServerInventoryManager;
 class ServerModManager;
 class ServerScripting;
 class ServerThread;
@@ -83,8 +81,6 @@ public:
 	*/
 	void onMapEditEvent(const MapEditEvent &event);
 
-	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
-
 	// Envlock and conlock should be locked when using scriptapi
 	ServerScripting *getScriptIface(){ return m_script; }
 
@@ -125,13 +121,6 @@ private:
 	void init();
 
 	/*
-		Something random
-	*/
-
-	// When called, environment mutex should be locked
-	PlayerSAO *getPlayerSAO(session_t peer_id);
-
-	/*
 		Variables
 	*/
 	// Subgame specification
@@ -158,7 +147,4 @@ private:
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
-
-	// Inventory manager
-	std::unique_ptr<ServerInventoryManager> m_inventory_mgr;
 };

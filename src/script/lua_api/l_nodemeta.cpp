@@ -73,32 +73,6 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 // Exported functions
 
-// mark_as_private(self, <string> or {<string>, <string>, ...})
-int NodeMetaRef::l_mark_as_private(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
-	assert(meta);
-
-	if (lua_istable(L, 2)) {
-		lua_pushnil(L);
-		while (lua_next(L, 2) != 0) {
-			// key at index -2 and value at index -1
-			luaL_checktype(L, -1, LUA_TSTRING);
-			meta->markPrivate(readParam<std::string>(L, -1), true);
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-	} else if (lua_isstring(L, 2)) {
-		meta->markPrivate(readParam<std::string>(L, 2), true);
-	}
-	ref->reportMetadataChange();
-
-	return 0;
-}
-
 void NodeMetaRef::handleToTable(lua_State *L, IMetadata *_meta)
 {
 	// fields
@@ -198,7 +172,6 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, get_keys),
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
-	luamethod(NodeMetaRef, mark_as_private),
 	luamethod(MetaDataRef, equals),
 	{0,0}
 };

@@ -23,8 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 
 class ServerActiveObject;
-class LuaEntitySAO;
-class PlayerSAO;
 class RemotePlayer;
 
 /*

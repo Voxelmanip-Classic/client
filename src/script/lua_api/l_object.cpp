@@ -30,9 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "hud.h"
 #include "scripting_server.h"
-#include "server/luaentity_sao.h"
-#include "server/player_sao.h"
-#include "server/serverinventorymgr.h"
 
 /*
 	ObjectRef

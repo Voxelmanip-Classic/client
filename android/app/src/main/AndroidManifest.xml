@@ -47,7 +47,7 @@
 			</intent-filter>
 			<meta-data
 				android:name="android.app.lib_name"
-				android:value="Minetest" />
+				android:value="voxelmanip_classic" />
 		</activity>
 
 		<service

@@ -64,7 +64,13 @@ endif()
 # Included stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-set(IRRLICHTMT_FORCE_BINARY FALSE CACHE BOOL "Explicitly ignore IrrlichtMt found at lib/irrlichtmt in favour of binaries.")
+# Load default options for Android
+if(ANDROID)
+	cmake_minimum_required(VERSION 3.20)
+	include(MinetestAndroidLibs)
+endif()
+
+
 set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
 if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 	find_package(IrrlichtMt QUIET
@@ -78,7 +84,7 @@ if(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
 		# IrrlichtMtConfig.cmake
 		message(FATAL_ERROR "Could not find IrrlichtMtConfig.cmake in ${IRRLICHTMT_BUILD_DIR}/cmake.")
 	endif()
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt" AND NOT IRRLICHTMT_FORCE_BINARY)
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
 	if(BUILD_CLIENT)
 		# tell IrrlichtMt to create a static library

@@ -9,13 +9,9 @@ android {
 		minSdkVersion 21
 		targetSdkVersion 33
 		externalNativeBuild {
-			ndkBuild {
-				arguments '-j24',
-						"versionMajor=${versionMajor}",
-						"versionMinor=${versionMinor}",
-						"versionPatch=${versionPatch}",
-						"versionExtra=${versionExtra}",
-						"developmentBuild=0"
+			cmake {
+				arguments "-DANDROID_STL=c++_shared",
+					"-DENABLE_SOUND=1", "-DENABLE_TOUCH=1"
 			}
 		}
 
@@ -25,19 +21,13 @@ android {
 	}
 
 	externalNativeBuild {
-		ndkBuild {
-			path file('jni/Android.mk')
+		cmake {
+			path file("../../CMakeLists.txt")
 		}
 	}
 
 	buildTypes {
 		release {
-			externalNativeBuild {
-				ndkBuild {
-					arguments 'NDEBUG=1'
-				}
-			}
-
 			ndk {
 				debugSymbolLevel 'SYMBOL_TABLE'
 			}
@@ -46,7 +36,7 @@ android {
 }
 
 // get precompiled deps
-task downloadDeps(type: Download) {
+/*task downloadDeps(type: Download) {
 	def depsDir = new File(buildDir.parent, 'deps')
 	def depsZip = new File(buildDir, 'deps.zip')
 
@@ -66,4 +56,4 @@ preBuild.dependsOn getDeps
 
 clean {
 	delete new File(buildDir.parent, 'deps')
-}
+}*/

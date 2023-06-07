@@ -1188,8 +1188,6 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 				current_node->getMaterial(0) = mat;
 				current_node->setAutomaticCulling(EAC_OFF);
-				current_node->setIsDebugObject(true);  //so the picking won't have any effect on individual letter
-				//current_node->setDebugDataVisible(EDS_BBOX); //de-comment this when debugging
 
 				container.push_back(current_node);
 			}

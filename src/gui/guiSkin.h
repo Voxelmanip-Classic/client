@@ -142,77 +142,6 @@ namespace gui
 				const core::rect<s32>* clip=0,
 				const video::SColor* colors=0);
 
-		//! draws a window background
-		/** Used for drawing the background of dialogs and windows.
-		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex
-		implementations to find out how to draw the part exactly.
-		\param titleBarColor: Title color.
-		\param drawTitleBar: True to enable title drawing.
-		\param rect: Defining area where to draw.
-		\param clip: Clip area.
-		\param checkClientArea: When set to non-null the function will not draw anything,
-		but will instead return the clientArea which can be used for drawing by the calling window.
-		That is the area without borders and without titlebar.
-		\return Returns rect where it would be good to draw title bar text. This will
-		work even when checkClientArea is set to a non-null value.*/
-		virtual core::rect<s32> draw3DWindowBackground(IGUIElement* element,
-				bool drawTitleBar, video::SColor titleBarColor,
-				const core::rect<s32>& rect,
-				const core::rect<s32>* clip,
-				core::rect<s32>* checkClientArea)
-		{
-			return drawColored3DWindowBackground(element, drawTitleBar, titleBarColor,
-				rect, clip, checkClientArea);
-		}
-
-		virtual core::rect<s32> drawColored3DWindowBackground(IGUIElement* element,
-				bool drawTitleBar, video::SColor titleBarColor,
-				const core::rect<s32>& rect,
-				const core::rect<s32>* clip,
-				core::rect<s32>* checkClientArea,
-				const video::SColor* colors=0);
-
-		//! draws a standard 3d menu pane
-		/** Used for drawing for menus and context menus.
-		It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
-		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
-		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex
-		implementations to find out how to draw the part exactly.
-		\param rect: Defining area where to draw.
-		\param clip: Clip area.	*/
-		virtual void draw3DMenuPane(IGUIElement* element,
-				const core::rect<s32>& rect,
-				const core::rect<s32>* clip=0)
-		{
-			drawColored3DMenuPane(element, rect, clip);
-		}
-
-		virtual void drawColored3DMenuPane(IGUIElement* element,
-				const core::rect<s32>& rect,
-				const core::rect<s32>* clip=0,
-				const video::SColor* colors=0);
-
-		//! draws a standard 3d tool bar
-		/** Used for drawing for toolbars and menus.
-		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex
-		implementations to find out how to draw the part exactly.
-		\param rect: Defining area where to draw.
-		\param clip: Clip area.	*/
-		virtual void draw3DToolBar(IGUIElement* element,
-				const core::rect<s32>& rect,
-				const core::rect<s32>* clip=0)
-		{
-			drawColored3DToolBar(element, rect, clip);
-		}
-
-		virtual void drawColored3DToolBar(IGUIElement* element,
-				const core::rect<s32>& rect,
-				const core::rect<s32>* clip=0,
-				const video::SColor* colors=0);
-
 		//! draws a tab button
 		/** Used for drawing for tab buttons on top of tabs.
 		\param element: Pointer to the element which wishes to draw this. This parameter
@@ -303,7 +232,6 @@ namespace gui
 		core::stringw Texts[EGDT_COUNT];
 #endif
 		video::IVideoDriver* Driver;
-		bool UseGradient;
 
 		EGUI_SKIN_TYPE Type;
 	};

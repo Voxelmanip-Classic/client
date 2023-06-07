@@ -601,21 +601,6 @@ static void init_log_streams(const Settings &cmd_args)
 	g_logger.removeOutput(&file_log_output);
 	std::string conf_loglev = g_settings->get("debug_log_level");
 
-	// Old integer format
-	if (std::isdigit(conf_loglev[0])) {
-		warningstream << "Deprecated use of debug_log_level with an "
-			"integer value; please update your configuration." << std::endl;
-		static const char *lev_name[] =
-			{"", "error", "action", "info", "verbose", "trace"};
-		int lev_i = atoi(conf_loglev.c_str());
-		if (lev_i < 0 || lev_i >= (int)ARRLEN(lev_name)) {
-			warningstream << "Supplied invalid debug_log_level!"
-				"  Assuming action level." << std::endl;
-			lev_i = 2;
-		}
-		conf_loglev = lev_name[lev_i];
-	}
-
 	if (log_filename.empty() || conf_loglev.empty())  // No logging
 		return;
 

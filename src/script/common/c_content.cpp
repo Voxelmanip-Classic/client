@@ -758,19 +758,6 @@ std::vector<ItemStack> read_items(lua_State *L, int index, IGameDef *gdef)
 }
 
 /******************************************************************************/
-void luaentity_get(lua_State *L, u16 id)
-{
-	// Get luaentities[i]
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "luaentities");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushinteger(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // Remove luaentities
-	lua_remove(L, -2); // Remove core
-}
-
-/******************************************************************************/
 // Returns depth of json value tree
 static int push_json_value_getdepth(const Json::Value &value)
 {
@@ -920,14 +907,8 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		lua_pushstring(L, "object");
 		lua_setfield(L, -2, "type");
-
-		if (csm) {
-			lua_pushinteger(L, pointed.object_id);
-			lua_setfield(L, -2, "id");
-		} else {
-			push_objectRef(L, pointed.object_id);
-			lua_setfield(L, -2, "ref");
-		}
+		lua_pushinteger(L, pointed.object_id);
+		lua_setfield(L, -2, "id");
 	} else {
 		lua_pushstring(L, "nothing");
 		lua_setfield(L, -2, "type");
@@ -940,18 +921,6 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 		lua_pushinteger(L, pointed.box_id + 1); // change to Lua array index
 		lua_setfield(L, -2, "box_id");
 	}
-}
-
-void push_objectRef(lua_State *L, const u16 id)
-{
-	// Get core.object_refs[i]
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushinteger(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // core
 }
 
 void read_hud_element(lua_State *L, HudElement *elem)
@@ -1145,58 +1114,3 @@ bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void 
 }
 
 /******************************************************************************/
-
-// Indices must match values in `enum CollisionType` exactly!!
-static const char *collision_type_str[] = {
-	"node",
-	"object",
-};
-
-// Indices must match values in `enum CollisionAxis` exactly!!
-static const char *collision_axis_str[] = {
-	"x",
-	"y",
-	"z",
-};
-
-void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
-{
-	lua_createtable(L, 0, 4);
-
-	setboolfield(L, -1, "touching_ground", res.touching_ground);
-	setboolfield(L, -1, "collides", res.collides);
-	setboolfield(L, -1, "standing_on_object", res.standing_on_object);
-
-	/* collisions */
-	lua_createtable(L, res.collisions.size(), 0);
-	int i = 1;
-	for (const auto &c : res.collisions) {
-		lua_createtable(L, 0, 5);
-
-		lua_pushstring(L, collision_type_str[c.type]);
-		lua_setfield(L, -2, "type");
-
-		assert(c.axis != COLLISION_AXIS_NONE);
-		lua_pushstring(L, collision_axis_str[c.axis]);
-		lua_setfield(L, -2, "axis");
-
-		if (c.type == COLLISION_NODE) {
-			push_v3s16(L, c.node_p);
-			lua_setfield(L, -2, "node_pos");
-		} else if (c.type == COLLISION_OBJECT) {
-			push_objectRef(L, c.object->getId());
-			lua_setfield(L, -2, "object");
-		}
-
-		push_v3f(L, c.old_speed / BS);
-		lua_setfield(L, -2, "old_velocity");
-
-		push_v3f(L, c.new_speed / BS);
-		lua_setfield(L, -2, "new_velocity");
-
-		lua_rawseti(L, -2, i++);
-	}
-	lua_setfield(L, -2, "collisions");
-	/**/
-}
-

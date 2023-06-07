@@ -141,18 +141,6 @@ void cleanupAndroid()
 	jvm->DetachCurrentThread();
 }
 
-static std::string javaStringToUTF8(jstring js)
-{
-	std::string str;
-	// Get string as a UTF-8 c-string
-	const char *c_str = jnienv->GetStringUTFChars(js, nullptr);
-	// Save it
-	str = c_str;
-	// And free the c-string
-	jnienv->ReleaseStringUTFChars(js, c_str);
-	return str;
-}
-
 void initializePathsAndroid()
 {
 	// Set user path

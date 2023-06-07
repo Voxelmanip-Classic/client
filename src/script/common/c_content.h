@@ -131,8 +131,6 @@ bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
 
-void               luaentity_get             (lua_State *L,u16 id);
-
 bool               push_json_value           (lua_State *L,
                                               const Json::Value &value,
                                               int nullindex);
@@ -147,12 +145,8 @@ void               read_json_value           (lua_State *L, Json::Value &root,
 void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm =
 	false, bool hitpoint = false);
 
-void push_objectRef            (lua_State *L, const u16 id);
-
 void read_hud_element          (lua_State *L, HudElement *elem);
 
 void push_hud_element          (lua_State *L, HudElement *elem);
 
 bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *elem, void **value);
-
-void push_collision_move_result(lua_State *L, const collisionMoveResult &res);

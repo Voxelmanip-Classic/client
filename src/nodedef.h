@@ -176,7 +176,6 @@ public:
 	WorldAlignMode world_aligned_mode;
 	AutoScale autoscale_mode;
 	int node_texture_size;
-	bool opaque_water;
 	bool connected_glass;
 	bool enable_minimap;
 

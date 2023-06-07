@@ -184,13 +184,12 @@ void set_default_settings()
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "");
 	settings->setDefault("cinematic", "false");
-	settings->setDefault("camera_smoothing", "0");
+	settings->setDefault("camera_smoothing", "0.0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "false");
-	settings->setDefault("opaque_water", "false");
 	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");

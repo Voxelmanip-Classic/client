@@ -45,18 +45,13 @@ int LuaRaycast::l_next(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
-	bool csm = false;
-#ifndef SERVER
-	csm = getClient(L) != nullptr;
-#endif
-
 	LuaRaycast *o = checkObject<LuaRaycast>(L, 1);
 	PointedThing pointed;
 	env->continueRaycast(&o->state, &pointed);
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else
-		push_pointed_thing(L, pointed, csm, true);
+		push_pointed_thing(L, pointed, true, true);
 
 	return 1;
 }

@@ -148,8 +148,6 @@ protected:
 	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
 #endif
 
-	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
-
 	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;
 	bool            m_secure = false;

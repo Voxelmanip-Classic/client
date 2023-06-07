@@ -29,15 +29,10 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Colors[EGDC_3D_FACE]            = video::SColor(220,70,70,70);
 	Colors[EGDC_3D_HIGH_LIGHT]      = video::SColor(101,255,255,255);
 	Colors[EGDC_3D_LIGHT]           = video::SColor(101,210,210,210);
-	Colors[EGDC_ACTIVE_BORDER]      = video::SColor(101,16,14,115);
-	Colors[EGDC_ACTIVE_CAPTION]     = video::SColor(255,255,255,255);
-	Colors[EGDC_APP_WORKSPACE]      = video::SColor(101,100,100,100);
 	Colors[EGDC_BUTTON_TEXT]        = video::SColor(240,10,10,10);
 	Colors[EGDC_GRAY_TEXT]          = video::SColor(240,130,130,130);
 	Colors[EGDC_HIGH_LIGHT]         = video::SColor(101,8,36,107);
 	Colors[EGDC_HIGH_LIGHT_TEXT]    = video::SColor(240,255,255,255);
-	Colors[EGDC_INACTIVE_BORDER]    = video::SColor(101,165,165,165);
-	Colors[EGDC_INACTIVE_CAPTION]   = video::SColor(255,30,30,30);
 	Colors[EGDC_TOOLTIP]            = video::SColor(200,0,0,0);
 	Colors[EGDC_TOOLTIP_BACKGROUND] = video::SColor(200,255,255,225);
 	Colors[EGDC_SCROLLBAR]          = video::SColor(101,230,230,230);
@@ -52,25 +47,13 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 
 
 	Sizes[EGDS_SCROLLBAR_SIZE] = 14;
-	Sizes[EGDS_MENU_HEIGHT] = 30;
 	Sizes[EGDS_WINDOW_BUTTON_WIDTH] = 15;
 	Sizes[EGDS_CHECK_BOX_WIDTH] = 18;
-	Sizes[EGDS_MESSAGE_BOX_WIDTH] = 500;
-	Sizes[EGDS_MESSAGE_BOX_HEIGHT] = 200;
 	Sizes[EGDS_BUTTON_WIDTH] = 80;
 	Sizes[EGDS_BUTTON_HEIGHT] = 30;
 
 	Sizes[EGDS_TEXT_DISTANCE_X] = 2;
 	Sizes[EGDS_TEXT_DISTANCE_Y] = 0;
-
-	Sizes[EGDS_TITLEBARTEXT_DISTANCE_X] = 2;
-	Sizes[EGDS_TITLEBARTEXT_DISTANCE_Y] = 0;
-
-	Sizes[EGDS_MESSAGE_BOX_GAP_SPACE] = 15;
-	Sizes[EGDS_MESSAGE_BOX_MIN_TEXT_WIDTH] = 0;
-	Sizes[EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH] = 500;
-	Sizes[EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT] = 0;
-	Sizes[EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT] = 99999;
 
 	Sizes[EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X] = 1;
 	Sizes[EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y] = 1;
@@ -88,35 +71,14 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Texts[EGDT_WINDOW_MAXIMIZE] = L"Maximize";
 #endif
 
-	Icons[EGDI_WINDOW_MAXIMIZE] = 225;
-	Icons[EGDI_WINDOW_RESTORE] = 226;
-	Icons[EGDI_WINDOW_CLOSE] = 227;
-	Icons[EGDI_WINDOW_MINIMIZE] = 228;
 	Icons[EGDI_CURSOR_UP] = 229;
 	Icons[EGDI_CURSOR_DOWN] = 230;
 	Icons[EGDI_CURSOR_LEFT] = 231;
 	Icons[EGDI_CURSOR_RIGHT] = 232;
-	Icons[EGDI_MENU_MORE] = 232;
 	Icons[EGDI_CHECK_BOX_CHECKED] = 233;
-	Icons[EGDI_DROP_DOWN] = 234;
-	Icons[EGDI_SMALL_CURSOR_UP] = 235;
-	Icons[EGDI_SMALL_CURSOR_DOWN] = 236;
-	Icons[EGDI_RADIO_BUTTON_CHECKED] = 237;
-	Icons[EGDI_MORE_LEFT] = 238;
-	Icons[EGDI_MORE_RIGHT] = 239;
-	Icons[EGDI_MORE_UP] = 240;
-	Icons[EGDI_MORE_DOWN] = 241;
-	Icons[EGDI_WINDOW_RESIZE] = 242;
-	Icons[EGDI_EXPAND] = 243;
-	Icons[EGDI_COLLAPSE] = 244;
-
-	Icons[EGDI_FILE] = 245;
-	Icons[EGDI_DIRECTORY] = 246;
 
 	for (u32 i=0; i<EGDF_COUNT; ++i)
 		Fonts[i] = 0;
-
-	UseGradient = false ;
 }
 
 
@@ -291,16 +253,7 @@ void GUISkin::drawColored3DButtonPaneStandard(IGUIElement* element,
 	rect.LowerRightCorner.X -= 1;
 	rect.LowerRightCorner.Y -= 1;
 
-	if (!UseGradient)
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
-	}
-	else
-	{
-		const video::SColor c1 = colors[EGDC_3D_FACE];
-		const video::SColor c2 = c1.getInterpolated(colors[EGDC_3D_DARK_SHADOW], 0.4f);
-		Driver->draw2DRectangle(rect, c1, c1, c2, c2, clip);
-	}
+	Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
 }
 // END PATCH
 
@@ -340,16 +293,7 @@ void GUISkin::drawColored3DButtonPanePressed(IGUIElement* element,
 	rect.UpperLeftCorner.X += 1;
 	rect.UpperLeftCorner.Y += 1;
 
-	if (!UseGradient)
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
-	}
-	else
-	{
-		const video::SColor c1 = colors[EGDC_3D_FACE];
-		const video::SColor c2 = c1.getInterpolated(colors[EGDC_3D_DARK_SHADOW], 0.4f);
-		Driver->draw2DRectangle(rect, c1, c1, c2, c2, clip);
-	}
+	Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
 }
 // END PATCH
 
@@ -451,260 +395,6 @@ void GUISkin::drawColored3DSunkenPane(IGUIElement* element, video::SColor bgcolo
 }
 // END PATCH
 
-//! draws a window background
-// return where to draw title bar text.
-// PATCH
-core::rect<s32> GUISkin::drawColored3DWindowBackground(IGUIElement* element,
-				bool drawTitleBar, video::SColor titleBarColor,
-				const core::rect<s32>& r,
-				const core::rect<s32>* clip,
-				core::rect<s32>* checkClientArea,
-				const video::SColor* colors)
-{
-	if (!Driver)
-	{
-		if ( checkClientArea )
-		{
-			*checkClientArea = r;
-		}
-		return r;
-	}
-
-	if (!colors)
-		colors = Colors;
-
-	core::rect<s32> rect = r;
-
-	// top border
-	rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 1;
-	if ( !checkClientArea )
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_HIGH_LIGHT], rect, clip);
-	}
-
-	// left border
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	rect.LowerRightCorner.X = rect.UpperLeftCorner.X + 1;
-	if ( !checkClientArea )
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_HIGH_LIGHT], rect, clip);
-	}
-
-	// right border dark outer line
-	rect.UpperLeftCorner.X = r.LowerRightCorner.X - 1;
-	rect.LowerRightCorner.X = r.LowerRightCorner.X;
-	rect.UpperLeftCorner.Y = r.UpperLeftCorner.Y;
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	if ( !checkClientArea )
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_DARK_SHADOW], rect, clip);
-	}
-
-	// right border bright innner line
-	rect.UpperLeftCorner.X -= 1;
-	rect.LowerRightCorner.X -= 1;
-	rect.UpperLeftCorner.Y += 1;
-	rect.LowerRightCorner.Y -= 1;
-	if ( !checkClientArea )
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_SHADOW], rect, clip);
-	}
-
-	// bottom border dark outer line
-	rect.UpperLeftCorner.X = r.UpperLeftCorner.X;
-	rect.UpperLeftCorner.Y = r.LowerRightCorner.Y - 1;
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	rect.LowerRightCorner.X = r.LowerRightCorner.X;
-	if ( !checkClientArea )
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_DARK_SHADOW], rect, clip);
-	}
-
-	// bottom border bright inner line
-	rect.UpperLeftCorner.X += 1;
-	rect.LowerRightCorner.X -= 1;
-	rect.UpperLeftCorner.Y -= 1;
-	rect.LowerRightCorner.Y -= 1;
-	if ( !checkClientArea )
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_SHADOW], rect, clip);
-	}
-
-	// client area for background
-	rect = r;
-	rect.UpperLeftCorner.X +=1;
-	rect.UpperLeftCorner.Y +=1;
-	rect.LowerRightCorner.X -= 2;
-	rect.LowerRightCorner.Y -= 2;
-	if (checkClientArea)
-	{
-		*checkClientArea = rect;
-	}
-
-	if ( !checkClientArea )
-	{
-		if (!UseGradient)
-		{
-			Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
-		}
-		else
-		{
-			const video::SColor c2 = colors[EGDC_3D_SHADOW];
-			const video::SColor c1 = colors[EGDC_3D_FACE];
-			Driver->draw2DRectangle(rect, c1, c1, c1, c2, clip);
-		}
-	}
-
-	// title bar
-	rect = r;
-	rect.UpperLeftCorner.X += 2;
-	rect.UpperLeftCorner.Y += 2;
-	rect.LowerRightCorner.X -= 2;
-	rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + getSize(EGDS_WINDOW_BUTTON_WIDTH) + 2;
-
-	if (drawTitleBar )
-	{
-		if (checkClientArea)
-		{
-			(*checkClientArea).UpperLeftCorner.Y = rect.LowerRightCorner.Y;
-		}
-		else
-		{
-			// draw title bar
-			//if (!UseGradient)
-			//	Driver->draw2DRectangle(titleBarColor, rect, clip);
-			//else
-			const video::SColor c = titleBarColor.getInterpolated(video::SColor(titleBarColor.getAlpha(),0,0,0), 0.2f);
-			Driver->draw2DRectangle(rect, titleBarColor, c, titleBarColor, c, clip);
-		}
-	}
-
-	return rect;
-}
-// END PATCH
-
-
-//! draws a standard 3d menu pane
-/**	Used for drawing for menus and context menus.
-It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
-EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
-\param element: Pointer to the element which wishes to draw this. This parameter
-is usually not used by ISkin, but can be used for example by more complex
-implementations to find out how to draw the part exactly.
-\param rect: Defining area where to draw.
-\param clip: Clip area.	*/
-// PATCH
-void GUISkin::drawColored3DMenuPane(IGUIElement* element,
-			const core::rect<s32>& r, const core::rect<s32>* clip,
-			const video::SColor* colors)
-{
-	if (!Driver)
-		return;
-
-	if (!colors)
-		colors = Colors;
-
-	core::rect<s32> rect = r;
-
-	// in this skin, this is exactly what non pressed buttons look like,
-	// so we could simply call
-	// draw3DButtonPaneStandard(element, rect, clip);
-	// here.
-	// but if the skin is transparent, this doesn't look that nice. So
-	// We draw it a little bit better, with some more draw2DRectangle calls,
-	// but there aren't that much menus visible anyway.
-
-	rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 1;
-	Driver->draw2DRectangle(colors[EGDC_3D_HIGH_LIGHT], rect, clip);
-
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	rect.LowerRightCorner.X = rect.UpperLeftCorner.X + 1;
-	Driver->draw2DRectangle(colors[EGDC_3D_HIGH_LIGHT], rect, clip);
-
-	rect.UpperLeftCorner.X = r.LowerRightCorner.X - 1;
-	rect.LowerRightCorner.X = r.LowerRightCorner.X;
-	rect.UpperLeftCorner.Y = r.UpperLeftCorner.Y;
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	Driver->draw2DRectangle(colors[EGDC_3D_DARK_SHADOW], rect, clip);
-
-	rect.UpperLeftCorner.X -= 1;
-	rect.LowerRightCorner.X -= 1;
-	rect.UpperLeftCorner.Y += 1;
-	rect.LowerRightCorner.Y -= 1;
-	Driver->draw2DRectangle(colors[EGDC_3D_SHADOW], rect, clip);
-
-	rect.UpperLeftCorner.X = r.UpperLeftCorner.X;
-	rect.UpperLeftCorner.Y = r.LowerRightCorner.Y - 1;
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	rect.LowerRightCorner.X = r.LowerRightCorner.X;
-	Driver->draw2DRectangle(colors[EGDC_3D_DARK_SHADOW], rect, clip);
-
-	rect.UpperLeftCorner.X += 1;
-	rect.LowerRightCorner.X -= 1;
-	rect.UpperLeftCorner.Y -= 1;
-	rect.LowerRightCorner.Y -= 1;
-	Driver->draw2DRectangle(colors[EGDC_3D_SHADOW], rect, clip);
-
-	rect = r;
-	rect.UpperLeftCorner.X +=1;
-	rect.UpperLeftCorner.Y +=1;
-	rect.LowerRightCorner.X -= 2;
-	rect.LowerRightCorner.Y -= 2;
-
-	if (!UseGradient)
-		Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
-	else
-	{
-		const video::SColor c1 = colors[EGDC_3D_FACE];
-		const video::SColor c2 = colors[EGDC_3D_SHADOW];
-		Driver->draw2DRectangle(rect, c1, c1, c2, c2, clip);
-	}
-}
-// END PATCH
-
-
-//! draws a standard 3d tool bar
-/**	Used for drawing for toolbars and menus.
-\param element: Pointer to the element which wishes to draw this. This parameter
-is usually not used by ISkin, but can be used for example by more complex
-implementations to find out how to draw the part exactly.
-\param rect: Defining area where to draw.
-\param clip: Clip area.	*/
-// PATCH
-void GUISkin::drawColored3DToolBar(IGUIElement* element,
-				const core::rect<s32>& r,
-				const core::rect<s32>* clip,
-				const video::SColor* colors)
-{
-	if (!Driver)
-		return;
-
-	if (!colors)
-		colors = Colors;
-
-	core::rect<s32> rect = r;
-
-	rect.UpperLeftCorner.X = r.UpperLeftCorner.X;
-	rect.UpperLeftCorner.Y = r.LowerRightCorner.Y - 1;
-	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
-	rect.LowerRightCorner.X = r.LowerRightCorner.X;
-	Driver->draw2DRectangle(colors[EGDC_3D_SHADOW], rect, clip);
-
-	rect = r;
-	rect.LowerRightCorner.Y -= 1;
-
-	if (!UseGradient)
-	{
-		Driver->draw2DRectangle(colors[EGDC_3D_FACE], rect, clip);
-	}
-	else
-	{
-		const video::SColor c1 = colors[EGDC_3D_FACE];
-		const video::SColor c2 = colors[EGDC_3D_SHADOW];
-		Driver->draw2DRectangle(rect, c1, c1, c2, c2, clip);
-	}
-}
-// END PATCH
 
 //! draws a tab button
 /**	Used for drawing for tab buttons on top of tabs.
@@ -876,14 +566,7 @@ void GUISkin::drawColored3DTabBody(IGUIElement* element, bool border, bool backg
 			//tr.UpperLeftCorner.X += 1;
 		}
 
-		if (!UseGradient)
-			Driver->draw2DRectangle(colors[EGDC_3D_FACE], tr, clip);
-		else
-		{
-			video::SColor c1 = colors[EGDC_3D_FACE];
-			video::SColor c2 = colors[EGDC_3D_SHADOW];
-			Driver->draw2DRectangle(tr, c1, c1, c2, c2, clip);
-		}
+		Driver->draw2DRectangle(colors[EGDC_3D_FACE], tr, clip);
 	}
 }
 // END PATCH

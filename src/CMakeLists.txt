@@ -239,7 +239,6 @@ set(common_SRCS
 	nameidmapping.cpp
 	nodedef.cpp
 	nodemetadata.cpp
-	nodetimer.cpp
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
@@ -248,12 +247,10 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	raycast.cpp
-	remoteplayer.cpp
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
 	settings.cpp
-	staticobject.cpp
 	texture_override.cpp
 	tileanimation.cpp
 	tool.cpp

@@ -35,18 +35,6 @@ class Server;
 class ServerScripting;
 typedef u16 session_t;
 
-
-
-/*
-	ServerEnvironment::m_on_mapblocks_changed_receiver
-*/
-struct OnMapblocksChangedReceiver : public MapEventReceiver {
-	std::unordered_set<v3s16> modified_blocks;
-	bool receiving = false;
-
-	void onMapEditEvent(const MapEditEvent &event) override;
-};
-
 class ServerEnvironment final : public Environment
 {
 public:
@@ -70,11 +58,6 @@ public:
 	void step(f32 dtime);
 
 private:
-
-	/*
-		Internal ActiveObject interface
-		-------------------------------------------
-	*/
 
 	/*
 		Member variables

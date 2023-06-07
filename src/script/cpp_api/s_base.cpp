@@ -388,21 +388,6 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 		getstringfield_default(L, index, "mod_origin", "") : "";
 }
 
-// Creates a new anonymous reference if cobj=NULL or id=0
-void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
-		ServerActiveObject *cobj)
-{
-	if (cobj == NULL || cobj->getId() == 0) {
-		ObjectRef::create(L, cobj);
-	} else {
-		push_objectRef(L, cobj->getId());
-		if (cobj->isGone())
-			warningstream << "ScriptApiBase::objectrefGetOrCreate(): "
-					<< "Pushing ObjectRef to removed/deactivated object"
-					<< ", this is probably a bug." << std::endl;
-	}
-}
-
 Server* ScriptApiBase::getServer()
 {
 	return dynamic_cast<Server *>(m_gamedef);

@@ -73,7 +73,6 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	// Register reference classes (userdata)
 	ItemStackMetaRef::Register(L);
 	LuaItemStack::Register(L);
-	LuaRaycast::Register(L);
 	NodeMetaRef::Register(L);
 	LuaSettings::Register(L);
 	StorageRef::Register(L);

@@ -33,17 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-files.h"
 
-/*
-	OnMapblocksChangedReceiver
-*/
-
-void OnMapblocksChangedReceiver::onMapEditEvent(const MapEditEvent &event)
-{
-	assert(receiving);
-	for (const v3s16 &p : event.modified_blocks) {
-		modified_blocks.insert(p);
-	}
-}
 
 /*
 	ServerEnvironment

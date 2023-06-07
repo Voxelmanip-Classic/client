@@ -275,7 +275,6 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
-	opaque_water                   = g_settings->getBool("opaque_water");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
 	node_texture_size              = std::max<u16>(g_settings->getU16("texture_min_size"), 1);
 	std::string leaves_style_str   = g_settings->get("leaves_style");
@@ -846,15 +845,11 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		solidness = 0;
 		break;
 	case NDT_LIQUID:
-		if (tsettings.opaque_water)
-			alpha = ALPHAMODE_OPAQUE;
 		solidness = 1;
 		is_liquid = true;
 		break;
 	case NDT_FLOWINGLIQUID:
 		solidness = 0;
-		if (tsettings.opaque_water)
-			alpha = ALPHAMODE_OPAQUE;
 		is_liquid = true;
 		break;
 	case NDT_GLASSLIKE:

@@ -35,16 +35,24 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
 menudata = {}
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
-dofile(menupath .. DIR_DELIM .. "game_theme.lua")
 
-dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_about.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
 
 local tabs = {}
 
-tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
-tabs.about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
+dofile(menupath .. DIR_DELIM .. "settings" .. DIR_DELIM .. "init.lua")
 tabs.connect = dofile(menupath .. DIR_DELIM .. "tab_connect.lua")
+
+--------------------------------------------------------------------------------
+
+function header_show()
+	core.set_background('header', defaulttexturedir .. "menu_header.png")
+end
+
+function header_hide()
+	core.set_background('header', "")
+end
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
@@ -56,26 +64,10 @@ end
 
 --------------------------------------------------------------------------------
 local function init_globals()
-	-- Init gamedata
-	gamedata.worldindex = 0
 
-	local gameid = core.settings:get("menu_last_game")
-	local game = gameid and pkgmgr.find_by_gameid(gameid)
-	if not game then
-		gameid = core.settings:get("default_game") or "minetest"
-		game = pkgmgr.find_by_gameid(gameid)
-
-		-- If default_game doesn't exist, fall back to first game installed if one exists.
-		if not game and #pkgmgr.games > 0 then
-			game = pkgmgr.games[1]
-			gameid = game.id
-		end
-
-		core.settings:set("menu_last_game", gameid)
-	end
-
-	mm_game_theme.init()
-	mm_game_theme.reset()
+	core.set_background('background', defaulttexturedir .. "menu_bg.png")
+	core.set_clouds(false)
+	core.set_topleft_text("Voxelmanip Client - In development!")
 
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
@@ -83,22 +75,9 @@ local function init_globals()
 
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tabs.connect)
-	tv_main:add(tabs.settings)
-	tv_main:add(tabs.about)
 
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
-
-	local last_tab = core.settings:get("maintab_LAST")
-	if last_tab and tv_main.current_tab ~= last_tab then
-		tv_main:set_tab(last_tab)
-	end
-
-	-- In case the folder of the last selected game has been deleted,
-	-- display "Minetest" as a header
-	if tv_main.current_tab == "local" and not game then
-		mm_game_theme.reset()
-	end
 
 	ui.set_default("maintab")
 	tv_main:show()

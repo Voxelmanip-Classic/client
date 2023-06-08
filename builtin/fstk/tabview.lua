@@ -128,6 +128,8 @@ end
 --------------------------------------------------------------------------------
 local function tab_header(self)
 
+	if #self.tablist == 1 then return '' end
+
 	local toadd = ""
 
 	for i=1,#self.tablist,1 do

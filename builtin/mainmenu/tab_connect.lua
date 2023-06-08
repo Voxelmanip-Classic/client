@@ -16,6 +16,8 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local function get_formspec(tabview, name, tabdata)
+	header_show()
+
 	local retval = [[
 		label[1,0.75;Log into your Voxelmanip Classic server account.]
 
@@ -28,13 +30,16 @@ local function get_formspec(tabview, name, tabdata)
 		container_end[]
 
 		box[9.75,0;0.15,7.1;#555]
-		container[0,1]
-		label[11.65,0.8;No account?]
-		button[10.7,1.7;4,1.25;btn_register;Register]
-		container_end[]
+		style[lbl_register;border=false]
+		button[10.7,0.8;4,0.9;lbl_register;No account?]
+		button[10.7,2.2;4,1.25;btn_register;Register]
+
+		box[9.9,4;5.6,0.15;#555]
+		button[10.7,5;4,1.25;btn_settings;Settings]
+
 	]]
 
-	return retval, "size[15.5,7.1,false]position[0.5,0.65]real_coordinates[true]"
+	return retval, "size[15.5,7.1,false]position[0.5,0.55]real_coordinates[true]"
 end
 
 --------------------------------------------------------------------------------
@@ -69,18 +74,20 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
+	if fields.btn_settings then
+		local dlg = create_settings_dlg()
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
+		return true
+	end
 
 	return false
-end
-
-local function on_change(type, old_tab, new_tab)
-
 end
 
 return {
 	name = "connect",
 	caption = fgettext("Connect"),
 	cbf_formspec = get_formspec,
-	cbf_button_handler = main_button_handler,
-	on_change = on_change
+	cbf_button_handler = main_button_handler
 }

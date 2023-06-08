@@ -76,7 +76,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount", 0.0f, 100.0f);
+	m_cache_fall_bobbing_amount = 0.03f;
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount", 0.0f, 7.9f);
 	// 45 degrees is the lowest FOV that doesn't cause the server to treat this
 	// as a zoom FOV and load world beyond the set server limits.

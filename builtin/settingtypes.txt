@@ -198,16 +198,6 @@ enable_particles (Digging particles) bool true
 #    Strength of 3D mode parallax.
 3d_paralax_strength (3D mode parallax strength) float 0.025 -0.087 0.087
 
-[**Bobbing]
-
-#    Enable view bobbing and amount of view bobbing.
-#    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
-
-#    Multiplier for fall bobbing.
-#    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
-
 [**Camera]
 
 #    Field of view in degrees.
@@ -226,12 +216,9 @@ display_gamma (Light curve gamma) float 1.0 0.33 3.0
 #    set to the nearest valid value.
 ambient_occlusion_gamma (Ambient occlusion gamma) float 1.8 0.25 4.0
 
-[**Node and Entity Highlighting]
-
-#    Show entity selection boxes
-#    A restart is required after changing this.
-show_entity_selectionbox (Show entity selection boxes) bool false
-
+#    Enable view bobbing and amount of view bobbing.
+#    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
+view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 
 [**Fog]
 
@@ -261,28 +248,6 @@ mip_map (Mipmapping) bool false
 
 #    Use anisotropic filtering when viewing at textures from an angle.
 anisotropic_filter (Anisotropic filtering) bool false
-
-#    Use bilinear filtering when scaling textures.
-bilinear_filter (Bilinear filtering) bool false
-
-#    Use trilinear filtering when scaling textures.
-trilinear_filter (Trilinear filtering) bool false
-
-#    Filtered textures can blend RGB values with fully-transparent neighbors,
-#    which PNG optimizers usually discard, often resulting in dark or
-#    light edges to transparent textures. Apply a filter to clean that up
-#    at texture load time. This is automatically enabled if mipmapping is enabled.
-texture_clean_transparent (Clean transparent textures) bool false
-
-#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
-#    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels. This sets the minimum texture size
-#    for the upscaled textures; higher values look sharper, but require more
-#    memory. Powers of 2 are recommended. This setting is ONLY applied if
-#    bilinear/trilinear/anisotropic filtering is enabled.
-#    This is also used as the base node texture size for world-aligned
-#    texture autoscaling.
-texture_min_size (Minimum texture size) int 64 1 32768
 
 #    Use multi-sample antialiasing (MSAA) to smooth out block edges.
 #    This algorithm smooths out the 3D viewport while keeping the image sharp,
@@ -668,12 +633,6 @@ show_debug (Show debug info) bool false
 #    try reducing it, but don't reduce it to a number below double of targeted
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024 1 65535
-
-#    Compression level to use when sending mapblocks to the client.
-#    -1 - use default compression level
-#     0 - least compression, fastest
-#     9 - best compression, slowest
-map_compression_level_net (Map Compression Level for Network Transfer) int -1 -1 9
 
 [*Misc]
 

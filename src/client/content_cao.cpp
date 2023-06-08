@@ -1190,8 +1190,6 @@ void GenericCAO::updateTextures(std::string mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
-	bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
-	bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
 	bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 
 	m_previous_texture_modifier = m_current_texture_modifier;
@@ -1217,8 +1215,6 @@ void GenericCAO::updateTextures(std::string mod)
 				m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
 			}
 
-			m_spritenode->getMaterial(0).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-			m_spritenode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 			m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 		}
 	}
@@ -1250,13 +1246,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// player models have a res of 64
 				const core::dimension2d<u32> &size = texture->getOriginalSize();
 				const u32 res = std::min(size.Height, size.Width);
-				use_trilinear_filter &= res > 64;
-				use_bilinear_filter &= res > 64;
 
-				m_animated_meshnode->getMaterial(i)
-						.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				m_animated_meshnode->getMaterial(i)
-						.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				m_animated_meshnode->getMaterial(i)
 						.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
@@ -1304,8 +1294,6 @@ void GenericCAO::updateTextures(std::string mod)
 					m_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
 				}
 
-				m_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 		} else if (m_prop.visual == "upright_sprite") {
@@ -1328,8 +1316,6 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
-				material.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				material.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			{
@@ -1356,8 +1342,6 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
-				material.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				material.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			// Set mesh color (only if lighting is disabled)

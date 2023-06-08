@@ -596,8 +596,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 {
 	m_time += dtime;
 
-	static thread_local const float radius =
-			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
+	static thread_local const float radius = 12 * MAP_BLOCKSIZE;
 
 	bool unloaded = false;
 	const core::matrix4 *attached_absolute_pos_rot_matrix = nullptr;

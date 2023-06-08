@@ -94,9 +94,6 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 		case fast_id:
 			key = "fastmove";
 			break;
-		case debug_id:
-			key = "toggle_debug";
-			break;
 		case toggle_chat_id:
 			key = "toggle_chat";
 			break;
@@ -556,7 +553,6 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	m_settingsbar.addButton(fly_id,     L"fly",       "fly_btn.png");
 	m_settingsbar.addButton(noclip_id,  L"noclip",    "noclip_btn.png");
 	m_settingsbar.addButton(fast_id,    L"fast",      "fast_btn.png");
-	m_settingsbar.addButton(debug_id,   L"debug",     "debug_btn.png");
 	m_settingsbar.addButton(camera_id,  L"camera",    "camera_btn.png");
 	m_settingsbar.addButton(range_id,   L"rangeview", "rangeview_btn.png");
 

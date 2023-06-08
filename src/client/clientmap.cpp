@@ -100,8 +100,6 @@ ClientMap::ClientMap(
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
-	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
 	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
 	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
 	m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
@@ -839,10 +837,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			auto &material = buf->getMaterial();
 
 			// Apply filter settings
-			material.setFlag(video::EMF_TRILINEAR_FILTER,
-				m_cache_trilinear_filter);
-			material.setFlag(video::EMF_BILINEAR_FILTER,
-				m_cache_bilinear_filter);
 			material.setFlag(video::EMF_ANISOTROPIC_FILTER,
 				m_cache_anistropic_filter);
 			material.setFlag(video::EMF_WIREFRAME,

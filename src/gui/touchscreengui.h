@@ -49,7 +49,6 @@ typedef enum
 	fly_id,
 	noclip_id,
 	fast_id,
-	debug_id,
 	camera_id,
 	range_id,
 	minimap_id,

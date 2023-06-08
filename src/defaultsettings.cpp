@@ -47,7 +47,6 @@ void set_default_settings()
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("client_mapblock_limit", "7500");
 	settings->setDefault("enable_build_where_you_stand", "false");
-	settings->setDefault("enable_client_modding", "true");
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("occlusion_culler", "bfs");
@@ -188,7 +187,6 @@ void set_default_settings()
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
-	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
@@ -197,8 +195,6 @@ void set_default_settings()
 	settings->setDefault("gui_scaling_filter_txr2img", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("show_entity_selectionbox", "false");
-	settings->setDefault("texture_clean_transparent", "false");
-	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("enable_particles", "true");
@@ -214,8 +210,6 @@ void set_default_settings()
 	settings->setDefault("inventory_items_animations", "true");
 	settings->setDefault("mip_map", "true");
 	settings->setDefault("anisotropic_filter", "true");
-	settings->setDefault("bilinear_filter", "false");
-	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("tone_mapping", "false");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("enable_waving_leaves", "false");
@@ -283,54 +277,19 @@ void set_default_settings()
 	settings->setDefault("mono_font_size", "16");
 	settings->setDefault("chat_font_size", "0"); // Default "font_size"
 
-	// Server
-	settings->setDefault("disable_escape_sequences", "false");
-
 	// Network
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("max_packets_per_iteration","1024");
 	settings->setDefault("port", "30000");
-	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
 
-	settings->setDefault("default_game", "nodecore");
-	settings->setDefault("creative_mode", "false");
-	settings->setDefault("enable_damage", "true");
-	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("deprecated_lua_api_handling", "log");
 
 	settings->setDefault("profiler_print_interval", "0");
-	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
-	// This causes frametime jitter on client side, or does it?
-	settings->setDefault("max_block_send_distance", "12");
-	settings->setDefault("time_speed", "72");
-	settings->setDefault("world_start_time", "6125");
-	settings->setDefault("map_compression_level_disk", "-1");
-	settings->setDefault("map_compression_level_net", "-1");
-	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
-	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("chat_log_level", "error");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
-	settings->setDefault("secure.http_mods", "");
-
-	// Physics
-	settings->setDefault("movement_acceleration_default", "3");
-	settings->setDefault("movement_acceleration_air", "2");
-	settings->setDefault("movement_acceleration_fast", "10");
-	settings->setDefault("movement_speed_walk", "4");
-	settings->setDefault("movement_speed_crouch", "1.35");
-	settings->setDefault("movement_speed_fast", "20");
-	settings->setDefault("movement_speed_climb", "3");
-	settings->setDefault("movement_speed_jump", "6.5");
-	settings->setDefault("movement_liquid_fluidity", "1");
-	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
-	settings->setDefault("movement_liquid_sink", "10");
-	settings->setDefault("movement_gravity", "9.81");
-
-	// Mapgen
-	settings->setDefault("max_block_generate_distance", "10");
 
 	settings->setDefault("screen_dpi", "72");
 	settings->setDefault("display_density_factor", "1");
@@ -353,12 +312,8 @@ void set_default_settings()
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("performance_tradeoffs", "true");
-	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
-	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max_unfocused", "10");
-	settings->setDefault("map_compression_level_disk", "-1");
-	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("viewing_range", "90");
 	settings->setDefault("leaves_style", "simple");

@@ -108,8 +108,6 @@ private:
 
 	bool m_enable_shaders;
 	bool m_anisotropic_filter;
-	bool m_bilinear_filter;
-	bool m_trilinear_filter;
 	/*!
 	 * Stores the colors of the mesh's mesh buffers.
 	 * This does not include lighting.

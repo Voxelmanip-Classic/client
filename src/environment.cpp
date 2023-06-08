@@ -34,7 +34,7 @@ Environment::Environment(IGameDef *gamedef):
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 
-	m_time_of_day = g_settings->getU32("world_start_time");
+	m_time_of_day = 6125;
 	m_time_of_day_f = (float)m_time_of_day / 24000.0f;
 }
 

@@ -201,8 +201,6 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
-	m_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_trilinear_filter = g_settings->getBool("trilinear_filter");
 
 	// If this is the first wield mesh scene node, create a cache
 	// for extrusion meshes (and a cube mesh), otherwise reuse it
@@ -297,14 +295,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		material.MaterialType = m_material_type;
 		material.MaterialTypeParam = 0.5f;
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-		// Enable bi/trilinear filtering only for high resolution textures
-		if (dim.Width > 32) {
-			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
-		} else {
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-		}
+		material.setFlag(video::EMF_BILINEAR_FILTER, false);
+		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		// mipmaps cause "thin black line" artifacts
 		material.setFlag(video::EMF_USE_MIP_MAPS, false);
@@ -466,8 +458,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.MaterialType = m_material_type;
 			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
-			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
 
 		// initialize the color

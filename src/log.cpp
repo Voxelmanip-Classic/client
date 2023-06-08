@@ -372,24 +372,23 @@ void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
 {
 	std::string color;
 
-	if (!g_settings->getBool("disable_escape_sequences")) {
-		switch (lev) {
-		case LL_ERROR: // red
-			color = "\x1b(c@#F00)";
-			break;
-		case LL_WARNING: // yellow
-			color = "\x1b(c@#EE0)";
-			break;
-		case LL_INFO: // grey
-			color = "\x1b(c@#BBB)";
-			break;
-		case LL_VERBOSE: // dark grey
-		case LL_TRACE:
-			color = "\x1b(c@#888)";
-			break;
-		default: break;
-		}
+	switch (lev) {
+	case LL_ERROR: // red
+		color = "\x1b(c@#F00)";
+		break;
+	case LL_WARNING: // yellow
+		color = "\x1b(c@#EE0)";
+		break;
+	case LL_INFO: // grey
+		color = "\x1b(c@#BBB)";
+		break;
+	case LL_VERBOSE: // dark grey
+	case LL_TRACE:
+		color = "\x1b(c@#888)";
+		break;
+	default: break;
 	}
+
 	MutexAutoLock lock(m_buffer_mutex);
 	m_buffer.emplace(color.append(line));
 }

@@ -489,37 +489,6 @@ function pkgmgr.enable_mod(this, toset)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.get_worldconfig(worldpath)
-	local filename = worldpath ..
-				DIR_DELIM .. "world.mt"
-
-	local worldfile = Settings(filename)
-
-	local worldconfig = {}
-	worldconfig.global_mods = {}
-	worldconfig.game_mods = {}
-
-	for key,value in pairs(worldfile:to_table()) do
-		if key == "gameid" then
-			worldconfig.id = value
-		elseif key:sub(0, 9) == "load_mod_" then
-			-- Compatibility: Check against "nil" which was erroneously used
-			-- as value for fresh configured worlds
-			worldconfig.global_mods[key] = value ~= "false" and value ~= "nil"
-				and value
-		else
-			worldconfig[key] = value
-		end
-	end
-
-	--read gamemods
-	local gamespec = pkgmgr.find_by_gameid(worldconfig.id)
-	pkgmgr.get_game_mods(gamespec, worldconfig.game_mods)
-
-	return worldconfig
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 	assert(type(expected_type) == "string")
 	assert(type(path) == "string")

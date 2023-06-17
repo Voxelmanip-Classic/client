@@ -458,6 +458,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.MaterialType = m_material_type;
 			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 		}
 
 		// initialize the color

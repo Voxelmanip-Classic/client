@@ -1215,6 +1215,8 @@ void GenericCAO::updateTextures(std::string mod)
 				m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
 			}
 
+			m_spritenode->getMaterial(0).setFlag(video::EMF_TRILINEAR_FILTER, false);
+			m_spritenode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, false);
 			m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 		}
 	}
@@ -1247,6 +1249,10 @@ void GenericCAO::updateTextures(std::string mod)
 				const core::dimension2d<u32> &size = texture->getOriginalSize();
 				const u32 res = std::min(size.Height, size.Width);
 
+				m_animated_meshnode->getMaterial(i)
+						.setFlag(video::EMF_TRILINEAR_FILTER, false);
+				m_animated_meshnode->getMaterial(i)
+						.setFlag(video::EMF_BILINEAR_FILTER, false);
 				m_animated_meshnode->getMaterial(i)
 						.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
@@ -1294,6 +1300,8 @@ void GenericCAO::updateTextures(std::string mod)
 					m_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
 				}
 
+				m_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, false);
+				m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, false);
 				m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 		} else if (m_prop.visual == "upright_sprite") {
@@ -1316,6 +1324,8 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
+				material.setFlag(video::EMF_TRILINEAR_FILTER, false);
+				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			{
@@ -1342,6 +1352,8 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
+				material.setFlag(video::EMF_TRILINEAR_FILTER, false);
+				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			// Set mesh color (only if lighting is disabled)

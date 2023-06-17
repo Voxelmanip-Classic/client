@@ -837,6 +837,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			auto &material = buf->getMaterial();
 
 			// Apply filter settings
+			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_ANISOTROPIC_FILTER,
 				m_cache_anistropic_filter);
 			material.setFlag(video::EMF_WIREFRAME,

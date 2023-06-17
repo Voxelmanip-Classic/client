@@ -9,7 +9,7 @@ local function playerlist()
 	if tab_held and not list_shown then
 		local huds = {minetest.localplayer:hud_add{
 			hud_elem_type = "image",
-			position = {x = 0.5, y = 0},
+			position = {x = 0.5, y = 0.1},
 			offset = {x = 0, y = 30},
 			text = "^[resize:8x8^[colorize:#222:255^[opacity:200",
 			alignment = {x = 0, y = 1},
@@ -21,7 +21,7 @@ local function playerlist()
 			if i ~= 1 then -- for some reason the first name in the list is a duplicate of the current player
 				table.insert(huds, minetest.localplayer:hud_add{
 					hud_elem_type = "text",
-					position = {x = 0.5, y = 0},
+					position = {x = 0.5, y = 0.1},
 					offset = {x = 0, y = 40 + (i - 2) * 20},
 					text = name,
 					alignment = {x = 0, y = 1},

@@ -67,7 +67,6 @@ local function init_globals()
 
 	core.set_background('background', defaulttexturedir .. "menu_bg.png")
 	core.set_clouds(false)
-	core.set_topleft_text("Voxelmanip Client - In development!")
 
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})

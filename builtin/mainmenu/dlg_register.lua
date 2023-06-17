@@ -18,38 +18,36 @@
 --------------------------------------------------------------------------------
 
 local function register_formspec(dialogdata)
-	local title = fgettext("Register")
-	local buttons_y = 5.5 + 1.3
-	if dialogdata.error then
-		buttons_y = buttons_y + 0.8
-	end
+	local buttons_y = 5.5 + 0.5 + 0.8
 
 	local retval = {
 		"formspec_version[4]",
-		"size[8.25,", tostring(buttons_y + 1.175), "]",
+		"size[10,", tostring(buttons_y + 1.2), "]",
+		"position[0.5,0.55]",
 		"set_focus[", (dialogdata.name ~= "" and "password" or "name"), "]",
-		"label[0.375,0.8;", title, "]",
-		"field[0.375,1.9;7.5,1;name;", core.formspec_escape(fgettext("Name")), ";",
-				core.formspec_escape(dialogdata.name), "]",
-		"pwdfield[0.375,3.6;7.5,1;password;", core.formspec_escape(fgettext("Password")), "]",
-		"pwdfield[0.375,5.3;7.5,1;password_2;", core.formspec_escape(fgettext("Confirm Password")), "]"
+		"label[0.375,0.8;", fgettext("Register"), "]",
+
+		"label[0.375,2;Name]",
+		"field[3.6,1.5;6,1;name;;", core.formspec_escape(dialogdata.name), "]",
+		"label[0.375,3.5;Password]",
+		"pwdfield[3.6,3;6,1;password;]",
+		"label[0.375,5;Confirm Password]",
+		"pwdfield[3.6,4.5;6,1;password_2;]",
+
+		"container[0.375,", tostring(buttons_y), "]",
+		"button[0,0;3,1;dlg_register_confirm;", fgettext("Register"), "]",
+		"button[6.25,0;3,1;dlg_register_cancel;", fgettext("Cancel"), "]",
+		"container_end[]",
 	}
 
 	if dialogdata.error then
 		table.insert_all(retval, {
-			"box[0.375,", tostring(buttons_y - 0.9), ";7.5,0.6;darkred]",
-			"label[0.625,", tostring(buttons_y - 0.6), ";", core.formspec_escape(dialogdata.error), "]",
+		"box[0.375,", tostring(buttons_y - 0.9), ";9.25,0.6;darkred]",
+		"label[0.625,", tostring(buttons_y - 0.6), ";", core.formspec_escape(dialogdata.error or ""), "]",
 		})
 	end
 
-	table.insert_all(retval, {
-		"container[0.375,", tostring(buttons_y), "]",
-		"button[0,0;2.5,0.8;dlg_register_confirm;", fgettext("Register"), "]",
-		"button[5,0;2.5,0.8;dlg_register_cancel;", fgettext("Cancel"), "]",
-		"container_end[]",
-	})
-
-	return table.concat(retval, "")
+	return table.concat(retval)
 end
 
 --------------------------------------------------------------------------------
@@ -59,13 +57,16 @@ local function register_buttonhandler(this, fields)
 
 	if fields.dlg_register_confirm or fields.key_enter then
 		if fields.name == "" then
-			this.data.error = fgettext("Missing name")
-			return true
+			this.data.error = "Missing name"
+		elseif fields.password ~= fields.password_2 then
+			this.data.error = "Passwords do not match"
+		elseif fields.password == "" then
+			this.data.error = "Please enter a password"
+		elseif string.len(fields.password) < 6 then
+			this.data.error = "Password needs to be longer than 6 characters"
 		end
-		if fields.password ~= fields.password_2 then
-			this.data.error = fgettext("Passwords do not match")
-			return true
-		end
+
+		if this.data.error then return true end
 
 		gamedata.playername = fields.name
 		gamedata.password   = fields.password

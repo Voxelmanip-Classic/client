@@ -260,14 +260,14 @@ void set_default_settings()
 	settings->setDefault("joystick_deadzone", "2048");
 
 	// General font settings
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
-	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
-	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
-	settings->setDefault("font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Archivo-Regular.ttf"));
+	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Archivo-Regular.ttf"));
+	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Archivo-Bold.ttf"));
+	settings->setDefault("font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Archivo-Bold.ttf"));
 	settings->setDefault("font_bold", "false");
 	settings->setDefault("font_italic", "false");
 	settings->setDefault("font_shadow", "1");
-	settings->setDefault("font_shadow_alpha", "127");
+	settings->setDefault("font_shadow_alpha", "255");
 	settings->setDefault("font_size_divisible_by", "1");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
 	settings->setDefault("mono_font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
@@ -276,7 +276,7 @@ void set_default_settings()
 	settings->setDefault("mono_font_size_divisible_by", "1");
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
 
-	settings->setDefault("font_size", "16");
+	settings->setDefault("font_size", "18");
 	settings->setDefault("mono_font_size", "16");
 	settings->setDefault("chat_font_size", "0"); // Default "font_size"
 

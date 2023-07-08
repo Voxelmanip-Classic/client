@@ -553,8 +553,6 @@ client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
 font_bold (Font bold by default) bool false
 
-font_italic (Font italic by default) bool false
-
 #    Shadow offset (in pixels) of the default font. If 0, then shadow will not be drawn.
 font_shadow (Font shadow) int 1 0 65535
 
@@ -575,8 +573,6 @@ font_size_divisible_by (Font size divisible by) int 1 1
 font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
 
 font_path_bold (Bold font path) filepath fonts/Arimo-Regular.ttf
-font_path_italic (Italic font path) filepath fonts/Arimo-Regular.ttf
-font_path_bold_italic (Bold and italic font path) filepath fonts/Arimo-Regular.ttf
 
 #    Font size of the monospace font where 1 unit = 1 pixel at 96 DPI
 mono_font_size (Monospace font size) int 16 5 72
@@ -592,12 +588,6 @@ mono_font_size_divisible_by (Monospace font size divisible by) int 1 1
 mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
 
 mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Regular.ttf
-mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Regular.ttf
-mono_font_path_bold_italic (Bold and italic monospace font path) filepath fonts/Cousine-Regular.ttf
-
-#    Path of the fallback font. Must be a TrueType font.
-#    This font will be used for certain languages or if the default font is unavailable.
-fallback_font_path (Fallback font path) filepath fonts/Arimo-Regular.ttf
 
 [*Lighting]
 

@@ -355,7 +355,7 @@ local function get_formspec(dialogdata)
 		-- HACK: this is needed to allow resubmitting the same formspec
 		formspec_show_hack and " " or "",
 
-		"box[0,0;", tostring(tabsize.width), ",", tostring(tabsize.height), ";#000000b0]",
+		"box[0,0;", tostring(tabsize.width), ",", tostring(tabsize.height), ";#000000d0]",
 
 		"button[0.5,", tostring(tabsize.height), ";4.5,0.9;back;", fgettext("Back"), "]",
 
@@ -447,15 +447,15 @@ local function get_formspec(dialogdata)
 					fgettext("Reset setting to default ($1)", tostring(default)) or
 					fgettext("Reset setting to default")
 
-			fs[#fs + 1] = ("image_button[%f,%f;0.5,0.5;%s;%s;]"):format(
-					right_pane_width - 1.4, info_reset_y, reset_icon_path, "reset_" .. i)
+			fs[#fs + 1] = ("image_button[%f,%f;0.6,0.6;%s;%s;]"):format(
+					right_pane_width - 1.7, info_reset_y, reset_icon_path, "reset_" .. i)
 			fs[#fs + 1] = ("tooltip[%s;%s]"):format("reset_" .. i, reset_tooltip)
 		end
 
 		if show_info then
-			local info_x = right_pane_width - 0.75
-			fs[#fs + 1] = ("image[%f,%f;0.5,0.5;%s]"):format(info_x, info_reset_y, info_icon_path)
-			fs[#fs + 1] = ("tooltip[%f,%f;0.5,0.5;%s]"):format(info_x, info_reset_y, fgettext(comp.info_text))
+			local info_x = right_pane_width - 0.9
+			fs[#fs + 1] = ("image[%f,%f;0.6,0.6;%s]"):format(info_x, info_reset_y, info_icon_path)
+			fs[#fs + 1] = ("tooltip[%f,%f;0.6,0.6;%s]"):format(info_x, info_reset_y, fgettext(comp.info_text))
 		end
 
 		fs[#fs + 1] = "style_type[image_button;border=;padding=]"
@@ -466,7 +466,7 @@ local function get_formspec(dialogdata)
 			if PLATFORM == "Android" then
 				y = y + used_h + 0.5
 			else
-				y = y + used_h + 0.25
+				y = y + used_h + 0.5
 			end
 
 		end

@@ -39,7 +39,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	]]
 
-	return retval, "size[15.5,7.1,false]position[0.5,0.55]real_coordinates[true]"
+	return retval, "size[15.5,7.1,false]position[0.5,0.55]padding[0,0]real_coordinates[true]"
 end
 
 --------------------------------------------------------------------------------

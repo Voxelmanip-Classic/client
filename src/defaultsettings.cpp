@@ -310,8 +310,6 @@ void set_default_settings()
 #endif
 	// Altered settings for Android
 #ifdef __ANDROID__
-	settings->setDefault("screen_w", "0");
-	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("performance_tradeoffs", "true");

@@ -117,10 +117,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 600 * s, 40 * s);
 		rect += topleft + v2s32(25 * s, 3 * s);
-		//gui::IGUIStaticText *t =
-		Environment->addStaticText(wstrgettext("Keybindings.").c_str(),
+		Environment->addStaticText(wstrgettext("Keybindings:").c_str(),
 								   rect, false, true, this, -1);
-		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
 
 	// Build buttons
@@ -212,7 +210,7 @@ void GUIKeyChangeMenu::drawMenu()
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	video::SColor bgcolor(140, 0, 0, 0);
+	video::SColor bgcolor(180, 0, 0, 0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	gui::IGUIElement::draw();

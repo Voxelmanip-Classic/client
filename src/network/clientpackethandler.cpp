@@ -179,7 +179,7 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 {
 	ChatMessage *chatMessage = new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-			L"Password change denied. Password NOT changed.");
+			L"Incorrect password.");
 	pushToChatQueue(chatMessage);
 	// reset everything and be sad
 	deleteAuthData();

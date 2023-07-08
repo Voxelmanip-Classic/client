@@ -32,7 +32,6 @@ public:
 	virtual void exitToOS() = 0;
 	virtual void keyConfig() = 0;
 	virtual void disconnect() = 0;
-	virtual void changePassword() = 0;
 	virtual void changeVolume() = 0;
 
 	virtual void signalKeyConfigChange() = 0;
@@ -115,11 +114,6 @@ public:
 		disconnect_requested = true;
 	}
 
-	virtual void changePassword()
-	{
-		changepassword_requested = true;
-	}
-
 	virtual void changeVolume()
 	{
 		changevolume_requested = true;
@@ -137,7 +131,6 @@ public:
 
 
 	bool disconnect_requested = false;
-	bool changepassword_requested = false;
 	bool changevolume_requested = false;
 	bool keyconfig_requested = false;
 	bool shutdown_requested = false;

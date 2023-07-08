@@ -3,8 +3,9 @@ core.register_on_esc(function()
 	local fs = {[[
 		formspec_version[4]
 		size[6,8]
+		position[0.5,0.525]
 		no_prepend[]
-		bgcolor[#320000b4;true]
+		bgcolor[;true;#000000b0]
 	]]}
 
 	local btns = {
@@ -17,9 +18,10 @@ core.register_on_esc(function()
 	end
 
 	table.insert(btns, { "btn_exit_menu", "Exit to Menu" })
+	--table.insert(btns, { "btn_exit_os", "Exit to OS" })
 
 	for i = 1, #btns, 1 do
-		table.insert(fs, ("button[1,%s;4,1;%s;%s]"):format(i*1.5, btns[i][1], btns[i][2]))
+		table.insert(fs, ("button[1,%s;4,1;%s;%s]"):format((i-1)*1.5, btns[i][1], btns[i][2]))
 	end
 
 	core.show_formspec("builtin:esc", table.concat(fs))
@@ -28,11 +30,12 @@ end)
 core.register_on_formspec_input(function(formname, fields)
 	if formname ~= "builtin:esc" then return end
 
-	core.close_formspec()
-
 	if fields.btn_change_password then
-		core.change_password()
+		dlg_change_password()
+		return
 	end
+
+	core.close_formspec()
 
 	if fields.btn_key_config then
 		core.show_keys_menu()

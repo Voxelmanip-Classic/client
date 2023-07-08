@@ -365,9 +365,15 @@ int ModApiClient::l_show_keys_menu(lua_State *L)
 	return 1;
 }
 
-int ModApiClient::l_change_password(lua_State *L)
+int ModApiClient::l_send_change_password(lua_State *L)
 {
-	g_gamecallback->changePassword();
+	Client *client = getClient(L);
+
+	std::string old_password = std::string(luaL_checkstring(L, 1));
+	std::string new_password = std::string(luaL_checkstring(L, 2));
+
+	client->sendChangePassword(old_password, new_password);
+
 	return 1;
 }
 
@@ -397,5 +403,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_csm_restrictions);
 
 	API_FCT(show_keys_menu);
-	API_FCT(change_password);
+	API_FCT(send_change_password);
 }

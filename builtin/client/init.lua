@@ -14,3 +14,4 @@ assert(loadfile(commonpath .. "item_s.lua"))({}) -- Just for push/read node func
 
 dofile(clientpath .. "tab_playerlist.lua")
 dofile(clientpath .. "esc.lua")
+dofile(clientpath .. "change_password.lua")

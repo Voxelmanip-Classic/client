@@ -46,7 +46,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiChatConsole.h"
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
-#include "gui/guiPasswordChange.h"
 #include "gui/mainmenumanager.h"
 #include "gui/profilergraph.h"
 #include "mapblock.h"
@@ -1716,12 +1715,6 @@ inline bool Game::handleCallbacks()
 	if (g_gamecallback->disconnect_requested) {
 		g_gamecallback->disconnect_requested = false;
 		return false;
-	}
-
-	if (g_gamecallback->changepassword_requested) {
-		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client, texture_src))->drop();
-		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {

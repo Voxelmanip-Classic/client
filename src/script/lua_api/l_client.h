@@ -99,8 +99,8 @@ private:
 	// show_keys_menu()
 	static int l_show_keys_menu(lua_State *L);
 
-	// change_password()
-	static int l_change_password(lua_State *L);
+	// send_change_password()
+	static int l_send_change_password(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

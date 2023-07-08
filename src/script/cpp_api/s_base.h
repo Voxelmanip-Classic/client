@@ -58,7 +58,7 @@ extern "C" {
 	setOriginFromTableRaw(index, __FUNCTION__)
 
 enum class ScriptingType: u8 {
-	Async,
+	Async, // either mainmenu (client) or ingame (server)
 	Client,
 	MainMenu,
 	Server
@@ -117,7 +117,6 @@ protected:
 	friend class ObjectRef;
 	friend class NodeMetaRef;
 	friend class ModApiBase;
-	friend class ModApiEnvMod;
 
 	/*
 		Subtle edge case with coroutines: If for whatever reason you have a

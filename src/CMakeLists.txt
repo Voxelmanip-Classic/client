@@ -347,7 +347,6 @@ if(BUILD_CLIENT)
 	include_directories(SYSTEM
 		${FREETYPE_INCLUDE_DIRS}
 		${SOUND_INCLUDE_DIRS}
-		${X11_INCLUDE_DIR}
 	)
 endif()
 
@@ -370,7 +369,6 @@ if(BUILD_CLIENT)
 		${ZLIB_LIBRARIES}
 		IrrlichtMt::IrrlichtMt
 		${ZSTD_LIBRARY}
-		${X11_LIBRARIES}
 		${SOUND_LIBRARIES}
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
@@ -546,7 +544,7 @@ if(MSVC)
 else()
 	# GCC or compatible compilers such as Clang
 	set(WARNING_FLAGS "-Wall -Wextra")
-	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter -Wno-implicit-fallthrough")
+	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter")
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()
@@ -666,7 +664,7 @@ if(WIN32)
 	endif()
 endif()
 
-if(BUILD_CLIENT)
+if(BUILD_CLIENT AND NOT ANDROID)
 	install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION ${BINDIR}
 		LIBRARY DESTINATION ${BINDIR}
@@ -692,7 +690,7 @@ if(BUILD_CLIENT)
 
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
 			FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
-endif(BUILD_CLIENT)
+endif()
 
 if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})

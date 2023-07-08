@@ -13,10 +13,10 @@ endif()
 project(voxelmanip_classic)
 set(PROJECT_NAME_CAPITALIZED "Voxelmanip Classic")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-set(GCC_MINIMUM_VERSION "5.1")
-set(CLANG_MINIMUM_VERSION "3.5")
+set(GCC_MINIMUM_VERSION "7.5")
+set(CLANG_MINIMUM_VERSION "6.0")
 
 # You should not need to edit these manually, use util/bump_version.sh
 set(VERSION_MAJOR 5)

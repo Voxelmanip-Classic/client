@@ -53,7 +53,7 @@ struct ItemStack;
 struct ItemDefinition;
 struct ToolCapabilities;
 struct ObjectProperties;
-struct SimpleSoundSpec;
+struct SoundSpec;
 class Inventory;
 class InventoryList;
 struct NodeBox;
@@ -66,6 +66,22 @@ struct EnumString;
 class Schematic;
 class ServerActiveObject;
 struct collisionMoveResult;
+
+// Combines the pure sound (SoundSpec) with positional information
+struct ServerPlayingSound
+{
+	SoundLocation type = SoundLocation::Local;
+
+	float gain = 1.0f; // for amplification of the base sound
+	float max_hear_distance = 32 * BS;
+	v3f pos;
+	u16 object = 0;
+	std::string to_player;
+	std::string exclude_player;
+
+	SoundSpec spec;
+
+};
 
 extern struct EnumString es_TileAnimationType[];
 
@@ -80,8 +96,9 @@ void               push_box                  (lua_State *L,
 void               push_palette              (lua_State *L,
                                               const std::vector<video::SColor> *palette);
 
-void               read_soundspec            (lua_State *L, int index,
-                                              SimpleSoundSpec &spec);
+void               read_simplesoundspec      (lua_State *L, int index,
+                                              SoundSpec &spec);
+
 NodeBox            read_nodebox              (lua_State *L, int index);
 
 ItemStack          read_item                 (lua_State *L, int index, IItemDefManager *idef);
@@ -124,8 +141,8 @@ std::vector<ItemStack> read_items            (lua_State *L,
                                               int index,
                                               IGameDef* gdef);
 
-void               push_soundspec            (lua_State *L,
-                                              const SimpleSoundSpec &spec);
+void               push_simplesoundspec      (lua_State *L,
+                                              const SoundSpec &spec);
 
 bool               string_to_enum            (const EnumString *spec,
                                               int &result,

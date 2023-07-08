@@ -563,9 +563,8 @@ const luaL_Reg LuaItemStack::methods[] = {
 	ItemDefinition
 */
 
-
 // get_content_id(name)
-int ModApiItemMod::l_get_content_id(lua_State *L)
+int ModApiItem::l_get_content_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -591,7 +590,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 }
 
 // get_name_from_content_id(name)
-int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
+int ModApiItem::l_get_name_from_content_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	content_t c = luaL_checkint(L, 1);
@@ -603,7 +602,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 	return 1; /* number of results */
 }
 
-void ModApiItemMod::InitializeClient(lua_State *L, int top)
+void ModApiItem::InitializeClient(lua_State *L, int top)
 {
 	// all read-only functions
 	API_FCT(get_content_id);

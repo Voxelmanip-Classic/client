@@ -117,10 +117,10 @@ void ItemDefinition::reset()
 	delete tool_capabilities;
 	tool_capabilities = NULL;
 	groups.clear();
-	sound_place = SimpleSoundSpec();
-	sound_place_failed = SimpleSoundSpec();
-	sound_use = SimpleSoundSpec();
-	sound_use_air = SimpleSoundSpec();
+	sound_place = SoundSpec();
+	sound_place_failed = SoundSpec();
+	sound_use = SoundSpec();
+	sound_use_air = SoundSpec();
 	range = -1;
 	node_placement_prediction.clear();
 	place_param2 = 0;
@@ -158,8 +158,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString16(node_placement_prediction);
 
 	// Version from ContentFeatures::serialize to keep in sync
-	sound_place.serialize(os, protocol_version);
-	sound_place_failed.serialize(os, protocol_version);
+	sound_place.serializeSimple(os, protocol_version);
+	sound_place_failed.serializeSimple(os, protocol_version);
 
 	writeF32(os, range);
 	os << serializeString16(palette_image);
@@ -171,8 +171,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	os << place_param2;
 
-	sound_use.serialize(os, protocol_version);
-	sound_use_air.serialize(os, protocol_version);
+	sound_use.serializeSimple(os, protocol_version);
+	sound_use_air.serializeSimple(os, protocol_version);
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -212,8 +212,8 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 	node_placement_prediction = deSerializeString16(is);
 
-	sound_place.deSerialize(is, protocol_version);
-	sound_place_failed.deSerialize(is, protocol_version);
+	sound_place.deSerializeSimple(is, protocol_version);
+	sound_place_failed.deSerializeSimple(is, protocol_version);
 
 	range = readF32(is);
 	palette_image = deSerializeString16(is);
@@ -228,8 +228,8 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		place_param2 = readU8(is); // 0 if missing
 
-		sound_use.deSerialize(is, protocol_version);
-		sound_use_air.deSerialize(is, protocol_version);
+		sound_use.deSerializeSimple(is, protocol_version);
+		sound_use_air.deSerializeSimple(is, protocol_version);
 	} catch(SerializationError &e) {};
 }
 
@@ -332,8 +332,8 @@ public:
 		if (!inventory_overlay.empty())
 			cache_key += ":" + inventory_overlay;
 
-		infostream << "Lazily creating item texture and mesh for \""
-				<< cache_key << "\""<<std::endl;
+		//infostream << "Lazily creating item texture and mesh for \""
+		//		<< cache_key << "\""<<std::endl;
 
 		// Skip if already in cache
 		auto it = m_clientcached.find(cache_key);
@@ -441,7 +441,7 @@ public:
 
 		ItemDefinition* hand_def = new ItemDefinition;
 		hand_def->name.clear();
-		hand_def->wield_image = "wieldhand.png";
+		hand_def->wield_image = "blank.png";
 		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
 

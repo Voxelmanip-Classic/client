@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_mainmenu.h"
-#include "lua_api/l_sound.h"
+#include "lua_api/l_mainmenu_sound.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
 #include "log.h"
@@ -65,7 +65,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
-	ModApiSound::Initialize(L, top);
+	ModApiMainMenuSound::Initialize(L, top);
 
 	asyncEngine.registerStateInitializer(registerLuaClasses);
 	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);
@@ -80,6 +80,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
 {
 	LuaSettings::Register(L);
+	MainMenuSoundHandle::Register(L);
 }
 
 /******************************************************************************/

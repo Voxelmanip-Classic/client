@@ -152,6 +152,13 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	lua_pushstring(m_luastack, porting::getPlatformName());
 	lua_setglobal(m_luastack, "PLATFORM");
 
+#ifdef HAVE_TOUCHSCREENGUI
+	lua_pushboolean(m_luastack, true);
+#else
+	lua_pushboolean(m_luastack, false);
+#endif
+	lua_setglobal(m_luastack, "TOUCHSCREEN_GUI");
+
 	// Make sure Lua uses the right locale
 	setlocale(LC_NUMERIC, "C");
 }
@@ -390,8 +397,13 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 
 Server* ScriptApiBase::getServer()
 {
+	// Since the gamedef is the server it's still possible to retrieve it in
+	// e.g. the async environment, but this isn't meant to happen.
+	// TODO: still needs work
+	//assert(getType() == ScriptingType::Server);
 	return dynamic_cast<Server *>(m_gamedef);
 }
+
 #ifndef SERVER
 Client* ScriptApiBase::getClient()
 {

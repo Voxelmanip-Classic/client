@@ -112,7 +112,7 @@ const luaL_Reg LuaRaycast::methods[] =
 // get_node_light(pos, timeofday)
 // pos = {x=num, y=num, z=num}
 // timeofday: nil = current time, 0 = night, 0.5 = day
-int ModApiEnvMod::l_get_node_light(lua_State *L)
+int ModApiEnv::l_get_node_light(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -137,7 +137,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 
 // get_node_max_level(pos)
 // pos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_get_node_max_level(lua_State *L)
+int ModApiEnv::l_get_node_max_level(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -149,7 +149,7 @@ int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 
 // get_node_level(pos)
 // pos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_get_node_level(lua_State *L)
+int ModApiEnv::l_get_node_level(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -160,7 +160,7 @@ int ModApiEnvMod::l_get_node_level(lua_State *L)
 }
 
 // find_nodes_with_meta(pos1, pos2)
-int ModApiEnvMod::l_find_nodes_with_meta(lua_State *L)
+int ModApiEnv::l_find_nodes_with_meta(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -177,7 +177,7 @@ int ModApiEnvMod::l_find_nodes_with_meta(lua_State *L)
 }
 
 // get_timeofday() -> 0...1
-int ModApiEnvMod::l_get_timeofday(lua_State *L)
+int ModApiEnv::l_get_timeofday(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -188,7 +188,7 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 	return 1;
 }
 
-void ModApiEnvMod::collectNodeIds(lua_State *L, int idx, const NodeDefManager *ndef,
+void ModApiEnv::collectNodeIds(lua_State *L, int idx, const NodeDefManager *ndef,
 	std::vector<content_t> &filter)
 {
 	if (lua_istable(L, idx)) {
@@ -201,13 +201,31 @@ void ModApiEnvMod::collectNodeIds(lua_State *L, int idx, const NodeDefManager *n
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, idx)) {
-		ndef->getIds(readParam<std::string>(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, idx), filter);
 	}
+}
+
+template <typename F>
+int ModApiEnvBase::findNodeNear(lua_State *L, v3s16 pos, int radius,
+		const std::vector<content_t> &filter, int start_radius, F &&getNode)
+{
+	for (int d = start_radius; d <= radius; d++) {
+		const std::vector<v3s16> &list = FacePositionCache::getFacePositions(d);
+		for (const v3s16 &i : list) {
+			v3s16 p = pos + i;
+			content_t c = getNode(p).getContent();
+			if (CONTAINS(filter, c)) {
+				push_v3s16(L, p);
+				return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 // find_node_near(pos, radius, nodenames, [search_center]) -> pos or nil
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-int ModApiEnvMod::l_find_node_near(lua_State *L)
+int ModApiEnv::l_find_node_near(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -227,21 +245,13 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		radius = client->CSMClampRadius(pos, radius);
 #endif
 
-	for (int d = start_radius; d <= radius; d++) {
-		const std::vector<v3s16> &list = FacePositionCache::getFacePositions(d);
-		for (const v3s16 &i : list) {
-			v3s16 p = pos + i;
-			content_t c = map.getNode(p).getContent();
-			if (CONTAINS(filter, c)) {
-				push_v3s16(L, p);
-				return 1;
-			}
-		}
-	}
-	return 0;
+	auto getNode = [&map] (v3s16 p) -> MapNode {
+		return map.getNode(p);
+	};
+	return findNodeNear(L, pos, radius, filter, start_radius, getNode);
 }
 
-static void checkArea(v3s16 &minp, v3s16 &maxp)
+void ModApiEnvBase::checkArea(v3s16 &minp, v3s16 &maxp)
 {
 	auto volume = VoxelArea(minp, maxp).getVolume();
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
@@ -256,32 +266,10 @@ static void checkArea(v3s16 &minp, v3s16 &maxp)
 #undef CLAMP
 }
 
-// find_nodes_in_area(minp, maxp, nodenames, [grouped])
-int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
+template <typename F>
+int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
+		const std::vector<content_t> &filter, bool grouped, F &&iterate)
 {
-	GET_PLAIN_ENV_PTR;
-
-	v3s16 minp = read_v3s16(L, 1);
-	v3s16 maxp = read_v3s16(L, 2);
-	sortBoxVerticies(minp, maxp);
-
-	const NodeDefManager *ndef = env->getGameDef()->ndef();
-	Map &map = env->getMap();
-
-#ifndef SERVER
-	if (Client *client = getClient(L)) {
-		minp = client->CSMClampPos(minp);
-		maxp = client->CSMClampPos(maxp);
-	}
-#endif
-
-	checkArea(minp, maxp);
-
-	std::vector<content_t> filter;
-	collectNodeIds(L, 3, ndef, filter);
-
-	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
-
 	if (grouped) {
 		// create the table we will be returning
 		lua_createtable(L, 0, filter.size());
@@ -293,7 +281,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		for (u32 i = 0; i < filter.size(); i++)
 			lua_newtable(L);
 
-		map.forEachNodeInArea(minp, maxp, [&](v3s16 p, MapNode n) -> bool {
+		iterate([&](v3s16 p, MapNode n) -> bool {
 			content_t c = n.getContent();
 
 			auto it = std::find(filter.begin(), filter.end(), c);
@@ -327,7 +315,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 
 		lua_newtable(L);
 		u32 i = 0;
-		map.forEachNodeInArea(minp, maxp, [&](v3s16 p, MapNode n) -> bool {
+		iterate([&](v3s16 p, MapNode n) -> bool {
 			content_t c = n.getContent();
 
 			auto it = std::find(filter.begin(), filter.end(), c);
@@ -351,17 +339,9 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	}
 }
 
-// find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
-// nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
-int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
+// find_nodes_in_area(minp, maxp, nodenames, [grouped])
+int ModApiEnv::l_find_nodes_in_area(lua_State *L)
 {
-	/* Note: A similar but generalized (and therefore slower) version of this
-	 * function could be created -- e.g. find_nodes_in_area_under -- which
-	 * would accept a node name (or ID?) or list of names that the "above node"
-	 * should be.
-	 * TODO
-	 */
-
 	GET_PLAIN_ENV_PTR;
 
 	v3s16 minp = read_v3s16(L, 1);
@@ -383,16 +363,28 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	std::vector<content_t> filter;
 	collectNodeIds(L, 3, ndef, filter);
 
+	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
+
+	auto iterate = [&] (auto &&callback) {
+		map.forEachNodeInArea(minp, maxp, callback);
+	};
+	return findNodesInArea(L, ndef, filter, grouped, iterate);
+}
+
+template <typename F>
+int ModApiEnvBase::findNodesInAreaUnderAir(lua_State *L, v3s16 minp, v3s16 maxp,
+	const std::vector<content_t> &filter, F &&getNode)
+{
 	lua_newtable(L);
 	u32 i = 0;
 	v3s16 p;
 	for (p.X = minp.X; p.X <= maxp.X; p.X++)
 	for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
 		p.Y = minp.Y;
-		content_t c = map.getNode(p).getContent();
+		content_t c = getNode(p).getContent();
 		for (; p.Y <= maxp.Y; p.Y++) {
 			v3s16 psurf(p.X, p.Y + 1, p.Z);
-			content_t csurf = map.getNode(psurf).getContent();
+			content_t csurf = getNode(psurf).getContent();
 			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
 					CONTAINS(filter, c)) {
 				push_v3s16(L, p);
@@ -404,8 +396,41 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	return 1;
 }
 
+// find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
+// nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
+int ModApiEnv::l_find_nodes_in_area_under_air(lua_State *L)
+{
+	/* TODO: A similar but generalized (and therefore slower) version of this
+	 * function could be created -- e.g. find_nodes_in_area_under -- which
+	 * would accept a node name or list of names that the "above node" should be.
+	 */
+	GET_PLAIN_ENV_PTR;
+
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	Map &map = env->getMap();
+
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
+	}
+
+	checkArea(minp, maxp);
+
+	std::vector<content_t> filter;
+	collectNodeIds(L, 3, ndef, filter);
+
+	auto getNode = [&map] (v3s16 p) -> MapNode {
+		return map.getNode(p);
+	};
+	return findNodesInAreaUnderAir(L, minp, maxp, filter, getNode);
+}
+
 // line_of_sight(pos1, pos2) -> true/false, pos
-int ModApiEnvMod::l_line_of_sight(lua_State *L)
+int ModApiEnv::l_line_of_sight(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
@@ -425,12 +450,12 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	return 1;
 }
 
-int ModApiEnvMod::l_raycast(lua_State *L)
+int ModApiEnv::l_raycast(lua_State *L)
 {
 	return LuaRaycast::create_object(L);
 }
 
-void ModApiEnvMod::Initialize(lua_State *L, int top)
+void ModApiEnv::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_node_light);
 	API_FCT(get_timeofday);
@@ -444,7 +469,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(raycast);
 }
 
-void ModApiEnvMod::InitializeClient(lua_State *L, int top)
+void ModApiEnv::InitializeClient(lua_State *L, int top)
 {
 	API_FCT(get_node_light);
 	API_FCT(get_timeofday);

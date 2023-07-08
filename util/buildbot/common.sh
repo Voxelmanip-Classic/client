@@ -1,9 +1,6 @@
 CORE_GIT=https://github.com/rollerozxa/rollertest
 CORE_BRANCH=master
 CORE_NAME=minetest
-GAME_GIT=https://github.com/minetest/minetest_game
-GAME_BRANCH=master
-GAME_NAME=minetest_game
 
 libpng_version=1.6.39
 ogg_version=1.3.5
@@ -42,11 +39,6 @@ get_sources () {
 	sourcedir=$PWD/$CORE_NAME
 	[ -d $CORE_NAME ] && { pushd $CORE_NAME; git pull --ff-only; popd; } || \
 		git clone -b $CORE_BRANCH $CORE_GIT $CORE_NAME
-	if [ -z "$NO_MINETEST_GAME" ]; then
-		cd $sourcedir
-		[ -d games/$GAME_NAME ] && { pushd games/$GAME_NAME; git pull --ff-only; popd; } || \
-			git clone -b $GAME_BRANCH $GAME_GIT games/$GAME_NAME
-	fi
 }
 
 # sets $runtime_dlls

@@ -1099,43 +1099,53 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 	return out;
 }
 
+/*
+	Replaces the smaller of the two images with one upscaled to match the
+	dimensions of the other.
+	Ensure no other references to these images are being held, as one may
+	get dropped and switched with a new image.
+*/
+void upscaleImagesToMatchLargest(video::IImage *& img1,
+	video::IImage *& img2)
+{
+	core::dimension2d<u32> dim1 = img1->getDimension();
+	core::dimension2d<u32> dim2 = img2->getDimension();
+
+	if (dim1 == dim2) {
+		// image dimensions match, no scaling required
+
+	}
+	else if (dim1.Width * dim1.Height < dim2.Width * dim2.Height) {
+		// Upscale img1
+		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
+			createImage(video::ECF_A8R8G8B8, dim2);
+		img1->copyToScaling(scaled_image);
+		img1->drop();
+		img1 = scaled_image;
+
+	} else {
+		// Upscale img2
+		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
+			createImage(video::ECF_A8R8G8B8, dim1);
+		img2->copyToScaling(scaled_image);
+		img2->drop();
+		img2 = scaled_image;
+	}
+}
+
 void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 {
 	//infostream<<"Blitting "<<part_of_name<<" on base"<<std::endl;
+	upscaleImagesToMatchLargest(dst, src);
+
 	// Size of the copied area
-	core::dimension2d<u32> dim = src->getDimension();
-	//core::dimension2d<u32> dim(16,16);
+	core::dimension2d<u32> dim_dst = dst->getDimension();
 	// Position to copy the blitted to in the base image
 	core::position2d<s32> pos_to(0,0);
 	// Position to copy the blitted from in the blitted image
 	core::position2d<s32> pos_from(0,0);
-	// Blit
-	/*image->copyToWithAlpha(baseimg, pos_to,
-			core::rect<s32>(pos_from, dim),
-			video::SColor(255,255,255,255),
-			NULL);*/
 
-	core::dimension2d<u32> dim_dst = dst->getDimension();
-	if (dim == dim_dst) {
-		blit_with_alpha(src, dst, pos_from, pos_to, dim);
-	} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
-		// Upscale overlying image
-		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
-			createImage(video::ECF_A8R8G8B8, dim_dst);
-		src->copyToScaling(scaled_image);
-
-		blit_with_alpha(scaled_image, dst, pos_from, pos_to, dim_dst);
-		scaled_image->drop();
-	} else {
-		// Upscale base image
-		video::IImage *scaled_base = RenderingEngine::get_video_driver()->
-			createImage(video::ECF_A8R8G8B8, dim);
-		dst->copyToScaling(scaled_base);
-		dst->drop();
-		dst = scaled_base;
-
-		blit_with_alpha(src, dst, pos_from, pos_to, dim);
-	}
+	blit_with_alpha(src, dst, pos_from, pos_to, dim_dst);
 }
 
 bool TextureSource::generateImagePart(std::string part_of_name,
@@ -1939,7 +1949,7 @@ static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst
 #endif
 
 /*
-	Apply color to destination
+	Apply color to destination, using a weighted interpolation blend
 */
 static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		const video::SColor &color, int ratio, bool keep_alpha)
@@ -1977,7 +1987,7 @@ static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 }
 
 /*
-	Apply color to destination
+	Apply color to destination, using a Multiply blend mode
 */
 static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		const video::SColor &color)

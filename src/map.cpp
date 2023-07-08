@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "database/database.h"
 #include "script/scripting_server.h"
+#include "irrlicht_changes/printing.h"
 #include <deque>
 #include <queue>
 
@@ -94,22 +95,22 @@ MapSector * Map::getSectorNoGenerateNoLock(v2s16 p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerate(v2s16 p)
+MapSector *Map::getSectorNoGenerate(v2s16 p)
 {
 	return getSectorNoGenerateNoLock(p);
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
+MapBlock *Map::getBlockNoCreateNoEx(v3s16 p3d)
 {
 	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerate(p2d);
-	if(sector == NULL)
-		return NULL;
+	MapSector *sector = getSectorNoGenerate(p2d);
+	if (!sector)
+		return nullptr;
 	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreate(v3s16 p3d)
+MapBlock *Map::getBlockNoCreate(v3s16 p3d)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if(block == NULL)
@@ -152,7 +153,7 @@ static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
 		errorstream<<"Not allowing to place CONTENT_IGNORE"
 				<<" while trying to replace \""
 				<<nodedef->get(block->getNodeNoCheck(relpos)).name
-				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+				<<"\" at "<<p<<" (block "<<blockpos<<")"<<std::endl;
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
@@ -496,7 +497,7 @@ std::vector<v3s16> Map::findNodesWithMetadata(v3s16 p1, v3s16 p2)
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if (!block) {
 			verbosestream << "Map::getNodeMetadata(): Need to emerge "
-				<< PP(blockpos) << std::endl;
+				<< blockpos << std::endl;
 			block = emergeBlock(blockpos, false);
 		}
 		if (!block) {
@@ -526,7 +527,7 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeMetadata(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+				<<blockpos<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
@@ -545,7 +546,7 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeMetadata(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+				<<blockpos<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "gamedef.h"
+#include "irrlicht_changes/printing.h"
 #include "log.h"
 #include "nameidmapping.h"
 #include "serialization.h"
@@ -81,6 +82,7 @@ MapBlock::~MapBlock()
 	}
 #endif
 }
+
 
 // This method is only for Server, don't call it on client
 void MapBlock::step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb)
@@ -276,7 +278,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
-	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())<<std::endl);
+	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()<<std::endl);
 
 	m_day_night_differs_expired = false;
 
@@ -295,7 +297,8 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 		m_lighting_complete = readU16(is);
 	m_generated = (flags & 0x08) == 0;
 
-	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+
+	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()
 			<<": Bulk node data"<<std::endl);
 	u8 content_width = readU8(is);
 	u8 params_width = readU8(is);
@@ -320,7 +323,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 	/*
 		NodeMetadata
 	*/
-	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()
 			<<": Node metadata"<<std::endl);
 	if (version >= 29) {
 		m_node_metadata.deSerialize(is, m_gamedef->idef());
@@ -335,11 +338,11 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 		} catch(SerializationError &e) {
 			warningstream<<"MapBlock::deSerialize(): Ignoring an error"
 					<<" while deserializing node metadata at ("
-					<<PP(getPos())<<": "<<e.what()<<std::endl;
+					<<getPos()<<": "<<e.what()<<std::endl;
 		}
 	}
 
-	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()
 			<<": Done."<<std::endl);
 }
 

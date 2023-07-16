@@ -1,0 +1,52 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
+version: 1
+AppDir:
+  path: AppDir
+  app_info:
+    id: se.voxelmanip.voxelmanip_classic
+    name: Voxelmanip Classic
+    icon: voxelmanip_classic
+    version: !ENV ${VERSION}
+    exec: usr/bin/voxelmanip_classic
+    exec_args: $@
+  files:
+    include: []
+    exclude:
+    - usr/share/man
+    - usr/share/doc
+    - usr/share/lintian
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal main universe
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-updates main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-backports main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-security main universe
+
+    include:
+      - libc6
+      - libfreetype6
+      - libgl1
+      - libjsoncpp1
+      - libluajit-5.1-2
+      - libopenal1
+      - libopengl0
+      - libpng16-16
+      - libstdc++6
+      - libvorbisfile3
+      - libx11-6
+      - libxi6
+      - zlib1g
+AppImage:
+  update-information: guess
+  sign-key: None
+  arch: x86_64
+script: |
+    # Compile and install binaries into AppDir
+    cmake -B appimage-build -DCMAKE_INSTALL_PREFIX=AppDir/usr/ -DBUILD_SERVER=FALSE -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE
+    cmake --build appimage-build --parallel $(nproc) --config Release
+    cmake --install appimage-build
+
+    # Validation issues
+    sed -i '/PrefersNonDefaultGPU/d' AppDir/usr/share/applications/voxelmanip_classic.desktop

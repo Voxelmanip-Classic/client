@@ -49,12 +49,9 @@ public:
 	void setArrowsVisible(ArrowVisibility visible);
 
 private:
-	void refreshControls();
 	s32 getPosFromMousePos(const core::position2di &p) const;
 	f32 range() const { return f32(max_pos - min_pos); }
 
-	IGUIButton *up_button;
-	IGUIButton *down_button;
 	ArrowVisibility arrow_visibility = DEFAULT;
 	bool is_dragging;
 	bool is_horizontal;
@@ -73,5 +70,4 @@ private:
 	s32 border_size;
 
 	core::rect<s32> slider_rect;
-	video::SColor current_icon_color;
 };

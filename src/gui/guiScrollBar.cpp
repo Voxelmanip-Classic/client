@@ -17,13 +17,12 @@ the arrow buttons where there is insufficient space.
 GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 		core::rect<s32> rectangle, bool horizontal, bool auto_scale) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
-		up_button(nullptr), down_button(nullptr), is_dragging(false),
+		is_dragging(false),
 		is_horizontal(horizontal), is_auto_scaling(auto_scale),
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
 		large_step(50), drag_offset(0), page_size(100), border_size(0)
 {
-	refreshControls();
 	setNotClipped(false);
 	setTabStop(true);
 	setTabOrder(-1);
@@ -76,11 +75,6 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 			break;
 		case EET_GUI_EVENT:
 			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED) {
-				if (event.GUIEvent.Caller == up_button)
-					setPos(scroll_pos - small_step);
-				else if (event.GUIEvent.Caller == down_button)
-					setPos(scroll_pos + small_step);
-
 				SEvent e;
 				e.EventType = EET_GUI_EVENT;
 				e.GUIEvent.Caller = this;
@@ -202,11 +196,6 @@ void GUIScrollBar::draw()
 	if (!skin)
 		return;
 
-	video::SColor icon_color = skin->getColor(
-			isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL);
-	if (icon_color != current_icon_color)
-		refreshControls();
-
 	slider_rect = AbsoluteRect;
 	skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), slider_rect,
 			&AbsoluteClippingRect);
@@ -231,7 +220,6 @@ void GUIScrollBar::draw()
 void GUIScrollBar::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
-	refreshControls();
 	setPos(scroll_pos);
 }
 
@@ -292,9 +280,6 @@ void GUIScrollBar::setMax(const s32 &max)
 	if (min_pos > max_pos)
 		min_pos = max_pos;
 
-	bool enable = core::isnotzero(range());
-	up_button->setEnabled(enable);
-	down_button->setEnabled(enable);
 	setPos(scroll_pos);
 }
 
@@ -304,9 +289,6 @@ void GUIScrollBar::setMin(const s32 &min)
 	if (max_pos < min_pos)
 		max_pos = min_pos;
 
-	bool enable = core::isnotzero(range());
-	up_button->setEnabled(enable);
-	down_button->setEnabled(enable);
 	setPos(scroll_pos);
 }
 
@@ -318,129 +300,11 @@ void GUIScrollBar::setPageSize(const s32 &size)
 
 void GUIScrollBar::setArrowsVisible(ArrowVisibility visible)
 {
+	// always false now I guess
 	arrow_visibility = visible;
-	refreshControls();
 }
 
 s32 GUIScrollBar::getPos() const
 {
 	return scroll_pos;
-}
-
-void GUIScrollBar::refreshControls()
-{
-	IGUISkin *skin = Environment->getSkin();
-	IGUISpriteBank *sprites = nullptr;
-	current_icon_color = video::SColor(255, 255, 255, 255);
-
-	if (skin) {
-		sprites = skin->getSpriteBank();
-		current_icon_color =
-				skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL
-							   : EGDC_GRAY_WINDOW_SYMBOL);
-	}
-	if (is_horizontal) {
-		s32 h = RelativeRect.getHeight();
-		border_size = RelativeRect.getWidth() < h * 4 ? 0 : h;
-		if (!up_button) {
-			up_button = Environment->addButton(
-					core::rect<s32>(0, 0, h, h), this);
-			up_button->setSubElement(true);
-			up_button->setTabStop(false);
-		}
-		if (sprites) {
-			up_button->setSpriteBank(sprites);
-			up_button->setSprite(EGBS_BUTTON_UP,
-					s32(skin->getIcon(EGDI_CURSOR_LEFT)),
-					current_icon_color);
-			up_button->setSprite(EGBS_BUTTON_DOWN,
-					s32(skin->getIcon(EGDI_CURSOR_LEFT)),
-					current_icon_color);
-		}
-		up_button->setRelativePosition(core::rect<s32>(0, 0, h, h));
-		up_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT,
-				EGUIA_LOWERRIGHT);
-		if (!down_button) {
-			down_button = Environment->addButton(
-					core::rect<s32>(RelativeRect.getWidth() - h, 0,
-							RelativeRect.getWidth(), h),
-					this);
-			down_button->setSubElement(true);
-			down_button->setTabStop(false);
-		}
-		if (sprites) {
-			down_button->setSpriteBank(sprites);
-			down_button->setSprite(EGBS_BUTTON_UP,
-					s32(skin->getIcon(EGDI_CURSOR_RIGHT)),
-					current_icon_color);
-			down_button->setSprite(EGBS_BUTTON_DOWN,
-					s32(skin->getIcon(EGDI_CURSOR_RIGHT)),
-					current_icon_color);
-		}
-		down_button->setRelativePosition(
-				core::rect<s32>(RelativeRect.getWidth() - h, 0,
-						RelativeRect.getWidth(), h));
-		down_button->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT,
-				EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-	} else {
-		s32 w = RelativeRect.getWidth();
-		border_size = RelativeRect.getHeight() < w * 4 ? 0 : w;
-		if (!up_button) {
-			up_button = Environment->addButton(
-					core::rect<s32>(0, 0, w, w), this);
-			up_button->setSubElement(true);
-			up_button->setTabStop(false);
-		}
-		if (sprites) {
-			up_button->setSpriteBank(sprites);
-			up_button->setSprite(EGBS_BUTTON_UP,
-					s32(skin->getIcon(EGDI_CURSOR_UP)),
-					current_icon_color);
-			up_button->setSprite(EGBS_BUTTON_DOWN,
-					s32(skin->getIcon(EGDI_CURSOR_UP)),
-					current_icon_color);
-		}
-		up_button->setRelativePosition(core::rect<s32>(0, 0, w, w));
-		up_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
-				EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
-		if (!down_button) {
-			down_button = Environment->addButton(
-					core::rect<s32>(0, RelativeRect.getHeight() - w,
-							w, RelativeRect.getHeight()),
-					this);
-			down_button->setSubElement(true);
-			down_button->setTabStop(false);
-		}
-		if (sprites) {
-			down_button->setSpriteBank(sprites);
-			down_button->setSprite(EGBS_BUTTON_UP,
-					s32(skin->getIcon(EGDI_CURSOR_DOWN)),
-					current_icon_color);
-			down_button->setSprite(EGBS_BUTTON_DOWN,
-					s32(skin->getIcon(EGDI_CURSOR_DOWN)),
-					current_icon_color);
-		}
-		down_button->setRelativePosition(
-				core::rect<s32>(0, RelativeRect.getHeight() - w, w,
-						RelativeRect.getHeight()));
-		down_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
-				EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
-	}
-
-	bool visible;
-	if (arrow_visibility == DEFAULT)
-		visible = (border_size != 0);
-	else if (arrow_visibility == HIDE) {
-		visible = false;
-		border_size = 0;
-	} else {
-		visible = true;
-		if (is_horizontal)
-			border_size = RelativeRect.getHeight();
-		else
-			border_size = RelativeRect.getWidth();
-	}
-
-	up_button->setVisible(visible);
-	down_button->setVisible(visible);
 }

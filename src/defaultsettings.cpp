@@ -158,7 +158,7 @@ void set_default_settings()
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
-	settings->setDefault("fps_max", "60");
+	settings->setDefault("fps_max", "120");
 	settings->setDefault("fps_max_unfocused", "20");
 	settings->setDefault("viewing_range", "190");
 	settings->setDefault("client_mesh_chunk", "1");
@@ -167,7 +167,7 @@ void set_default_settings()
 	settings->setDefault("window_maximized", "false");
 	settings->setDefault("autosave_screensize", "false");
 	settings->setDefault("fullscreen", "false");
-	settings->setDefault("vsync", "false");
+	settings->setDefault("vsync", "true");
 	settings->setDefault("fov", "72");
 	settings->setDefault("leaves_style", "fancy");
 	settings->setDefault("connected_glass", "true");

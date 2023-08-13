@@ -62,18 +62,6 @@ namespace gui
 		\param index: The sprite index used to draw this icon */
 		virtual void setIcon(EGUI_DEFAULT_ICON icon, u32 index);
 
-#ifndef IRRLICHT_VMC_VERSION
-		//! Returns a default text.
-		/** For example for Message box button captions:
-		"OK", "Cancel", "Yes", "No" and so on. */
-		virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) const;
-
-		//! Sets a default text.
-		/** For example for Message box button captions:
-		"OK", "Cancel", "Yes", "No" and so on. */
-		virtual void setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText);
-#endif
-
 		//! draws a standard 3d button pane
 		/** Used for drawing for example buttons in normal state.
 		It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
@@ -228,9 +216,7 @@ namespace gui
 		u32 Icons[EGDI_COUNT];
 		IGUIFont* Fonts[EGDF_COUNT];
 		IGUISpriteBank* SpriteBank;
-#ifndef IRRLICHT_VMC_VERSION
-		core::stringw Texts[EGDT_COUNT];
-#endif
+
 		video::IVideoDriver* Driver;
 
 		EGUI_SKIN_TYPE Type;

@@ -631,7 +631,6 @@ void update_lighting_nodes(Map *map,
 	}
 }
 
-
 VoxelLineIterator::VoxelLineIterator(const v3f &start_position, const v3f &line_vector) :
 	m_start_position(start_position),
 	m_line_vector(line_vector)

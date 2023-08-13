@@ -3008,8 +3008,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_bgfullscreen = false;
 
 	m_formspec_version = 1;
-
-	m_bgcolor = video::SColor(180, 0, 0, 0);
+	m_bgcolor = video::SColor(200, 0, 0, 0);
 	m_fullscreen_bgcolor = video::SColor(140, 0, 0, 0);
 
 	m_default_tooltip_bgcolor = video::SColor(255,110,130,60);

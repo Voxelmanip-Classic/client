@@ -567,7 +567,7 @@ void Hud::drawCompassRotate(HudElement *e, video::ITexture *texture,
 	driver->setTransform(video::ETS_WORLD, Matrix);
 
 	video::SMaterial &material = m_rotation_mesh_buffer.getMaterial();
-	material.TextureLayer[0].Texture = texture;
+	material.TextureLayers[0].Texture = texture;
 	driver->setMaterial(material);
 	driver->drawMeshBuffer(&m_rotation_mesh_buffer);
 

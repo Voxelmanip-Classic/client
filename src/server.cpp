@@ -46,7 +46,7 @@ Server::Server(
 		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface,
-		std::string *on_shutdown_errmsg
+		std::string *shutdown_errmsg
 	):
 	m_gamespec(gamespec),
 	m_async_fatal_error(""),

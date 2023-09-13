@@ -52,9 +52,6 @@ public:
 
 	static Environment*     getEnv(lua_State *L);
 
-	// When we are not loading the mod, this function returns "."
-	static std::string      getCurrentModPath(lua_State *L);
-
 	// Get an arbitrary subclass of ScriptApiBase
 	// by using dynamic_cast<> on getScriptApiBase()
 	template<typename T>

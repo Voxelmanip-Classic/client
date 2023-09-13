@@ -31,10 +31,10 @@ minetest = core
 
 -- Load other files
 local scriptdir = core.get_builtin_path()
-local gamepath = scriptdir .. "game" .. DIR_DELIM
-local clientpath = scriptdir .. "client" .. DIR_DELIM
-local commonpath = scriptdir .. "common" .. DIR_DELIM
-local asyncpath = scriptdir .. "async" .. DIR_DELIM
+local gamepath = scriptdir .. "game/"
+local clientpath = scriptdir .. "client/"
+local commonpath = scriptdir .. "common/"
+local asyncpath = scriptdir .. "async/"
 
 dofile(commonpath .. "vector.lua")
 dofile(commonpath .. "strict.lua")
@@ -45,7 +45,7 @@ if INIT == "game" then
 	dofile(gamepath .. "init.lua")
 	assert(not core.get_http_api)
 elseif INIT == "mainmenu" then
-	dofile(core.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
+	dofile(core.get_mainmenu_path() .. "/init.lua")
 elseif INIT == "async"  then
 	dofile(asyncpath .. "mainmenu.lua")
 elseif INIT == "client" then

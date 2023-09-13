@@ -15,7 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local path = core.get_mainmenu_path() .. DIR_DELIM .. "settings"
+local path = core.get_mainmenu_path() .. "/settings"
 
-dofile(path .. DIR_DELIM .. "settingtypes.lua")
-dofile(path .. DIR_DELIM .. "dlg_settings.lua")
+dofile(path .. "/settingtypes.lua")
+dofile(path .. "/dlg_settings.lua")

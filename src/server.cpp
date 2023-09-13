@@ -93,11 +93,6 @@ const std::vector<ModSpec> & Server::getMods() const
 	return m_modmgr->getMods();
 }
 
-const ModSpec *Server::getModSpec(const std::string &modname) const
-{
-	return m_modmgr->getModSpec(modname);
-}
-
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";

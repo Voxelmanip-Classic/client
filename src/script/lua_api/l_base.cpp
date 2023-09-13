@@ -69,21 +69,6 @@ GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
 }
 #endif
 
-std::string ModApiBase::getCurrentModPath(lua_State *L)
-{
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	std::string current_mod_name = readParam<std::string>(L, -1, "");
-	if (current_mod_name.empty())
-		return ".";
-
-	const ModSpec *mod = getServer(L)->getModSpec(current_mod_name);
-	if (!mod)
-		return ".";
-
-	return mod->path;
-}
-
-
 bool ModApiBase::registerFunction(lua_State *L, const char *name,
 		lua_CFunction func, int top)
 {

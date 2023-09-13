@@ -78,12 +78,7 @@ function ui.update()
 	elseif gamedata ~= nil and gamedata.errormessage ~= nil then
 		local error_message = core.formspec_escape(gamedata.errormessage)
 
-		local error_title
-		if string.find(gamedata.errormessage, "ModError") then
-			error_title = fgettext("An error occurred in a Lua script:")
-		else
-			error_title = fgettext("An error occurred:")
-		end
+		local error_title = fgettext("An error occurred:")
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",
@@ -120,14 +115,12 @@ function ui.update()
 			end
 		end
 
-		if (active_toplevel_ui_elements > 1) then
-			core.log("warning", "more than one active ui "..
-				"element, self most likely isn't intended")
+		if active_toplevel_ui_elements > 1 then
+			core.log("warning", "more than one active ui element, self most likely isn't intended")
 		end
 
-		if (active_toplevel_ui_elements == 0) then
-			core.log("warning", "no toplevel ui element "..
-					"active; switching to default")
+		if active_toplevel_ui_elements == 0 then
+			core.log("warning", "no toplevel ui element active; switching to default")
 			ui.childlist[ui.default]:show()
 			formspec = {ui.childlist[ui.default]:get_formspec()}
 		end

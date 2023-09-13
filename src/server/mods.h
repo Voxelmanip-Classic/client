@@ -39,7 +39,6 @@ public:
 	 * @param worldpath
 	 */
 	ServerModManager(const std::string &worldpath);
-	const ModSpec *getModSpec(const std::string &modname) const;
 
 	inline const std::vector<ModSpec> &getMods() const {
 		return configuration.getMods();

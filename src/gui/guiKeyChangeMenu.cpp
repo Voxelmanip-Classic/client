@@ -403,7 +403,6 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_DEC_RANGE_BUTTON,    wstrgettext("Dec. range"),       "keymap_decrease_viewing_range_min");
 	this->add_key(GUI_ID_KEY_INC_RANGE_BUTTON,    wstrgettext("Inc. range"),       "keymap_increase_viewing_range_min");
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,      wstrgettext("Console"),          "keymap_console");
-	this->add_key(GUI_ID_KEY_BLOCK_BOUNDS_BUTTON, wstrgettext("Block bounds"),     "keymap_toggle_block_bounds");
 	this->add_key(GUI_ID_KEY_HUD_BUTTON,          wstrgettext("Toggle HUD"),       "keymap_toggle_hud");
 	this->add_key(GUI_ID_KEY_CHATLOG_BUTTON,      wstrgettext("Toggle chat log"),  "keymap_toggle_chat");
 	this->add_key(GUI_ID_KEY_FOG_BUTTON,          wstrgettext("Toggle fog"),       "keymap_toggle_fog");

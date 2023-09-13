@@ -357,16 +357,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 		// Allow paths in mod path
 		// Don't bother if write access isn't important, since it will be handled later
-		if (write_required || write_allowed != NULL) {
-			const ModSpec *mod = gamedef->getModSpec(mod_name);
-			if (mod) {
-				str = fs::AbsolutePath(mod->path);
-				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
-					if (write_allowed) *write_allowed = true;
-					return true;
-				}
-			}
-		}
+		// (removed)
 	}
 	lua_pop(L, 1);  // Pop mod name
 

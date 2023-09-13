@@ -123,18 +123,18 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 
 			-- Get config file
 			local mod_conf
-			local modpack_conf = io.open(mod_path .. DIR_DELIM .. "modpack.conf")
+			local modpack_conf = io.open(mod_path .. "/modpack.conf")
 			if modpack_conf then
 				toadd.is_modpack = true
 				modpack_conf:close()
 
-				mod_conf = Settings(mod_path .. DIR_DELIM .. "modpack.conf"):to_table()
+				mod_conf = Settings(mod_path .. "/modpack.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
 					toadd.is_name_explicit = true
 				end
 			else
-				mod_conf = Settings(mod_path .. DIR_DELIM .. "mod.conf"):to_table()
+				mod_conf = Settings(mod_path .. "/mod.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
 					toadd.is_name_explicit = true
@@ -152,7 +152,7 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 
 			-- Check modpack.txt
 			-- Note: modpack.conf is already checked above
-			local modpackfile = io.open(mod_path .. DIR_DELIM .. "modpack.txt")
+			local modpackfile = io.open(mod_path .. "/modpack.txt")
 			if modpackfile then
 				modpackfile:close()
 				toadd.is_modpack = true
@@ -197,31 +197,31 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.get_folder_type(path)
-	local testfile = io.open(path .. DIR_DELIM .. "init.lua","r")
+	local testfile = io.open(path .. "/init.lua","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "mod", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "modpack.conf","r")
+	testfile = io.open(path .. "/modpack.conf","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "modpack", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "modpack.txt","r")
+	testfile = io.open(path .. "/modpack.txt","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "modpack", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "game.conf","r")
+	testfile = io.open(path .. "/game.conf","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "game", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "texture_pack.conf","r")
+	testfile = io.open(path .. "/texture_pack.conf","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "txp", path = path }
@@ -257,93 +257,6 @@ end
 --------------------------------------------------------------------------------
 function pkgmgr.is_valid_modname(modpath)
 	return modpath:match("[^a-z0-9_]") == nil
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
-	if not render_list then
-		if not pkgmgr.global_mods then
-			pkgmgr.refresh_globals()
-		end
-		render_list = pkgmgr.global_mods
-	end
-
-	local list = render_list:get_list()
-	local retval = {}
-	for i, v in ipairs(list) do
-		local color = ""
-		local icon = 0
-		local error = with_error and with_error[v.virtual_path]
-		local function update_error(val)
-			if val and (not error or (error.type == "warning" and val.type == "error")) then
-				error = val
-			end
-		end
-
-		if v.is_modpack then
-			local rawlist = render_list:get_raw_list()
-			color = mt_color_dark_green
-
-			for j = 1, #rawlist do
-				if rawlist[j].modpack == list[i].name then
-					if with_error then
-						update_error(with_error[rawlist[j].virtual_path])
-					end
-
-					if rawlist[j].enabled then
-						icon = 1
-					else
-						-- Modpack not entirely enabled so showing as grey
-						color = mt_color_grey
-					end
-				end
-			end
-		elseif v.is_game_content or v.type == "game" then
-			icon = 1
-			color = mt_color_lightblue
-
-			local rawlist = render_list:get_raw_list()
-			if v.type == "game" and with_error then
-				for j = 1, #rawlist do
-					if rawlist[j].is_game_content then
-						update_error(with_error[rawlist[j].virtual_path])
-					end
-				end
-			end
-		elseif v.enabled or v.type == "txp" then
-			icon = 1
-			color = mt_color_green
-		end
-
-		if error then
-			if error.type == "warning" then
-				color = mt_color_orange
-				icon = 2
-			else
-				color = mt_color_red
-				icon = 3
-			end
-		end
-
-		retval[#retval + 1] = color
-		if v.modpack ~= nil or v.loc == "game" then
-			retval[#retval + 1] = "1"
-		else
-			retval[#retval + 1] = "0"
-		end
-
-		if with_error then
-			retval[#retval + 1] = icon
-		end
-
-		if use_technical_names then
-			retval[#retval + 1] = core.formspec_escape(v.list_name or v.name)
-		else
-			retval[#retval + 1] = core.formspec_escape(v.list_title or v.list_name or v.title or v.name)
-		end
-	end
-
-	return table.concat(retval, ",")
 end
 
 --------------------------------------------------------------------------------
@@ -565,98 +478,6 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.preparemodlist(data)
-	local retval = {}
-
-	local global_mods = {}
-	local game_mods = {}
-
-	--read global mods
-	local modpaths = core.get_modpaths()
-	for key, modpath in pairs(modpaths) do
-		pkgmgr.get_mods(modpath, key, global_mods)
-	end
-
-	for i=1,#global_mods,1 do
-		global_mods[i].type = "mod"
-		global_mods[i].loc = "global"
-		global_mods[i].enabled = false
-		retval[#retval + 1] = global_mods[i]
-	end
-
-	--read game mods
-	local gamespec = pkgmgr.find_by_gameid(data.gameid)
-	pkgmgr.get_game_mods(gamespec, game_mods)
-
-	if #game_mods > 0 then
-		-- Add title
-		retval[#retval + 1] = {
-			type = "game",
-			is_game_content = true,
-			name = fgettext("$1 mods", gamespec.title),
-			path = gamespec.path
-		}
-	end
-
-	for i=1,#game_mods,1 do
-		game_mods[i].type = "mod"
-		game_mods[i].loc = "game"
-		game_mods[i].is_game_content = true
-		retval[#retval + 1] = game_mods[i]
-	end
-
-	if data.worldpath == nil then
-		return retval
-	end
-
-	--read world mod configuration
-	local filename = data.worldpath ..
-				DIR_DELIM .. "world.mt"
-
-	local worldfile = Settings(filename)
-	for key, value in pairs(worldfile:to_table()) do
-		if key:sub(1, 9) == "load_mod_" then
-			key = key:sub(10)
-			local mod_found = false
-
-			local fallback_found = false
-			local fallback_mod = nil
-
-			for i=1, #retval do
-				if retval[i].name == key and
-						not retval[i].is_modpack then
-					if core.is_yes(value) or retval[i].virtual_path == value then
-						retval[i].enabled = true
-						mod_found = true
-						break
-					elseif fallback_found then
-						-- Only allow fallback if only one mod matches
-						fallback_mod = nil
-					else
-						fallback_found = true
-						fallback_mod = retval[i]
-					end
-				end
-			end
-
-			if not mod_found then
-				if fallback_mod and value:find("/") then
-					fallback_mod.enabled = true
-				else
-					core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
-				end
-			end
-		end
-	end
-
-	return retval
-end
-
-function pkgmgr.compare_package(a, b)
-	return a and b and a.name == b.name and a.path == b.path
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.comparemod(elem1,elem2)
 	if elem1 == nil or elem2 == nil then
 		return false
@@ -688,10 +509,7 @@ function pkgmgr.refresh_globals()
 			return true
 		end
 	end
-	pkgmgr.global_mods = filterlist.create(pkgmgr.preparemodlist,
-			pkgmgr.comparemod, is_equal, nil, {})
-	pkgmgr.global_mods:add_sort_mechanism("alphabetic", sort_mod_list)
-	pkgmgr.global_mods:set_sortmode("alphabetic")
+
 end
 
 --------------------------------------------------------------------------------
@@ -714,14 +532,3 @@ function pkgmgr.get_game_mods(gamespec, retval)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.update_gamelist()
-	pkgmgr.games = core.get_games()
-	table.sort(pkgmgr.games, function(a, b)
-		return a.title:lower() < b.title:lower()
-	end)
-end
-
---------------------------------------------------------------------------------
--- read initial data
---------------------------------------------------------------------------------
-pkgmgr.update_gamelist()

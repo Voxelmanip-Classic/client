@@ -351,7 +351,7 @@ static bool setup_log_params(const Settings &cmd_args)
 
 	// In certain cases, output info level on stderr
 	if (cmd_args.getFlag("info") || cmd_args.getFlag("verbose") ||
-			cmd_args.getFlag("trace") || cmd_args.getFlag("speedtests"))
+			cmd_args.getFlag("trace"))
 		g_logger.addOutput(&stderr_output, LL_INFO);
 
 	// In certain cases, output verbose level on stderr

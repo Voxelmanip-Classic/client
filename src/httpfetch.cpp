@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static std::mutex g_httpfetch_mutex;
 static std::unordered_map<u64, std::queue<HTTPFetchResult>>
 	g_httpfetch_results;
-static PcgRandom g_callerid_randomness;
 
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(20),
@@ -78,35 +77,6 @@ u64 httpfetch_caller_alloc()
 	}
 
 	FATAL_ERROR("httpfetch_caller_alloc: ran out of caller IDs");
-}
-
-u64 httpfetch_caller_alloc_secure()
-{
-	MutexAutoLock lock(g_httpfetch_mutex);
-
-	// Generate random caller IDs and make sure they're not
-	// already used or reserved.
-	// Give up after 100 tries to prevent infinite loop
-	size_t tries = 100;
-	u64 caller;
-
-	do {
-		caller = (((u64) g_callerid_randomness.next()) << 32) |
-				g_callerid_randomness.next();
-
-		if (--tries < 1) {
-			FATAL_ERROR("httpfetch_caller_alloc_secure: ran out of caller IDs");
-			return HTTPFETCH_DISCARD;
-		}
-	} while (caller >= HTTPFETCH_CID_START &&
-		g_httpfetch_results.find(caller) != g_httpfetch_results.end());
-
-	verbosestream << "httpfetch_caller_alloc_secure: allocating "
-		<< caller << std::endl;
-
-	// Access element to create it
-	g_httpfetch_results[caller];
-	return caller;
 }
 
 void httpfetch_caller_free(u64 caller)

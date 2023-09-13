@@ -66,13 +66,7 @@ private:
 
 	static int l_close(lua_State *L);
 
-	static int l_get_worlds(lua_State *L);
-
 	static int l_gettext(lua_State *L);
-
-	//packages
-
-	static int l_get_games(lua_State *L);
 
 	//gui
 
@@ -107,8 +101,6 @@ private:
 	static int l_get_user_path(lua_State *L);
 
 	static int l_get_modpath(lua_State *L);
-
-	static int l_get_modpaths(lua_State *L);
 
 	static int l_get_clientmodpath(lua_State *L);
 

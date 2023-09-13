@@ -261,7 +261,6 @@ public:
 	static const std::string &getClientModsLuaPath();
 
 	const std::vector<ModSpec> &getMods() const override;
-	const ModSpec* getModSpec(const std::string &modname) const override;
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);

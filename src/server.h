@@ -87,7 +87,6 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 
 	virtual const std::vector<ModSpec> &getMods() const;
-	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 

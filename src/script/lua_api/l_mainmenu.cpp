@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "convert_json.h"
-#include "content/content.h"
 #include "content/subgames.h"
 #include "settings.h"
 #include "client/client.h"
@@ -247,105 +246,6 @@ int ModApiMainMenu::l_get_table_index(lua_State *L)
 	return 1;
 }
 
-/******************************************************************************/
-int ModApiMainMenu::l_get_worlds(lua_State *L)
-{
-	std::vector<WorldSpec> worlds = getAvailableWorlds();
-
-	lua_newtable(L);
-	int top = lua_gettop(L);
-	unsigned int index = 1;
-
-	for (const WorldSpec &world : worlds) {
-		lua_pushnumber(L,index);
-
-		lua_newtable(L);
-		int top_lvl2 = lua_gettop(L);
-
-		lua_pushstring(L,"path");
-		lua_pushstring(L, world.path.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"name");
-		lua_pushstring(L, world.name.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"gameid");
-		lua_pushstring(L, world.gameid.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_settable(L, top);
-		index++;
-	}
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_get_games(lua_State *L)
-{
-	std::vector<SubgameSpec> games = getAvailableGames();
-
-	lua_newtable(L);
-	int top = lua_gettop(L);
-	unsigned int index = 1;
-
-	for (const SubgameSpec &game : games) {
-		lua_pushnumber(L, index);
-		lua_newtable(L);
-		int top_lvl2 = lua_gettop(L);
-
-		lua_pushstring(L,  "id");
-		lua_pushstring(L,  game.id.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "path");
-		lua_pushstring(L,  game.path.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "type");
-		lua_pushstring(L,  "game");
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "gamemods_path");
-		lua_pushstring(L,  game.gamemods_path.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "name");
-		lua_pushstring(L,  game.title.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "title");
-		lua_pushstring(L,  game.title.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "author");
-		lua_pushstring(L,  game.author.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "release");
-		lua_pushinteger(L, game.release);
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L,  "menuicon_path");
-		lua_pushstring(L,  game.menuicon_path.c_str());
-		lua_settable(L,    top_lvl2);
-
-		lua_pushstring(L, "addon_mods_paths");
-		lua_newtable(L);
-		int table2 = lua_gettop(L);
-		int internal_index = 1;
-		for (const auto &addon_mods_path : game.addon_mods_paths) {
-			lua_pushnumber(L, internal_index);
-			lua_pushstring(L, addon_mods_path.second.c_str());
-			lua_settable(L,   table2);
-			internal_index++;
-		}
-		lua_settable(L, top_lvl2);
-		lua_settable(L, top);
-		index++;
-	}
-	return 1;
-}
 
 /******************************************************************************/
 int ModApiMainMenu::l_show_keys_menu(lua_State *L)
@@ -393,21 +293,6 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 	std::string modpath = fs::RemoveRelativePathComponents(
 		porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
 	lua_pushstring(L, modpath.c_str());
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_get_modpaths(lua_State *L)
-{
-	lua_newtable(L);
-
-	ModApiMainMenu::l_get_modpath(L);
-	lua_setfield(L, -2, "mods");
-
-	for (const std::string &component : getEnvModPaths()) {
-		lua_pushstring(L, component.c_str());
-		lua_setfield(L, -2, fs::AbsolutePath(component).c_str());
-	}
 	return 1;
 }
 
@@ -798,8 +683,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(set_clouds);
 	API_FCT(get_textlist_index);
 	API_FCT(get_table_index);
-	API_FCT(get_worlds);
-	API_FCT(get_games);
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(show_keys_menu);
@@ -807,7 +690,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(set_topleft_text);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
-	API_FCT(get_modpaths);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
@@ -840,11 +722,8 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 /******************************************************************************/
 void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 {
-	API_FCT(get_worlds);
-	API_FCT(get_games);
 	API_FCT(get_user_path);
 	API_FCT(get_modpath);
-	API_FCT(get_modpaths);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);

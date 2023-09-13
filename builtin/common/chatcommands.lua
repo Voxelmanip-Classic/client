@@ -89,10 +89,8 @@ local function do_help_cmd(name, param)
 	if #args > 1 then
 		return false, S("Too many arguments, try using just /help <command>")
 	end
-	local use_gui = INIT ~= "client" and core.get_player_by_name(name)
-	use_gui = use_gui and not opts:find("t")
 
-	if #args == 0 and not use_gui then
+	if #args == 0 then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do
 			if INIT == "client" or core.check_player_privs(name, def.privs) then
@@ -101,23 +99,12 @@ local function do_help_cmd(name, param)
 		end
 		table.sort(cmds)
 		local msg
-		if INIT == "game" then
-			msg = S("Available commands: @1",
-				table.concat(cmds, " ")) .. "\n"
-				.. S("Use '/help <cmd>' to get more "
-				.. "information, or '/help all' to list "
-				.. "everything.")
-		else
-			msg = core.gettext("Available commands: ")
-				.. table.concat(cmds, " ") .. "\n"
-				.. core.gettext("Use '.help <cmd>' to get more "
-				.. "information, or '.help all' to list "
-				.. "everything.")
-		end
+		msg = core.gettext("Available commands: ")
+			.. table.concat(cmds, " ") .. "\n"
+			.. core.gettext("Use '.help <cmd>' to get more "
+			.. "information, or '.help all' to list "
+			.. "everything.")
 		return true, msg
-	elseif #args == 0 or (args[1] == "all" and use_gui) then
-		core.show_general_help_formspec(name)
-		return true
 	elseif args[1] == "all" then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do
@@ -126,34 +113,13 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		local msg
-		if INIT == "game" then
-			msg = S("Available commands:")
-		else
-			msg = core.gettext("Available commands:")
-		end
+		local msg = core.gettext("Available commands:")
 		return true, msg.."\n"..table.concat(cmds, "\n")
-	elseif INIT == "game" and args[1] == "privs" then
-		if use_gui then
-			core.show_privs_help_formspec(name)
-			return true
-		end
-		local privs = {}
-		for priv, def in pairs(core.registered_privileges) do
-			privs[#privs + 1] = priv .. ": " .. def.description
-		end
-		table.sort(privs)
-		return true, S("Available privileges:").."\n"..table.concat(privs, "\n")
 	else
 		local cmd = args[1]
 		local def = core.registered_chatcommands[cmd]
 		if not def then
-			local msg
-			if INIT == "game" then
-				msg = S("Command not available: @1", cmd)
-			else
-				msg = core.gettext("Command not available: ") .. cmd
-			end
+			local msg = core.gettext("Command not available: ") .. cmd
 			return false, msg
 		else
 			return true, format_help_line(cmd, def)
@@ -161,18 +127,10 @@ local function do_help_cmd(name, param)
 	end
 end
 
-if INIT == "client" then
-	core.register_chatcommand("help", {
-		params = core.gettext("[all | <cmd>]"),
-		description = core.gettext("Get help for commands"),
-		func = function(param)
-			return do_help_cmd(nil, param)
-		end,
-	})
-else
-	core.register_chatcommand("help", {
-		params = S("[all | privs | <cmd>] [-t]"),
-		description = S("Get help for commands or list privileges (-t: output in chat)"),
-		func = do_help_cmd,
-	})
-end
+core.register_chatcommand("help", {
+	params = core.gettext("[all | <cmd>]"),
+	description = core.gettext("Get help for commands"),
+	func = function(param)
+		return do_help_cmd(nil, param)
+	end,
+})

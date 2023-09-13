@@ -61,19 +61,6 @@ struct SubgameSpec
 	void checkAndLog() const;
 };
 
-SubgameSpec findSubgame(const std::string &id);
-SubgameSpec findWorldSubgame(const std::string &world_path);
-
-std::set<std::string> getAvailableGameIds();
-std::vector<SubgameSpec> getAvailableGames();
-// Get the list of paths to mods in the environment variable $MINETEST_MOD_PATH
-std::vector<std::string> getEnvModPaths();
-
-bool getWorldExists(const std::string &world_path);
-//! Try to get the displayed name of a world
-std::string getWorldName(const std::string &world_path, const std::string &default_name);
-std::string getWorldGameId(const std::string &world_path, bool can_be_legacy = false);
-
 struct WorldSpec
 {
 	std::string path;
@@ -92,5 +79,3 @@ struct WorldSpec
 		return (!name.empty() && !path.empty() && !gameid.empty());
 	}
 };
-
-std::vector<WorldSpec> getAvailableWorlds();

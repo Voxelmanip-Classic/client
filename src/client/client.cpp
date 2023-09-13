@@ -279,11 +279,6 @@ const std::vector<ModSpec>& Client::getMods() const
 	return client_modspec_temp;
 }
 
-const ModSpec* Client::getModSpec(const std::string &modname) const
-{
-	return NULL;
-}
-
 void Client::Stop()
 {
 	m_shutdown = true;

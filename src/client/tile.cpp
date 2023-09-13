@@ -82,7 +82,7 @@ static bool replace_ext(std::string &path, const char *ext)
 std::string getImagePath(std::string path)
 {
 	// A NULL-ended list of possible image extensions
-	const char *extensions[] = { "png", "jpg", "bmp", "tga", NULL };
+	const char *extensions[] = { "png", "jpg", "tga", NULL };
 	// If there is no extension, assume PNG
 	if (removeStringEnd(path, extensions).empty())
 		path = path + ".png";
@@ -536,11 +536,6 @@ u32 TextureSource::getTextureId(const std::string &name)
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
 
-// Like blit_with_alpha, but only modifies destination pixels that
-// are fully opaque
-static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
-
 // Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
 // If the ratio is 255 or -1 and keep_alpha is true, then it multiples the
 // color alpha with the destination alpha.
@@ -555,11 +550,6 @@ static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 // Apply a mask to an image
 static void apply_mask(video::IImage *mask, video::IImage *dst,
 		v2s32 mask_pos, v2s32 dst_pos, v2u32 size);
-
-// Draw or overlay a crack
-static void draw_crack(video::IImage *crack, video::IImage *dst,
-		bool use_overlay, s32 frame_count, s32 progression,
-		video::IVideoDriver *driver, u8 tiles = 1);
 
 // Brighten image
 void brighten(video::IImage *image);
@@ -1223,61 +1213,10 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				<<std::endl;*/
 
 		/*
-			[crack:N:P
-			[cracko:N:P
-			Adds a cracking texture
-			N = animation frame count, P = crack progression
-		*/
-		if (str_starts_with(part_of_name, "[crack"))
-		{
-			if (baseimg == NULL) {
-				errorstream<<"generateImagePart(): baseimg == NULL "
-						<<"for part_of_name=\""<<part_of_name
-						<<"\", cancelling."<<std::endl;
-				return false;
-			}
-
-			// Crack image number and overlay option
-			// Format: crack[o][:<tiles>]:<frame_count>:<frame>
-			bool use_overlay = (part_of_name[6] == 'o');
-			Strfnd sf(part_of_name);
-			sf.next(":");
-			s32 frame_count = stoi(sf.next(":"));
-			s32 progression = stoi(sf.next(":"));
-			s32 tiles = 1;
-			// Check whether there is the <tiles> argument, that is,
-			// whether there are 3 arguments. If so, shift values
-			// as the first and not the last argument is optional.
-			auto s = sf.next(":");
-			if (!s.empty()) {
-				tiles = frame_count;
-				frame_count = progression;
-				progression = stoi(s);
-			}
-
-			if (progression >= 0) {
-				/*
-					Load crack image.
-
-					It is an image with a number of cracking stages
-					horizontally tiled.
-				*/
-				video::IImage *img_crack = m_sourcecache.getOrLoad(
-					"crack_anylength.png");
-
-				if (img_crack) {
-					draw_crack(img_crack, baseimg,
-						use_overlay, frame_count,
-						progression, driver, tiles);
-					img_crack->drop();
-				}
-			}
-		}
-		/*
 			[combine:WxH:X,Y=filename:X,Y=filename2
 			Creates a bigger texture from any amount of smaller ones
 		*/
-		else if (str_starts_with(part_of_name, "[combine"))
+		if (str_starts_with(part_of_name, "[combine"))
 		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1893,30 +1832,6 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 	}
 }
 
-/*
-	Draw an image on top of another one, using the alpha channel of the
-	source image; only modify fully opaque pixels in destinaion
-*/
-static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
-{
-	for (u32 y0=0; y0<size.Y; y0++)
-	for (u32 x0=0; x0<size.X; x0++)
-	{
-		s32 src_x = src_pos.X + x0;
-		s32 src_y = src_pos.Y + y0;
-		s32 dst_x = dst_pos.X + x0;
-		s32 dst_y = dst_pos.Y + y0;
-		video::SColor src_c = src->getPixel(src_x, src_y);
-		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		if (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
-		{
-			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
-			dst->setPixel(dst_x, dst_y, dst_c);
-		}
-	}
-}
-
 // This function has been disabled because it is currently unused.
 // Feel free to re-enable if you find it handy.
 #if 0
@@ -2068,37 +1983,6 @@ video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
 exit__has_tile:
 	crack_tile->drop();
 	return result;
-}
-
-static void draw_crack(video::IImage *crack, video::IImage *dst,
-		bool use_overlay, s32 frame_count, s32 progression,
-		video::IVideoDriver *driver, u8 tiles)
-{
-	// Dimension of destination image
-	core::dimension2d<u32> dim_dst = dst->getDimension();
-	// Limit frame_count
-	if (frame_count > (s32) dim_dst.Height)
-		frame_count = dim_dst.Height;
-	if (frame_count < 1)
-		frame_count = 1;
-	// Dimension of the scaled crack stage,
-	// which is the same as the dimension of a single destination frame
-	core::dimension2d<u32> frame_size(
-		dim_dst.Width,
-		dim_dst.Height / frame_count
-	);
-	video::IImage *crack_scaled = create_crack_image(crack, progression,
-			frame_size, tiles, driver);
-	if (!crack_scaled)
-		return;
-
-	auto blit = use_overlay ? blit_with_alpha_overlay : blit_with_alpha;
-	for (s32 i = 0; i < frame_count; ++i) {
-		v2s32 dst_pos(0, frame_size.Height * i);
-		blit(crack_scaled, dst, v2s32(0,0), dst_pos, frame_size);
-	}
-
-	crack_scaled->drop();
 }
 
 void brighten(video::IImage *image)

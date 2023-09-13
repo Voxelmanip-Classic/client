@@ -148,7 +148,7 @@ local function buttonhandler(this, fields)
 	end
 
 	if fields.share_debug then
-		local path = core.get_user_path() .. DIR_DELIM .. "debug.txt"
+		local path = core.get_user_path() .. "/debug.txt"
 		core.share_file(path)
 	end
 
@@ -159,8 +159,5 @@ local function buttonhandler(this, fields)
 end
 
 function create_about_dialog()
-	local retval =
-		dialog_create("dlg_about", get_formspec, buttonhandler, nil)
-
-	return retval
+	return dialog_create("dlg_about", get_formspec, buttonhandler, nil)
 end

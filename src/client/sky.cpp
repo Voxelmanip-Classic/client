@@ -77,7 +77,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	// Create materials
 
 	m_materials[0] = baseMaterial();
-	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
+	m_materials[0].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	m_materials[0].Lighting = true;
 	m_materials[0].ColorMaterial = video::ECM_NONE;
 
@@ -810,60 +810,12 @@ void Sky::setMoonTexture(const std::string &moon_texture,
 
 void Sky::setStarCount(u16 star_count)
 {
-	// Allow force updating star count at game init.
-	if (m_star_params.count != star_count || m_first_update) {
-		m_star_params.count = star_count;
-		updateStars();
-	}
+
 }
 
 void Sky::updateStars()
 {
-	m_stars.reset(new scene::SMeshBuffer());
-	// Stupid IrrLicht doesn’t allow non-indexed rendering, and indexed quad
-	// rendering is slow due to lack of hardware support. So as indices are
-	// 16-bit and there are 4 vertices per star... the limit is 2^16/4 = 0x4000.
-	// That should be well enough actually.
-	if (m_star_params.count > 0x4000) {
-		warningstream << "Requested " << m_star_params.count << " stars but " << 0x4000 << " is the max\n";
-		m_star_params.count = 0x4000;
-	}
-	m_stars->Vertices.reallocate(4 * m_star_params.count);
-	m_stars->Indices.reallocate(6 * m_star_params.count);
 
-	video::SColor fallback_color = m_star_params.starcolor; // used on GLES 2 “without shaders”
-	PcgRandom rgen(m_seed);
-	float d = (0.006 / 2) * m_star_params.scale;
-	for (u16 i = 0; i < m_star_params.count; i++) {
-		v3f r = v3f(
-			rgen.range(-10000, 10000),
-			rgen.range(-10000, 10000),
-			rgen.range(-10000, 10000)
-		);
-		core::CMatrix4<f32> a;
-		a.buildRotateFromTo(v3f(0, 1, 0), r);
-		v3f p = v3f(-d, 1, -d);
-		v3f p1 = v3f(d, 1, -d);
-		v3f p2 = v3f(d, 1, d);
-		v3f p3 = v3f(-d, 1, d);
-		a.rotateVect(p);
-		a.rotateVect(p1);
-		a.rotateVect(p2);
-		a.rotateVect(p3);
-		m_stars->Vertices.push_back(video::S3DVertex(p, {}, fallback_color, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p1, {}, fallback_color, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p2, {}, fallback_color, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p3, {}, fallback_color, {}));
-	}
-	for (u16 i = 0; i < m_star_params.count; i++) {
-		m_stars->Indices.push_back(i * 4 + 0);
-		m_stars->Indices.push_back(i * 4 + 1);
-		m_stars->Indices.push_back(i * 4 + 2);
-		m_stars->Indices.push_back(i * 4 + 2);
-		m_stars->Indices.push_back(i * 4 + 3);
-		m_stars->Indices.push_back(i * 4 + 0);
-	}
-	m_stars->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Sky::setSkyColors(const SkyColor &sky_color)

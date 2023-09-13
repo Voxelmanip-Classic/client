@@ -26,7 +26,6 @@
 -- element.getFormspec() returns formspec of tabview                          --
 --------------------------------------------------------------------------------
 
---------------------------------------------------------------------------------
 local function add_tab(self,tab)
 	assert(tab.size == nil or (type(tab.size) == table and
 			tab.size.x ~= nil and tab.size.y ~= nil))
@@ -57,7 +56,6 @@ local function add_tab(self,tab)
 	end
 end
 
---------------------------------------------------------------------------------
 local function get_formspec(self)
 	if self.hidden or (self.parent ~= nil and self.parent.hidden) then
 		return ""
@@ -69,36 +67,16 @@ local function get_formspec(self)
 	if self.parent == nil and not prepend then
 		local tsize = tab.tabsize or {width=self.width, height=self.height}
 
-
-		local padding = TOUCHSCREEN_GUI and "0.05,0.05" or "0,0"
-
-		prepend = string.format([[
-			formspec_version[6]
-			size[%f,%f,%s]
-			position[0.5,0.55]
-			padding[%s]
-			style_type[box;noclip=true]
-		]], tsize.width, tsize.height,
-				dump(self.fixed_size),
-				padding)
-
-		prepend = string.format("size[%f,%f,%s]position[0.5,0.65]", tsize.width, tsize.height,
-				dump(self.fixed_size))
-
+		prepend = string.format("size[%f,%f]position[0.5,0.65]", tsize.width, tsize.height)
 	end
 
-	return (prepend or "") .. self:tab_header() .. content
+	return (prepend or "") .. content
 end
 
---------------------------------------------------------------------------------
 local function handle_buttons(self,fields)
 
 	if self.hidden then
 		return false
-	end
-
-	if self:handle_tab_buttons(fields) then
-		return true
 	end
 
 	if self.glb_btn_handler ~= nil and
@@ -114,7 +92,6 @@ local function handle_buttons(self,fields)
 	return false
 end
 
---------------------------------------------------------------------------------
 local function handle_events(self,event)
 
 	if self.hidden then
@@ -134,75 +111,6 @@ local function handle_events(self,event)
 	return false
 end
 
-
---------------------------------------------------------------------------------
-local function tab_header(self)
-
-	if #self.tablist == 1 then return '' end
-
-	local toadd = ""
-
-	for i=1,#self.tablist,1 do
-
-		if toadd ~= "" then
-			toadd = toadd .. ","
-		end
-
-		toadd = toadd .. "  " .. self.tablist[i].caption .. "  "
-	end
-	return string.format("tabheader[%f,%f;%s;%s;%i;true;false]",
-			self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
-end
-
---------------------------------------------------------------------------------
-local function switch_to_tab(self, index)
-	--first call on_change for tab to leave
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, self.tablist[index].name)
-	end
-
-	--update tabview data
-	self.last_tab_index = index
-	local old_tab = self.current_tab
-	self.current_tab = self.tablist[index].name
-
-	if (self.autosave_tab) then
-		core.settings:set(self.name .. "_LAST",self.current_tab)
-	end
-
-	-- call for tab to enter
-	if self.tablist[index].on_change ~= nil then
-		self.tablist[index].on_change("ENTER",
-				old_tab,self.current_tab)
-	end
-end
-
---------------------------------------------------------------------------------
-local function handle_tab_buttons(self,fields)
-	--save tab selection to config file
-	if fields[self.name] then
-		local index = tonumber(fields[self.name])
-		switch_to_tab(self, index)
-		return true
-	end
-
-	return false
-end
-
---------------------------------------------------------------------------------
-local function set_tab_by_name(self, name)
-	for i=1,#self.tablist,1 do
-		if self.tablist[i].name == name then
-			switch_to_tab(self, i)
-			return true
-		end
-	end
-
-	return false
-end
-
---------------------------------------------------------------------------------
 local function hide_tabview(self)
 	self.hidden=true
 
@@ -213,7 +121,6 @@ local function hide_tabview(self)
 	end
 end
 
---------------------------------------------------------------------------------
 local function show_tabview(self)
 	self.hidden=false
 
@@ -233,41 +140,29 @@ local tabview_metatable = {
 	hide                      = hide_tabview,
 	delete                    = function(self) ui.delete(self) end,
 	set_parent                = function(self,parent) self.parent = parent end,
-	set_autosave_tab          =
-			function(self,value) self.autosave_tab = value end,
-	set_tab                   = set_tab_by_name,
 	set_global_button_handler =
 			function(self,handler) self.glb_btn_handler = handler end,
 	set_global_event_handler =
 			function(self,handler) self.glb_evt_handler = handler end,
-	set_fixed_size =
-			function(self,state) self.fixed_size = state end,
-	tab_header = tab_header,
 	handle_tab_buttons = handle_tab_buttons
 }
 
 tabview_metatable.__index = tabview_metatable
 
---------------------------------------------------------------------------------
-function tabview_create(name, size, tabheaderpos)
+function tabview_create(name, size)
 	local self = {}
 
 	self.name     = name
 	self.type     = "toplevel"
 	self.width    = size.x
 	self.height   = size.y
-	self.header_x = tabheaderpos.x
-	self.header_y = tabheaderpos.y
 
 	setmetatable(self, tabview_metatable)
 
-	self.fixed_size     = true
 	self.hidden         = true
 	self.current_tab    = nil
 	self.last_tab_index = 1
 	self.tablist        = {}
-
-	self.autosave_tab   = false
 
 	ui.add(self)
 	return self

@@ -79,14 +79,15 @@ void set_default_settings()
 	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
 	settings->setDefault("keymap_mute", "KEY_KEY_M");
 	settings->setDefault("keymap_cinematic", "");
-	settings->setDefault("keymap_toggle_block_bounds", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
 	settings->setDefault("keymap_toggle_fog", "KEY_F3");
 #if DEBUG
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
+	settings->setDefault("keymap_toggle_block_bounds", "");
 #else
 	settings->setDefault("keymap_toggle_update_camera", "");
+	settings->setDefault("keymap_toggle_block_bounds", "KEY_F4");
 #endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");

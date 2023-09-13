@@ -37,25 +37,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ServerModManager::ServerModManager(const std::string &worldpath):
 	configuration()
 {
-	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
-	// Add all game mods and all world mods
-	configuration.addGameMods(gamespec);
-	configuration.addModsInPath(worldpath + DIR_DELIM + "worldmods", "worldmods");
-
-	// Load normal mods
-	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	configuration.addModsFromConfig(worldmt, gamespec.addon_mods_paths);
-	configuration.checkConflictsAndDeps();
-}
-
-// clang-format on
-const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
-{
-	for (const auto &mod : configuration.getMods()) {
-		if (mod.name == modname)
-			return &mod;
-	}
-
-	return nullptr;
 }

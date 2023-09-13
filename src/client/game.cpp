@@ -594,12 +594,6 @@ public:
 	}
 };
 
-#ifdef HAVE_TOUCHSCREENGUI
-#define SIZE_TAG "size[11,5.5]"
-#else
-#define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
-#endif
-
 /****************************************************************************
  ****************************************************************************/
 
@@ -813,7 +807,6 @@ private:
 		bool disable_camera_update = false;
 	};
 
-	void showDeathFormspec();
 	void showPauseMenu();
 
 	void pauseAnimation();
@@ -1968,8 +1961,6 @@ void Game::processKeyInput()
 		decreaseViewRange();
 	} else if (wasKeyDown(KeyType::RANGESELECT)) {
 		toggleFullViewRange();
-	} else if (wasKeyDown(KeyType::ZOOM)) {
-		checkZoomEnabled();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_NEXT)) {
 		quicktune->next();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_PREV)) {
@@ -2119,11 +2110,7 @@ void Game::toggleFreeMove()
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	if (free_move) {
-		if (client->checkPrivilege("fly")) {
-			m_game_ui->showTranslatedStatusText("Fly mode enabled");
-		} else {
-			m_game_ui->showTranslatedStatusText("Fly mode enabled (note: no 'fly' privilege)");
-		}
+		m_game_ui->showTranslatedStatusText("Fly mode enabled");
 	} else {
 		m_game_ui->showTranslatedStatusText("Fly mode disabled");
 	}
@@ -2152,11 +2139,7 @@ void Game::toggleFast()
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
 	if (fast_move) {
-		if (has_fast_privs) {
-			m_game_ui->showTranslatedStatusText("Fast mode enabled");
-		} else {
-			m_game_ui->showTranslatedStatusText("Fast mode enabled (note: no 'fast' privilege)");
-		}
+		m_game_ui->showTranslatedStatusText("Fast mode enabled");
 	} else {
 		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
@@ -2335,14 +2318,10 @@ void Game::increaseViewRange()
 
 	if (range_new >= 4000) {
 		range_new = 4000;
-		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
-				fwgettext("Viewing range changed to %d (the maximum), but limited to %d by game or mod", range_new, server_limit) :
-				fwgettext("Viewing range changed to %d (the maximum)", range_new);
+		std::wstring msg = fwgettext("Viewing range changed to %d (the maximum)", range_new);
 		m_game_ui->showStatusText(msg);
 	} else {
-		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
-				fwgettext("Viewing range changed to %d, but limited to %d by game or mod", range_new, server_limit) :
-				fwgettext("Viewing range changed to %d", range_new);
+		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
 		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2357,14 +2336,10 @@ void Game::decreaseViewRange()
 
 	if (range_new <= 20) {
 		range_new = 20;
-		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
-				fwgettext("Viewing changed to %d (the minimum), but limited to %d by game or mod", range_new, server_limit) :
-				fwgettext("Viewing changed to %d (the minimum)", range_new);
+		std::wstring msg = fwgettext("Viewing changed to %d (the minimum)", range_new);
 		m_game_ui->showStatusText(msg);
 	} else {
-		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
-				fwgettext("Viewing range changed to %d, but limited to %d by game or mod", range_new, server_limit) :
-				fwgettext("Viewing range changed to %d", range_new);
+		std::wstring msg = 	fwgettext("Viewing range changed to %d", range_new);
 		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2375,23 +2350,12 @@ void Game::toggleFullViewRange()
 {
 	draw_control->range_all = !draw_control->range_all;
 	if (draw_control->range_all) {
-		if (sky->getFogDistance() >= 0) {
-			m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled, but forbidden by game or mod");
-		} else {
-			m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled");
-		}
+		m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled");
 	} else {
 		m_game_ui->showTranslatedStatusText("Unlimited viewing range disabled");
 	}
 }
 
-
-void Game::checkZoomEnabled()
-{
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (player->getZoomFOV() < 0.001f || player->getFov().fov > 0.0f)
-		m_game_ui->showTranslatedStatusText("Zoom currently disabled by game or mod");
-}
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
@@ -2631,8 +2595,6 @@ void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *
 	// builtin/client/init.lua
 	if (client->modsLoaded())
 		client->getScript()->on_death();
-	else
-		showDeathFormspec();
 
 	/* Handle visualization */
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
@@ -4175,29 +4137,6 @@ void Game::readSettings()
  Shutdown / cleanup
  ****************************************************************************/
 /****************************************************************************/
-
-void Game::showDeathFormspec()
-{
-	static std::string formspec_str =
-		std::string("formspec_version[1]") +
-		SIZE_TAG
-		"bgcolor[#320000b4;true]"
-		"label[4.85,1.35;" + gettext("You died") + "]"
-		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
-		;
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler  *
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(formspec_str);
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
-
-	auto *&formspec = m_game_ui->getFormspecGUI();
-	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
-		sound_manager.get());
-	formspec->setFocus("btn_respawn");
-}
 
 void Game::showPauseMenu()
 {

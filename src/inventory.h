@@ -131,24 +131,6 @@ struct ItemStack
 		return metadata.getToolCapabilities(*item_cap); // Check for override
 	}
 
-	// Wear out (only tools)
-	// Returns true if the item is (was) a tool
-	bool addWear(s32 amount, const IItemDefManager *itemdef)
-	{
-		if(getDefinition(itemdef).type == ITEM_TOOL)
-		{
-			if(amount > 65535 - wear)
-				clear();
-			else if(amount < -wear)
-				wear = 0;
-			else
-				wear += amount;
-			return true;
-		}
-
-		return false;
-	}
-
 	// If possible, adds newitem to this item.
 	// If cannot be added at all, returns the item back.
 	// If can be added partly, decremented item is returned back.

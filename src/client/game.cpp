@@ -3690,7 +3690,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		if (runData.nodig_delay_timer > 0.3)
 			runData.nodig_delay_timer = 0.3;
 		else if (runData.dig_instantly)
-			runData.nodig_delay_timer = 0.15;
+			runData.nodig_delay_timer = 0.2;
 
 		if (client->modsLoaded() &&
 				client->getScript()->on_dignode(nodepos, n)) {

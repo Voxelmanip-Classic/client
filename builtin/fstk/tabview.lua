@@ -144,7 +144,6 @@ local tabview_metatable = {
 			function(self,handler) self.glb_btn_handler = handler end,
 	set_global_event_handler =
 			function(self,handler) self.glb_evt_handler = handler end,
-	handle_tab_buttons = handle_tab_buttons
 }
 
 tabview_metatable.__index = tabview_metatable

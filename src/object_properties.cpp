@@ -117,64 +117,6 @@ bool ObjectProperties::validate()
 	return ret;
 }
 
-void ObjectProperties::serialize(std::ostream &os) const
-{
-	writeU8(os, 4); // PROTOCOL_VERSION >= 37
-	writeU16(os, hp_max);
-	writeU8(os, physical);
-	writeF32(os, 0.f); // Removed property (weight)
-	writeV3F32(os, collisionbox.MinEdge);
-	writeV3F32(os, collisionbox.MaxEdge);
-	writeV3F32(os, selectionbox.MinEdge);
-	writeV3F32(os, selectionbox.MaxEdge);
-	writeU8(os, pointable);
-	os << serializeString16(visual);
-	writeV3F32(os, visual_size);
-	writeU16(os, textures.size());
-	for (const std::string &texture : textures) {
-		os << serializeString16(texture);
-	}
-	writeV2S16(os, spritediv);
-	writeV2S16(os, initial_sprite_basepos);
-	writeU8(os, is_visible);
-	writeU8(os, makes_footstep_sound);
-	writeF32(os, automatic_rotate);
-	os << serializeString16(mesh);
-	writeU16(os, colors.size());
-	for (video::SColor color : colors) {
-		writeARGB8(os, color);
-	}
-	writeU8(os, collideWithObjects);
-	writeF32(os, stepheight);
-	writeU8(os, automatic_face_movement_dir);
-	writeF32(os, automatic_face_movement_dir_offset);
-	writeU8(os, backface_culling);
-	os << serializeString16(nametag);
-	writeARGB8(os, nametag_color);
-	writeF32(os, automatic_face_movement_max_rotation_per_sec);
-	os << serializeString16(infotext);
-	os << serializeString16(wield_item);
-	writeS8(os, glow);
-	writeU16(os, breath_max);
-	writeF32(os, eye_height);
-	writeF32(os, zoom_fov);
-	writeU8(os, use_texture_alpha);
-	os << serializeString16(damage_texture_modifier);
-	writeU8(os, shaded);
-	writeU8(os, show_on_minimap);
-
-	if (!nametag_bgcolor)
-		writeARGB8(os, NULL_BGCOLOR);
-	else if (nametag_bgcolor.value().getAlpha() == 0)
-		writeARGB8(os, video::SColor(0, 0, 0, 0));
-	else
-		writeARGB8(os, nametag_bgcolor.value());
-
-	writeU8(os, rotate_selectionbox);
-	// Add stuff only at the bottom.
-	// Never remove anything, because we don't want new versions of this
-}
-
 void ObjectProperties::deSerialize(std::istream &is)
 {
 	int version = readU8(is);

@@ -250,56 +250,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp,
 		const u16 initial_wear)
 {
-
-	// Group dig_immediate defaults to fixed time and no wear
-	if (tp->groupcaps.find("dig_immediate") == tp->groupcaps.cend()) {
-		switch (itemgroup_get(groups, "dig_immediate")) {
-		case 2:
-			return DigParams(true, 0.5, 0, "dig_immediate");
-		case 3:
-			return DigParams(true, 0, 0, "dig_immediate");
-		default:
-			break;
-		}
-	}
-
-	// Values to be returned (with a bit of conversion)
-	bool result_diggable = false;
-	float result_time = 0.0;
-	u32 result_wear = 0;
-	std::string result_main_group;
-
-	int level = itemgroup_get(groups, "level");
-	for (const auto &groupcap : tp->groupcaps) {
-		const ToolGroupCap &cap = groupcap.second;
-
-		int leveldiff = cap.maxlevel - level;
-		if (leveldiff < 0)
-			continue;
-
-		const std::string &groupname = groupcap.first;
-		float time = 0;
-		int rating = itemgroup_get(groups, groupname);
-		bool time_exists = cap.getTime(rating, &time);
-		if (!time_exists)
-			continue;
-
-		if (leveldiff > 1)
-			time /= leveldiff;
-		if (!result_diggable || time < result_time) {
-			result_time = time;
-			result_diggable = true;
-			// The actual number of uses increases
-			// exponentially with leveldiff.
-			// If the levels are equal, real_uses equals cap.uses.
-			u32 real_uses = cap.uses * pow(3.0, leveldiff);
-			real_uses = MYMIN(real_uses, U16_MAX);
-			result_wear = calculateResultWear(real_uses, initial_wear);
-			result_main_group = groupname;
-		}
-	}
-
-	return DigParams(result_diggable, result_time, result_wear, result_main_group);
+	return DigParams(true, 0, 0, "dig_immediate");
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,

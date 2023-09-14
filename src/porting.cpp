@@ -655,45 +655,6 @@ void initializePaths()
 #endif  // USE_GETTEXT
 }
 
-////
-//// OS-specific Secure Random
-////
-
-#ifdef WIN32
-
-bool secure_rand_fill_buf(void *buf, size_t len)
-{
-	HCRYPTPROV wctx;
-
-	if (!CryptAcquireContext(&wctx, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
-		return false;
-
-	CryptGenRandom(wctx, len, (BYTE *)buf);
-	CryptReleaseContext(wctx, 0);
-	return true;
-}
-
-#else
-
-bool secure_rand_fill_buf(void *buf, size_t len)
-{
-	// N.B.  This function checks *only* for /dev/urandom, because on most
-	// common OSes it is non-blocking, whereas /dev/random is blocking, and it
-	// is exceptionally uncommon for there to be a situation where /dev/random
-	// exists but /dev/urandom does not.  This guesswork is necessary since
-	// random devices are not covered by any POSIX standard...
-	FILE *fp = fopen("/dev/urandom", "rb");
-	if (!fp)
-		return false;
-
-	bool success = fread(buf, len, 1, fp) == 1;
-
-	fclose(fp);
-	return success;
-}
-
-#endif
-
 void attachOrCreateConsole()
 {
 #ifdef _WIN32

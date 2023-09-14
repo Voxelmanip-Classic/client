@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "httpfetch.h"
-#include "porting.h" // for sleep_ms(), get_sysinfo(), secure_rand_fill_buf()
+#include "porting.h" // for sleep_ms(), get_sysinfo()
 #include <iostream>
 #include <sstream>
 #include <list>

@@ -80,19 +80,18 @@ void set_default_settings()
 	settings->setDefault("keymap_mute", "KEY_KEY_M");
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
-	settings->setDefault("keymap_toggle_chat", "KEY_F2");
-	settings->setDefault("keymap_toggle_fog", "KEY_F3");
+	settings->setDefault("keymap_screenshot", "KEY_F2");
+	settings->setDefault("keymap_toggle_debug", "KEY_F3");
+
 #if DEBUG
-	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 	settings->setDefault("keymap_toggle_block_bounds", "");
 #else
-	settings->setDefault("keymap_toggle_update_camera", "");
 	settings->setDefault("keymap_toggle_block_bounds", "KEY_F4");
 #endif
-	settings->setDefault("keymap_toggle_debug", "KEY_F5");
-	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
-	settings->setDefault("keymap_camera_mode", "KEY_F7");
-	settings->setDefault("keymap_screenshot", "KEY_F12");
+	settings->setDefault("keymap_camera_mode", "KEY_F5");
+	settings->setDefault("keymap_toggle_chat", "KEY_F7");
+	settings->setDefault("keymap_toggle_profiler", "");
+	settings->setDefault("keymap_toggle_fog", "");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
 	settings->setDefault("keymap_slot1", "KEY_KEY_1");
@@ -127,19 +126,6 @@ void set_default_settings()
 	settings->setDefault("keymap_slot30", "");
 	settings->setDefault("keymap_slot31", "");
 	settings->setDefault("keymap_slot32", "");
-
-#ifndef NDEBUG
-	// Default keybinds for quicktune in debug builds
-	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
-	settings->setDefault("keymap_quicktune_next", "KEY_END");
-	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
-	settings->setDefault("keymap_quicktune_inc", "KEY_PRIOR");
-#else
-	settings->setDefault("keymap_quicktune_prev", "");
-	settings->setDefault("keymap_quicktune_next", "");
-	settings->setDefault("keymap_quicktune_dec", "");
-	settings->setDefault("keymap_quicktune_inc", "");
-#endif
 
 	settings->setDefault("keymap_tabb", "KEY_TAB");
 

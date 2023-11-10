@@ -64,7 +64,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
-#include "util/quicktune_shortcutter.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 #include "version.h"
@@ -641,7 +640,6 @@ struct GameRunData {
 	float jump_timer_down;        // since last key down
 	float jump_timer_down_before; // from key down until key down again
 
-	float damage_flash;
 	float update_draw_list_timer;
 	float touch_blocks_timer;
 
@@ -731,12 +729,10 @@ protected:
 	void toggleMinimap(bool shift_pressed);
 	void toggleFog();
 	void toggleDebug();
-	void toggleUpdateCamera();
 
 	void increaseViewRange();
 	void decreaseViewRange();
 	void toggleFullViewRange();
-	void checkZoomEnabled();
 
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
@@ -862,7 +858,6 @@ private:
 	LogOutputBuffer m_chat_log_buf;
 
 	EventManager *eventmgr = nullptr;
-	QuicktuneShortcutter *quicktune = nullptr;
 
 	std::unique_ptr<GameUI> m_game_ui;
 	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
@@ -1009,7 +1004,6 @@ Game::~Game()
 
 	delete hud;
 	delete camera;
-	delete quicktune;
 	delete eventmgr;
 	delete texture_src;
 	delete shader_src;
@@ -1291,10 +1285,8 @@ bool Game::init(
 	nodedef_manager = createNodeDefManager();
 
 	eventmgr = new EventManager();
-	quicktune = new QuicktuneShortcutter();
 
-	if (!(texture_src && shader_src && itemdef_manager && nodedef_manager
-			&& eventmgr && quicktune))
+	if (!(texture_src && shader_src && itemdef_manager && nodedef_manager && eventmgr))
 		return false;
 
 	if (!initSound())
@@ -1420,15 +1412,10 @@ bool Game::createClient(const GameStartData &start_data)
 	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
 	str += L" ";
 	str += utf8_to_wide(g_version_hash);
-	str += L" [";
-	str += driver->getName();
-	str += L"]";
 
 	device->setWindowCaption(str.c_str());
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	player->hurt_tilt_timer = 0;
-	player->hurt_tilt_strength = 0;
 
 	hud = new Hud(client, player, &player->inventory);
 
@@ -1949,8 +1936,6 @@ void Game::processKeyInput()
 		m_game_ui->toggleChat(client);
 	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
 		toggleFog();
-	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
-		toggleUpdateCamera();
 	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug();
 	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
@@ -1961,23 +1946,11 @@ void Game::processKeyInput()
 		decreaseViewRange();
 	} else if (wasKeyDown(KeyType::RANGESELECT)) {
 		toggleFullViewRange();
-	} else if (wasKeyDown(KeyType::QUICKTUNE_NEXT)) {
-		quicktune->next();
-	} else if (wasKeyDown(KeyType::QUICKTUNE_PREV)) {
-		quicktune->prev();
-	} else if (wasKeyDown(KeyType::QUICKTUNE_INC)) {
-		quicktune->inc();
-	} else if (wasKeyDown(KeyType::QUICKTUNE_DEC)) {
-		quicktune->dec();
 	}
 
 	if (!isKeyDown(KeyType::JUMP) && runData.reset_jump_timer) {
 		runData.reset_jump_timer = false;
 		runData.jump_timer_up = 0.0f;
-	}
-
-	if (quicktune->hasMessage()) {
-		m_game_ui->showStatusText(utf8_to_wide(quicktune->getMessage()));
 	}
 }
 
@@ -2300,30 +2273,16 @@ void Game::toggleDebug()
 }
 
 
-void Game::toggleUpdateCamera()
-{
-	m_flags.disable_camera_update = !m_flags.disable_camera_update;
-	if (m_flags.disable_camera_update)
-		m_game_ui->showTranslatedStatusText("Camera update disabled");
-	else
-		m_game_ui->showTranslatedStatusText("Camera update enabled");
-}
-
-
 void Game::increaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
-	s16 server_limit = sky->getFogDistance();
 
 	if (range_new >= 4000) {
 		range_new = 4000;
-		std::wstring msg = fwgettext("Viewing range changed to %d (the maximum)", range_new);
-		m_game_ui->showStatusText(msg);
-	} else {
-		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
-		m_game_ui->showStatusText(msg);
 	}
+
+	m_game_ui->showStatusText(fwgettext("Viewing range changed to %d", range_new));
 	g_settings->set("viewing_range", itos(range_new));
 }
 
@@ -2332,16 +2291,12 @@ void Game::decreaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
-	s16 server_limit = sky->getFogDistance();
 
 	if (range_new <= 20) {
 		range_new = 20;
-		std::wstring msg = fwgettext("Viewing changed to %d (the minimum)", range_new);
-		m_game_ui->showStatusText(msg);
-	} else {
-		std::wstring msg = 	fwgettext("Viewing range changed to %d", range_new);
-		m_game_ui->showStatusText(msg);
 	}
+
+	m_game_ui->showStatusText(fwgettext("Viewing range changed to %d", range_new));
 	g_settings->set("viewing_range", itos(range_new));
 }
 
@@ -2563,22 +2518,6 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 	if (!event->player_damage.effect)
 		return;
 
-	// Damage flash and hurt tilt are not used at death
-	if (client->getHP() > 0) {
-		LocalPlayer *player = client->getEnv().getLocalPlayer();
-
-		f32 hp_max = player->getCAO() ?
-			player->getCAO()->getProperties().hp_max : 20;
-		f32 damage_ratio = event->player_damage.amount / hp_max;
-
-		runData.damage_flash += 95.0f + 64.f * damage_ratio;
-		runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
-
-		player->hurt_tilt_timer = 1.5f;
-		player->hurt_tilt_strength =
-			rangelim(damage_ratio * 5.0f, 1.0f, 4.0f);
-	}
-
 	// Play damage sound
 	client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_DAMAGE));
 }
@@ -2598,9 +2537,6 @@ void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *
 
 	/* Handle visualization */
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	runData.damage_flash = 0;
-	player->hurt_tilt_timer = 0;
-	player->hurt_tilt_strength = 0;
 }
 
 void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
@@ -3862,16 +3798,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	}
 
 	/*
-		Damage camera tilt
-	*/
-	if (player->hurt_tilt_timer > 0.0f) {
-		player->hurt_tilt_timer -= dtime * 6.0f;
-
-		if (player->hurt_tilt_timer < 0.0f)
-			player->hurt_tilt_strength = 0.0f;
-	}
-
-	/*
 		Update minimap pos and rotation
 	*/
 	if (mapper && m_game_ui->m_flags.show_hud) {
@@ -3984,18 +3910,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	if (m_game_ui->m_flags.show_profiler_graph)
 		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
-
-	/*
-		Damage flash
-	*/
-	if (runData.damage_flash > 0.0f) {
-		video::SColor color(runData.damage_flash, 180, 0, 0);
-		driver->draw2DRectangle(color,
-					core::rect<s32>(0, 0, screensize.X, screensize.Y),
-					NULL);
-
-		runData.damage_flash -= 384.0f * dtime;
-	}
 
 	/*
 		==================== End scene ====================

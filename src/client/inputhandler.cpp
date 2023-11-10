@@ -59,7 +59,6 @@ void KeyCache::populate()
 	key[KeyType::TOGGLE_HUD] = getKeySetting("keymap_toggle_hud");
 	key[KeyType::TOGGLE_CHAT] = getKeySetting("keymap_toggle_chat");
 	key[KeyType::TOGGLE_FOG] = getKeySetting("keymap_toggle_fog");
-	key[KeyType::TOGGLE_UPDATE_CAMERA] = getKeySetting("keymap_toggle_update_camera");
 	key[KeyType::TOGGLE_DEBUG] = getKeySetting("keymap_toggle_debug");
 	key[KeyType::TOGGLE_PROFILER] = getKeySetting("keymap_toggle_profiler");
 	key[KeyType::CAMERA_MODE] = getKeySetting("keymap_camera_mode");
@@ -69,11 +68,6 @@ void KeyCache::populate()
 			getKeySetting("keymap_decrease_viewing_range_min");
 	key[KeyType::RANGESELECT] = getKeySetting("keymap_rangeselect");
 	key[KeyType::ZOOM] = getKeySetting("keymap_zoom");
-
-	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
-	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
-	key[KeyType::QUICKTUNE_INC] = getKeySetting("keymap_quicktune_inc");
-	key[KeyType::QUICKTUNE_DEC] = getKeySetting("keymap_quicktune_dec");
 
 	key[KeyType::TABB] = getKeySetting("keymap_tabb");
 

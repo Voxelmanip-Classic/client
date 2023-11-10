@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"
-#include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
 #include "database/database.h"
@@ -89,11 +88,9 @@ static void set_allowed_options(OptionList *allowed_options);
 static void print_help(const OptionList &allowed_options);
 static void print_allowed_options(const OptionList &allowed_options);
 static void print_version();
-static void print_modified_quicktune_values();
 
 static bool setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
-static bool use_debugger(int argc, char *argv[]);
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
 static void uninit_common();
 static void startup_message();
@@ -101,7 +98,6 @@ static bool read_config_file(const Settings &cmd_args);
 static void init_log_streams(const Settings &cmd_args);
 
 static bool game_configure(GameParams *game_params, const Settings &cmd_args);
-static void game_configure_port(GameParams *game_params, const Settings &cmd_args);
 
 /**********************************************************************/
 
@@ -140,11 +136,6 @@ int main(int argc, char *argv[])
 	if (!setup_log_params(cmd_args))
 		return 1;
 
-	if (cmd_args.getFlag("debugger")) {
-		if (!use_debugger(argc, argv))
-			warningstream << "Continuing without debugger" << std::endl;
-	}
-
 	porting::signal_handler_init();
 
 #ifdef __ANDROID__
@@ -175,8 +166,6 @@ int main(int argc, char *argv[])
 	// Update configuration file
 	if (!g_settings_path.empty())
 		g_settings->updateConfigFile(g_settings_path.c_str());
-
-	print_modified_quicktune_values();
 
 	END_DEBUG_EXCEPTION_HANDLER
 
@@ -300,23 +289,6 @@ static void print_version()
 	std::cout << g_build_info << std::endl;
 }
 
-static void print_modified_quicktune_values()
-{
-	bool header_printed = false;
-	std::vector<std::string> names = getQuicktuneNames();
-
-	for (const std::string &name : names) {
-		QuicktuneValue val = getQuicktuneValue(name);
-		if (!val.modified)
-			continue;
-		if (!header_printed) {
-			dstream << "Modified quicktune values:" << std::endl;
-			header_printed = true;
-		}
-		dstream << name << " = " << val.getString() << std::endl;
-	}
-}
-
 static bool setup_log_params(const Settings &cmd_args)
 {
 	// Quiet mode, print errors only
@@ -383,126 +355,6 @@ static bool create_userdata_path()
 #endif
 
 	return success;
-}
-
-namespace {
-	std::string findProgram(const char *name)
-	{
-		char *path_c = getenv("PATH");
-		if (!path_c)
-			return "";
-		std::istringstream iss(path_c);
-		std::string checkpath;
-		while (!iss.eof()) {
-			std::getline(iss, checkpath, PATH_DELIM[0]);
-			if (!checkpath.empty() && checkpath.back() != DIR_DELIM_CHAR)
-				checkpath.push_back(DIR_DELIM_CHAR);
-			checkpath.append(name);
-			if (fs::IsExecutable(checkpath))
-				return checkpath;
-		}
-		return "";
-	}
-
-#ifdef _WIN32
-	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
-#else
-	const char *debuggerNames[] = {"gdb", "lldb"};
-#endif
-	template <class T>
-	void getDebuggerArgs(T &out, int i) {
-		if (i == 0) {
-			for (auto s : {"-q", "--batch", "-iex", "set confirm off",
-				"-ex", "run", "-ex", "bt", "--args"})
-				out.push_back(s);
-		} else if (i == 1) {
-			for (auto s : {"-Q", "-b", "-o", "run", "-k", "bt\nq", "--"})
-				out.push_back(s);
-		}
-	}
-}
-
-static bool use_debugger(int argc, char *argv[])
-{
-#if defined(__ANDROID__)
-	return false;
-#else
-#ifdef _WIN32
-	if (IsDebuggerPresent()) {
-		warningstream << "Process is already being debugged." << std::endl;
-		return false;
-	}
-#endif
-
-	char exec_path[1024];
-	if (!porting::getCurrentExecPath(exec_path, sizeof(exec_path)))
-		return false;
-
-	int debugger = -1;
-	std::string debugger_path;
-	for (u32 i = 0; i < ARRLEN(debuggerNames); i++) {
-		debugger_path = findProgram(debuggerNames[i]);
-		if (!debugger_path.empty()) {
-			debugger = i;
-			break;
-		}
-	}
-	if (debugger == -1) {
-		warningstream << "Couldn't find a debugger to use. Try installing gdb or lldb." << std::endl;
-		return false;
-	}
-
-	// Try to be helpful
-#ifdef NDEBUG
-	if (strcmp(BUILD_TYPE, "RelWithDebInfo") != 0) {
-		warningstream << "It looks like your " PROJECT_NAME_C " executable was built without "
-			"debug symbols (BUILD_TYPE=" BUILD_TYPE "), so you won't get useful backtraces."
-			<< std::endl;
-	}
-#endif
-
-	std::vector<const char*> new_args;
-	new_args.push_back(debugger_path.c_str());
-	getDebuggerArgs(new_args, debugger);
-	// Copy the existing arguments
-	new_args.push_back(exec_path);
-	for (int i = 1; i < argc; i++) {
-		if (!strcmp(argv[i], "--debugger"))
-			continue;
-		new_args.push_back(argv[i]);
-	}
-	new_args.push_back(nullptr);
-
-#ifdef _WIN32
-	// Special treatment for Windows
-	std::string cmdline;
-	for (int i = 1; new_args[i]; i++) {
-		if (i > 1)
-			cmdline += ' ';
-		cmdline += porting::QuoteArgv(new_args[i]);
-	}
-
-	STARTUPINFO startup_info = {};
-	PROCESS_INFORMATION process_info = {};
-	bool ok = CreateProcess(new_args[0], cmdline.empty() ? nullptr : &cmdline[0],
-		nullptr, nullptr, false, CREATE_UNICODE_ENVIRONMENT,
-		nullptr, nullptr, &startup_info, &process_info);
-	if (!ok) {
-		warningstream << "CreateProcess: " << GetLastError() << std::endl;
-		return false;
-	}
-	DWORD exitcode = 0;
-	WaitForSingleObject(process_info.hProcess, INFINITE);
-	GetExitCodeProcess(process_info.hProcess, &exitcode);
-	exit(exitcode);
-	// not reached
-#else
-	errno = 0;
-	execv(new_args[0], const_cast<char**>(new_args.data()));
-	warningstream << "execv: " << strerror(errno) << std::endl;
-	return false;
-#endif
-#endif
 }
 
 static bool init_common(const Settings &cmd_args, int argc, char *argv[])
@@ -617,22 +469,10 @@ static void init_log_streams(const Settings &cmd_args)
 
 static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 {
-	game_configure_port(game_params, cmd_args);
+	if (cmd_args.exists("port"))
+		game_params->socket_port = cmd_args.getU16("port");
+	else
+		game_params->socket_port = 30000;
 
 	return true;
-}
-
-static void game_configure_port(GameParams *game_params, const Settings &cmd_args)
-{
-	if (cmd_args.exists("port")) {
-		game_params->socket_port = cmd_args.getU16("port");
-	} else {
-		if (game_params->is_dedicated_server)
-			game_params->socket_port = g_settings->getU16("port");
-		else
-			game_params->socket_port = g_settings->getU16("remote_port");
-	}
-
-	if (game_params->socket_port == 0)
-		game_params->socket_port = DEFAULT_SERVER_PORT;
 }

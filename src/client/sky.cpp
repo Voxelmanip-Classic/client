@@ -85,7 +85,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
 	m_materials[2] = baseMaterial();
-	m_materials[2].setTexture(0, tsrc->getTextureForMesh("sunrisebg.png"));
+	m_materials[2].setTexture(0, tsrc->getTextureForMesh("blank.png"));
 	m_materials[2].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
 	setSunTexture(m_sun_params.texture, m_sun_params.tonemap, tsrc);
@@ -260,29 +260,9 @@ void Sky::render()
 
 		// Draw sunrise/sunset horizon glow texture
 		// (textures/base/pack/sunrisebg.png)
-		if (m_sun_params.sunrise_visible) {
-			driver->setMaterial(m_materials[2]);
-			float mid1 = 0.25;
-			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
-			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
-			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
-			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
-			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
-			vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (wicked_time_of_day < 0.5)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
-			}
-			driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
-		}
+		//if (m_sun_params.sunrise_visible) {
+
+		//}
 
 		// Draw sun
 		if (m_sun_params.visible)

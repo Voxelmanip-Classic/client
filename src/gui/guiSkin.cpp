@@ -46,7 +46,7 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Colors[EGDC_FOCUSED_EDITABLE]	= video::SColor(255,240,240,255);
 
 
-	Sizes[EGDS_SCROLLBAR_SIZE] = 14;
+	Sizes[EGDS_SCROLLBAR_SIZE] = 18;
 	Sizes[EGDS_WINDOW_BUTTON_WIDTH] = 15;
 	Sizes[EGDS_CHECK_BOX_WIDTH] = 18;
 	Sizes[EGDS_BUTTON_WIDTH] = 80;

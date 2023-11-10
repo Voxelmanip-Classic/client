@@ -529,7 +529,6 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			AHBB_Dir_Right_Left, 3.0f);
 
 	m_settings_bar.addButton(fly_id, L"fly", "fly_btn.png");
-	m_settings_bar.addButton(noclip_id, L"noclip", "noclip_btn.png");
 	m_settings_bar.addButton(fast_id, L"fast", "fast_btn.png");
 	m_settings_bar.addButton(camera_id, L"camera", "camera_btn.png");
 	m_settings_bar.addButton(range_id, L"rangeview", "rangeview_btn.png");

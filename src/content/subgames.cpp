@@ -19,27 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <common/c_internal.h>
 #include "content/subgames.h"
-#include "porting.h"
-#include "filesys.h"
-#include "settings.h"
-#include "log.h"
-#include "util/strfnd.h"
-#include "defaultsettings.h" // for set_default_settings
-#include "util/string.h"
 
 void SubgameSpec::checkAndLog() const
 {
-	// Log deprecation messages
-	auto handling_mode = get_deprecated_handling_mode();
-	if (!deprecation_msgs.empty() && handling_mode != DeprecatedHandlingMode::Ignore) {
-		std::ostringstream os;
-		os << "Game " << title << " at " << path << ":" << std::endl;
-		for (auto msg : deprecation_msgs)
-			os << "\t" << msg << std::endl;
 
-		if (handling_mode == DeprecatedHandlingMode::Error)
-			throw ModError(os.str());
-		else
-			warningstream << os.str();
-	}
 }

@@ -126,7 +126,7 @@ public:
 		sun.sunrise_visible = true;
 		sun.texture = "sun.png";
 		sun.tonemap = "sun_tonemap.png";
-		sun.sunrise = "sunrisebg.png";
+		sun.sunrise = "blank.png";
 		sun.scale = 1;
 		return sun;
 	}

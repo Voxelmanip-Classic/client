@@ -98,9 +98,6 @@ public:
 
 	video::SColor light_color = video::SColor(255, 255, 255, 255);
 
-	float hurt_tilt_timer = 0.0f;
-	float hurt_tilt_strength = 0.0f;
-
 	GenericCAO *getCAO() const { return m_cao; }
 
 	ClientActiveObject *getParent() const;

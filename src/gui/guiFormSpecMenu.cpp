@@ -4193,8 +4193,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// from m_selected_item.
 		u32 drop_amount = 0;
 
+#if 0
 		// Set this number to a positive value to generate a craft action at s.
 		u32 craft_amount = 0;
+#endif
 
 		switch (updown) {
 		case BET_DOWN: {
@@ -4218,6 +4220,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				break;
 			}
 			if (s.listname == "craftpreview") {
+#if 0
 				// Craft preview has been clicked: craft
 				if (button == BET_MIDDLE)
 					craft_amount = 10;
@@ -4231,7 +4234,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				// Holding shift moves the crafted item to the inventory
 				m_shift_move_after_craft = event.MouseInput.Shift;
-
+#endif
 			} else if (!m_selected_item && button != BET_WHEEL_UP && !empty) {
 				// Non-empty stack has been clicked: select or shift-move it
 				u32 count = 0;

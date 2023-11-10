@@ -456,7 +456,7 @@ bool IClientMediaDownloader::checkAndLoad(
 		const std::string &data, bool is_from_cache, Client *client)
 {
 	const char *cached_or_received = is_from_cache ? "cached" : "received";
-	const char *cached_or_received_uc = is_from_cache ? "Cached" : "Received";
+	//const char *cached_or_received_uc = is_from_cache ? "Cached" : "Received";
 	std::string sha1_hex = hex_encode(sha1);
 
 	// Compute actual checksum of data

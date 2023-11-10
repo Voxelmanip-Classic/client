@@ -189,8 +189,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		// Set the window caption
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
-			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + wstrgettext("Main Menu") + L"]").c_str());
+			L" " + utf8_to_wide(g_version_hash)).c_str());
 
 		try {	// This is used for catching disconnects
 
@@ -416,14 +415,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		return false;
 	}
 
-	// If using simple singleplayer mode, override
-	if (start_data.isSinglePlayer()) {
-		start_data.name = "singleplayer";
-		start_data.password = "";
-		start_data.socket_port = myrand_range(49152, 65535);
-	} else {
-		g_settings->set("name", start_data.name);
-	}
+	g_settings->set("name", start_data.name);
 
 	if (start_data.name.length() > PLAYERNAME_SIZE - 1) {
 		error_message = gettext("Player name too long.");

@@ -347,9 +347,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
 	m_playernode->updateAbsolutePosition();
 
-	// Get camera tilt timer (hurt animation)
-	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
-
 	// Fall bobbing animation
 	float fall_bobbing = 0;
 	if(player->camera_impact >= 1 && m_camera_mode < CAMERA_MODE_THIRD)
@@ -388,10 +385,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		}
 
 		// Set head node transformation
-		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
+		eye_offset.Y += fall_bobbing;
 		m_headnode->setPosition(eye_offset);
-		m_headnode->setRotation(v3f(pitch, 0,
-			cameratilt * player->hurt_tilt_strength));
+		m_headnode->setRotation(v3f(pitch, 0, 0));
 		m_headnode->updateAbsolutePosition();
 	}
 

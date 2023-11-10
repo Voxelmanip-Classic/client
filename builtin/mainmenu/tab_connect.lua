@@ -18,7 +18,7 @@
 local function get_formspec(tabview, name, tabdata)
 	header_show()
 
-	local retval = [[
+	local retval = formspec_styling..[[
 		label[1,0.75;Log into your Voxelmanip Classic server account.]
 
 		container[0.7,1.75]
@@ -55,8 +55,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		gamedata.playername     = fields.username
 		gamedata.password       = fields.password
-		gamedata.address        = "voxelmanip.se"
-		gamedata.port           = 30001
+		gamedata.address        = serverdata.address
+		gamedata.port           = serverdata.port
 		gamedata.selected_world = 0
 		gamedata.singleplayer   = false
 
@@ -66,7 +66,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_register then
-		local dlg = create_register_dialog("voxelmanip.se", 30001, nil)
+		local dlg = create_register_dialog(serverdata.address, serverdata.port, nil)
 		dlg:set_parent(tabview)
 		tabview:hide()
 		dlg:show()

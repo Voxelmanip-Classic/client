@@ -24,6 +24,7 @@ local function register_formspec(dialogdata)
 		"formspec_version[4]",
 		"size[10,", tostring(buttons_y + 1.2), "]",
 		"position[0.5,0.55]",
+		formspec_styling,
 		"set_focus[", (dialogdata.name ~= "" and "password" or "name"), "]",
 		"label[0.375,0.8;", fgettext("Register"), "]",
 
@@ -91,7 +92,7 @@ local function register_buttonhandler(this, fields)
 end
 
 --------------------------------------------------------------------------------
-function create_register_dialog(address, port, server)
+function create_register_dialog(address, port)
 	assert(address)
 	assert(type(port) == "number")
 
@@ -101,7 +102,6 @@ function create_register_dialog(address, port, server)
 			nil)
 	retval.data.address = address
 	retval.data.port = port
-	retval.data.server = server
 	retval.data.name = core.settings:get("name") or ""
 	return retval
 end

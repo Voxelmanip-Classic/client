@@ -15,9 +15,29 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+serverdata = {
+	address ="voxelmanip.se",
+	port = 30001
+}
+
+--serverdata = {
+--	address = "127.0.0.1",
+--	port = 30000
+--}
+
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 defaulttexturedir = core.get_texturepath_share() .. "/base/pack/"
+
+function tex(name)
+	return core.formspec_escape(defaulttexturedir .. name .. ".png")
+end
+
+formspec_styling = table.concat{
+	"style_type[button;border=false;bgimg=", tex('ozxa_button'),
+	";bgimg_hovered=", tex('ozxa_button_hover'),
+	";bgimg_pressed=", tex('ozxa_button_pressed'), ";bgimg_middle=2,2;bgimg_middle=2,2;font_size=+1]"
+}
 
 function core.sound_stop(handle, ...)
 	return handle:stop(...)

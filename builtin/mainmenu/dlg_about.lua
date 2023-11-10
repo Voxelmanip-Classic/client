@@ -114,7 +114,7 @@ local function get_formspec(dialogdata)
 		"formspec_version[6]",
 		"size[15,9,false]",
 		"position[0.5,0.55]",
-		"real_coordinates[true]",
+		formspec_styling,
 
 		"image[0.25,0.25;1.5,1.5;",
 		core.formspec_escape(defaulttexturedir.."logo.png"), "]",

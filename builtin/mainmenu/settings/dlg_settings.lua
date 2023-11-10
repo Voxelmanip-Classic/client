@@ -345,6 +345,7 @@ local function get_formspec(dialogdata)
 		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + 1), "]",
 		"padding[0,0]",
 		offset,
+		formspec_styling,
 
 		"bgcolor[#0000]",
 

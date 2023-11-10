@@ -47,3 +47,44 @@ jobs:
         env:
           CC: gcc-12
           CXX: g++-12
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: clone irrlicht
+        run: |
+          git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-freetype
+            mingw-w64-x86_64-libpng
+            mingw-w64-x86_64-luajit
+            mingw-w64-x86_64-openal
+            mingw-w64-x86_64-libogg
+            mingw-w64-x86_64-libvorbis
+            mingw-w64-x86_64-zstd
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G Ninja
+          ninja -j2
+          ninja package
+
+      - name: Upload output as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/voxelmanip_classic-*-win64.zip

@@ -56,10 +56,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: clone irrlicht
-        run: |
-          git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
-
       - uses: msys2/setup-msys2@v2
         with:
           update: true
@@ -78,6 +74,7 @@ jobs:
 
       - name: Build
         run: |
+          git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
           mkdir build
           cd build
           cmake .. -G Ninja

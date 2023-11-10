@@ -504,11 +504,11 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.refresh_globals()
-	local function is_equal(element,uid) --uid match
-		if element.name == uid then
-			return true
-		end
-	end
+	--local function is_equal(element,uid) --uid match
+	--	if element.name == uid then
+	--		return true
+	--	end
+	--end
 
 end
 

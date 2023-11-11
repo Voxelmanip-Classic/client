@@ -25,9 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ParticleParameters;
 struct ParticleSpawnerParameters;
 struct SkyboxParams;
-struct SunParams;
-struct MoonParams;
-struct StarParams;
 
 enum ClientEventType : u8
 {
@@ -141,8 +138,5 @@ struct ClientEvent
 			f32 speed_x;
 			f32 speed_y;
 		} cloud_params;
-		SunParams *sun_params;
-		MoonParams *moon_params;
-		StarParams *star_params;
 	};
 };

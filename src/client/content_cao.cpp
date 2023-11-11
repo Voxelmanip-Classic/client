@@ -1247,11 +1247,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
 
-				// don't filter low-res textures, makes them look blurry
-				// player models have a res of 64
-				const core::dimension2d<u32> &size = texture->getOriginalSize();
-				const u32 res = std::min(size.Height, size.Width);
-
 				material.forEachTexture([=] (auto &tex) {
 					tex.setFiltersMinetest(false, false, use_anisotropic_filter);
 				});

@@ -48,33 +48,6 @@ struct SkyboxParams
 	float fog_start { -1.0f };
 };
 
-struct SunParams
-{
-	bool visible;
-	std::string texture;
-	std::string tonemap;
-	std::string sunrise;
-	bool sunrise_visible;
-	f32 scale;
-};
-
-struct MoonParams
-{
-	bool visible;
-	std::string texture;
-	std::string tonemap;
-	f32 scale;
-};
-
-struct StarParams
-{
-	bool visible;
-	u32 count;
-	video::SColor starcolor;
-	f32 scale;
-	f32 day_opacity;
-};
-
 struct CloudParams
 {
 	float density;
@@ -117,39 +90,6 @@ public:
 		sky.dawn_sky = video::SColor(255, 180, 186, 250);
 		sky.night_sky = video::SColor(255, 0, 107, 255);
 		return sky;
-	}
-
-	static const SunParams getSunDefaults()
-	{
-		SunParams sun;
-		sun.visible = true;
-		sun.sunrise_visible = true;
-		sun.texture = "sun.png";
-		sun.tonemap = "sun_tonemap.png";
-		sun.sunrise = "blank.png";
-		sun.scale = 1;
-		return sun;
-	}
-
-	static const MoonParams getMoonDefaults()
-	{
-		MoonParams moon;
-		moon.visible = true;
-		moon.texture = "moon.png";
-		moon.tonemap = "moon_tonemap.png";
-		moon.scale = 1;
-		return moon;
-	}
-
-	static const StarParams getStarDefaults()
-	{
-		StarParams stars;
-		stars.visible = true;
-		stars.count = 1000;
-		stars.starcolor = video::SColor(105, 235, 235, 255);
-		stars.scale = 1;
-		stars.day_opacity = 0;
-		return stars;
 	}
 
 	static const CloudParams getCloudDefaults()

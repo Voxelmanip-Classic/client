@@ -193,7 +193,6 @@ void set_default_settings()
 	settings->setDefault("minimap_double_scan_height", "true");
 
 	// Effects
-	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "true");
 	settings->setDefault("mip_map", "true");
 	settings->setDefault("anisotropic_filter", "true");

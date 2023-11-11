@@ -225,9 +225,6 @@ view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 #    Whether to fog out the end of the visible area.
 enable_fog (Fog) bool true
 
-#    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
-directional_colored_fog (Colored fog) bool true
-
 #    Fraction of the visible distance at which fog starts to be rendered
 fog_start (Fog start) float 0.4 0.0 0.99
 

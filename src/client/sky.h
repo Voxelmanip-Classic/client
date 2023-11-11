@@ -64,28 +64,8 @@ public:
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
 
-	void setSunVisible(bool sun_visible) { m_sun_params.visible = sun_visible; }
-	bool getSunVisible() const { return m_sun_params.visible; }
-	void setSunTexture(const std::string &sun_texture,
-		const std::string &sun_tonemap, ITextureSource *tsrc);
-	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
-	void setSunriseVisible(bool glow_visible) { m_sun_params.sunrise_visible = glow_visible; }
-	void setSunriseTexture(const std::string &sunglow_texture, ITextureSource* tsrc);
 	v3f getSunDirection();
-
-	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
-	bool getMoonVisible() const { return m_moon_params.visible; }
-	void setMoonTexture(const std::string &moon_texture,
-		const std::string &moon_tonemap, ITextureSource *tsrc);
-	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
 	v3f getMoonDirection();
-
-	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
-	void setStarCount(u16 star_count);
-	void setStarColor(video::SColor star_color) { m_star_params.starcolor = star_color; }
-	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; updateStars(); }
-	void setStarDayOpacity(f32 day_opacity) { m_star_params.day_opacity = day_opacity; }
-
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
 
@@ -113,7 +93,7 @@ public:
 	void clearSkyboxTextures() { m_sky_params.textures.clear(); }
 	void addTextureToSkybox(const  std::string &texture, int material_id,
 		ITextureSource *tsrc);
-	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
+
 	void setFogDistance(s16 fog_distance) { m_sky_params.fog_distance = fog_distance; }
 	s16 getFogDistance() const { return m_sky_params.fog_distance; }
 
@@ -171,7 +151,6 @@ private:
 	float m_cloud_brightness = 0.5f;
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
-	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
 	bool m_enable_shaders = false;
 
@@ -192,30 +171,14 @@ private:
 	);
 
 	SkyboxParams m_sky_params;
-	SunParams m_sun_params;
-	MoonParams m_moon_params;
-	StarParams m_star_params;
 
 	bool m_default_tint = true;
 
 	u64 m_seed = 0;
-	irr_ptr<scene::SMeshBuffer> m_stars;
-	video::SColorf m_star_color;
 
-	video::ITexture *m_sun_texture;
-	video::ITexture *m_moon_texture;
-	video::ITexture *m_sun_tonemap;
-	video::ITexture *m_moon_tonemap;
-
-	void updateStars();
-
-	void draw_sun(video::IVideoDriver *driver, const video::SColor &suncolor,
-		const video::SColor &suncolor2, float wicked_time_of_day);
-	void draw_moon(video::IVideoDriver *driver, const video::SColor &mooncolor,
-		const video::SColor &mooncolor2, float wicked_time_of_day);
 	void draw_sky_body(std::array<video::S3DVertex, 4> &vertices,
 		float pos_1, float pos_2, const video::SColor &c);
-	void draw_stars(video::IVideoDriver *driver, float wicked_time_of_day);
+
 	void place_sky_body(std::array<video::S3DVertex, 4> &vertices,
 		float horizon_position,	float day_position);
 };

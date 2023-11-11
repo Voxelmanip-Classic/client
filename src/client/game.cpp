@@ -343,7 +343,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<float> m_animation_timer_delta_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_delta_pixel;
 	CachedPixelShaderSetting<float, 3> m_day_light;
-	CachedPixelShaderSetting<float, 4> m_star_color;
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
@@ -403,7 +402,6 @@ public:
 		m_animation_timer_delta_vertex("animationTimerDelta"),
 		m_animation_timer_delta_pixel("animationTimerDelta"),
 		m_day_light("dayLight"),
-		m_star_color("starColor"),
 		m_eye_position_pixel("eyePosition"),
 		m_eye_position_vertex("eyePosition"),
 		m_minimap_yaw("yawVec"),
@@ -476,10 +474,6 @@ public:
 			sunlight.g,
 			sunlight.b };
 		m_day_light.set(dnc, services);
-
-		video::SColorf star_color = m_sky->getCurrentStarColor();
-		float clr[4] = {star_color.r, star_color.g, star_color.b, star_color.a};
-		m_star_color.set(clr, services);
 
 		u32 animation_timer = m_client->getEnv().getFrameTime() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
@@ -1633,21 +1627,6 @@ bool Game::getServerContent(bool *aborted)
 				message << " " << receive << "%";
 			message.precision(2);
 
-			// The media downloading speed status only works on multiplayer
-			// servers without a remote media server. If this is not the case
-			// then 'cur' will be 0, so don't show it on the progress bar.
-			float cur = client->getCurRate();
-			if (cur > 0) {
-				std::string cur_unit = gettext("KiB/s");
-
-				if (cur > 900) {
-					cur /= 1024.0;
-					cur_unit = gettext("MiB/s");
-				}
-
-				message << " (" << cur << ' ' << cur_unit << ")";
-			}
-
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
 			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()), guienv,
 				texture_src, dtime, progress);
@@ -2108,7 +2087,6 @@ void Game::toggleFreeMoveAlt()
 void Game::toggleFast()
 {
 	bool fast_move = !g_settings->getBool("fast_move");
-	bool has_fast_privs = client->checkPrivilege("fast");
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
 	if (fast_move) {
@@ -2535,8 +2513,6 @@ void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *
 	if (client->modsLoaded())
 		client->getScript()->on_death();
 
-	/* Handle visualization */
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
 }
 
 void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
@@ -2765,35 +2741,11 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	delete event->set_sky;
 }
 
-void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
-{
-	sky->setSunVisible(event->sun_params->visible);
-	sky->setSunTexture(event->sun_params->texture,
-		event->sun_params->tonemap, texture_src);
-	sky->setSunScale(event->sun_params->scale);
-	sky->setSunriseVisible(event->sun_params->sunrise_visible);
-	sky->setSunriseTexture(event->sun_params->sunrise, texture_src);
-	delete event->sun_params;
-}
+void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam) { }
 
-void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
-{
-	sky->setMoonVisible(event->moon_params->visible);
-	sky->setMoonTexture(event->moon_params->texture,
-		event->moon_params->tonemap, texture_src);
-	sky->setMoonScale(event->moon_params->scale);
-	delete event->moon_params;
-}
+void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam) { }
 
-void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam)
-{
-	sky->setStarsVisible(event->star_params->visible);
-	sky->setStarCount(event->star_params->count);
-	sky->setStarColor(event->star_params->starcolor);
-	sky->setStarScale(event->star_params->scale);
-	sky->setStarDayOpacity(event->star_params->day_opacity);
-	delete event->star_params;
-}
+void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam) { }
 
 void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 		CameraOrientation *cam)
@@ -3943,8 +3895,7 @@ void Game::updateShadows()
 
 	float timeoftheday = getWickedTimeOfDay(in_timeofday);
 	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
-	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
-	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
+	shadow->setShadowIntensity(client->getEnv().getLocalPlayer()->getLighting().shadow_intensity);
 
 	timeoftheday = fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;

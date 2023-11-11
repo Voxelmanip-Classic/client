@@ -354,7 +354,11 @@ endif()
 # When cross-compiling assume the user doesn't want to run the executable anyway,
 # otherwise place it in <source dir>/bin/ since Minetest can only run from there.
 if(NOT CMAKE_CROSSCOMPILING)
-	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
+	if(WIN32)
+		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}")
+	else()
+		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
+	endif()
 endif()
 
 if(BUILD_CLIENT)
@@ -599,6 +603,8 @@ endif()
 # Installation
 
 if(WIN32)
+	install(DIRECTORY ${CMAKE_BINARY_DIR}/dlls/ DESTINATION ${BINDIR} OPTIONAL)
+
 	if(EXTRA_DLL)
 		install(FILES ${EXTRA_DLL} DESTINATION ${BINDIR})
 	endif()

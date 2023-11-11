@@ -78,8 +78,15 @@ jobs:
           git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
           mkdir build
           cd build
-          cmake .. -G Ninja
-          ninja -j2
+          cmake .. -DRUN_IN_PLACE=0 -DENABLE_SYSTEM_GMP=OFF -DENABLE_SYSTEM_JSONCPP=OFF -G Ninja
+          ninja -j4
+
+      - name: Bundle up and package
+        run: |
+          cd build
+          mkdir dlls
+          ../misc/mingw-bundledlls --copy ../voxelmanip_classic.exe
+          mv ../*.dll dlls/
           ninja package
 
       - name: Upload output as artifact

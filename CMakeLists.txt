@@ -19,13 +19,13 @@ set(GCC_MINIMUM_VERSION "7.5")
 set(CLANG_MINIMUM_VERSION "6.0")
 
 # You should not need to edit these manually, use util/bump_version.sh
-set(VERSION_MAJOR 5)
-set(VERSION_MINOR 8)
-set(VERSION_PATCH 0)
+set(VERSION_MAJOR 2023)
+set(VERSION_MINOR 11)
+set(VERSION_PATCH 11)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
-set(DEVELOPMENT_BUILD TRUE)
+set(DEVELOPMENT_BUILD FALSE)
 
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
@@ -41,15 +41,7 @@ endif()
 
 message(STATUS "*** Will build version ${VERSION_STRING} ***")
 
-
-# Configuration options
-set(DEFAULT_RUN_IN_PLACE FALSE)
-if(WIN32)
-	set(DEFAULT_RUN_IN_PLACE TRUE)
-endif()
-set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
-	"Run directly in source directory structure")
-
+set(RUN_IN_PLACE FALSE CACHE BOOL "Run directly in source directory structure")
 
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
@@ -130,7 +122,7 @@ if(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
 	endif()
 	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 
-	set(TARGET_VER_S 1.9.0mt10)
+	set(TARGET_VER_S 1.9.0mt12)
 	string(REPLACE "mt" "." TARGET_VER ${TARGET_VER_S})
 	if(IrrlichtMt_VERSION VERSION_LESS ${TARGET_VER})
 		message(FATAL_ERROR "At least IrrlichtMt ${TARGET_VER_S} is required to build")

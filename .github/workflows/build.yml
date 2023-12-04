@@ -10,11 +10,7 @@ on:
       - 'src/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/buildbot/**'
-      - 'util/ci/**'
       - '.github/workflows/**.yml'
-      - 'Dockerfile'
-      - '.dockerignore'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -23,30 +19,23 @@ on:
       - 'src/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/buildbot/**'
-      - 'util/ci/**'
       - '.github/workflows/**.yml'
-      - 'Dockerfile'
-      - '.dockerignore'
 
 jobs:
-  # Current gcc version
-  gcc_12:
+  linux:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
         run: |
-          source ./util/ci/common.sh
-          install_linux_deps g++-12 libluajit-5.1-dev
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake g++-12 libluajit-5.1-dev libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev libzstd-dev
           git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
 
       - name: Build
         run: |
-          ./util/ci/build.sh
-        env:
-          CC: gcc-12
-          CXX: g++-12
+          cmake -B build -DRUN_IN_PLACE=TRUE
+          cmake --build build --parallel 4
 
   windows:
     runs-on: windows-latest
@@ -59,23 +48,28 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           update: true
+          msystem: UCRT64
           install: >-
-            base-devel
             git
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-freetype
-            mingw-w64-x86_64-libpng
-            mingw-w64-x86_64-luajit
-            mingw-w64-x86_64-openal
-            mingw-w64-x86_64-libogg
-            mingw-w64-x86_64-libvorbis
-            mingw-w64-x86_64-zstd
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-libpng
+            mingw-w64-ucrt-x86_64-luajit
+            mingw-w64-ucrt-x86_64-openal
+            mingw-w64-ucrt-x86_64-libogg
+            mingw-w64-ucrt-x86_64-libvorbis
+            mingw-w64-ucrt-x86_64-zstd
+
+      - name: Install external packages
+        run: |
+          wget https://grejer.voxelmanip.se/msys-pkgs/mingw-w64-ucrt-x86_64-freetype-2.13.2-1-any.pkg.tar.zst
+          pacman -U --noconfirm *.pkg.tar.zst
+
+          git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
 
       - name: Build
         run: |
-          git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
           mkdir build
           cd build
           cmake .. -DRUN_IN_PLACE=0 -DENABLE_SYSTEM_GMP=OFF -DENABLE_SYSTEM_JSONCPP=OFF -G Ninja
@@ -85,8 +79,7 @@ jobs:
         run: |
           cd build
           mkdir dlls
-          ../misc/mingw-bundledlls --copy ../voxelmanip_classic.exe
-          mv ../*.dll dlls/
+          for dll in $(ldd ../voxelmanip_classic.exe | grep $MINGW_PREFIX | sed 's/.* => //' | sed 's/ \(.*\)//'); do cp $dll dlls/; done
           ninja package
 
       - name: Upload output as artifact

@@ -40,10 +40,6 @@ local CHAR_CLASSES = {
 	FLAGS = "[%w_%-%.,]",
 }
 
-local function flags_to_table(flags)
-	return flags:gsub("%s+", ""):split(",", true) -- Remove all spaces and split
-end
-
 -- returns error message, or nil
 local function parse_setting_line(settings, line, read_all, base_level, allow_secure)
 

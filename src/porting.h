@@ -171,12 +171,6 @@ void migrateCachePath();
 */
 void initializePaths();
 
-/*
-	Return system information
-	e.g. "Linux/3.12.7 x86_64"
-*/
-std::string get_sysinfo();
-
 
 // Monotonic counter getters.
 
@@ -326,11 +320,6 @@ inline const char *getPlatformName()
 
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
 void attachOrCreateConsole();
-
-#ifdef _WIN32
-// Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
-std::string QuoteArgv(const std::string &arg);
-#endif
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 

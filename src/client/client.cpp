@@ -187,6 +187,9 @@ void Client::loadMods()
 		paths["mods"] = path_user;
 
 		std::string settings_path = path_user + DIR_DELIM + "mods.conf";
+
+		fs::CreateAllDirs(path_user);
+
 		modconf.addModsFromConfig(settings_path, paths);
 		modconf.checkConflictsAndDeps();
 	}
@@ -383,17 +386,11 @@ void Client::step(float dtime)
 		}
 	}
 
-	// UGLY hack to fix 2 second startup delay caused by non existent
-	// server client startup synchronization in local server or singleplayer mode
-	static bool initial_step = true;
-	if (initial_step) {
-		initial_step = false;
-	}
-	else if(m_state == LC_Created) {
+	if(m_state == LC_Created) {
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0) {
-			counter = 2.0;
+			counter = 10.0;
 
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");

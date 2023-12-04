@@ -61,18 +61,9 @@ GUIChatConsole::GUIChatConsole(
 	// load background settings
 	m_background_color.setAlpha(200);
 
-	// load the background texture depending on settings
-	ITextureSource *tsrc = client->getTextureSource();
-	if (tsrc->isKnownSourceImage("background_chat.png")) {
-		m_background = tsrc->getTexture("background_chat.png");
-		m_background_color.setRed(255);
-		m_background_color.setGreen(255);
-		m_background_color.setBlue(255);
-	} else {
-		m_background_color.setRed(0);
-		m_background_color.setGreen(0);
-		m_background_color.setBlue(0);
-	}
+	m_background_color.setRed(0);
+	m_background_color.setGreen(0);
+	m_background_color.setBlue(0);
 
 	const u16 chat_font_size = g_settings->getU16("chat_font_size");
 	m_font = g_fontengine->getFont(chat_font_size != 0 ?

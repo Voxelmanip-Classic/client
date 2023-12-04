@@ -17,7 +17,8 @@
 
 
 local component_funcs =  dofile(core.get_mainmenu_path() .. "/settings/components.lua")
-local quick_shader_component =  dofile(core.get_mainmenu_path() .. "/settings/shader_component.lua")
+local shadows_component =  dofile(core.get_mainmenu_path() .. "/settings/shadows_component.lua")
+
 
 local full_settings = settingtypes.parse_config_file(false, true)
 local info_icon_path = core.formspec_escape(defaulttexturedir .. "settings_info.png")
@@ -79,31 +80,11 @@ local change_keys = {
 
 
 add_page({
-	id = "most_used",
-	title = gettext("Most Used"),
-	content = {
-		top_btns,
-		"fullscreen",
-		PLATFORM ~= "Android" and "autosave_screensize" or false,
-		"touchscreen_threshold",
-		{ heading = gettext("Scaling") },
-		"gui_scaling",
-		"hud_scaling",
-		{ heading = gettext("Graphics / Performance") },
-		"smooth_lighting",
-		"enable_particles",
-		"enable_3d_clouds",
-		"connected_glass",
-		"leaves_style",
-		{ heading = gettext("Shaders") },
-		quick_shader_component,
-	},
-})
-
-add_page({
 	id = "accessibility",
 	title = gettext("Accessibility"),
 	content = {
+		top_btns,
+		{ heading = gettext("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
@@ -163,6 +144,11 @@ end
 load_settingtypes()
 
 table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+do
+	local content = page_by_id.graphics_and_audio_shaders.content
+	local idx = table.indexof(content, "enable_dynamic_shadows")
+	table.insert(content, idx, shadows_component)
+end
 
 
 local function get_setting_info(name)
@@ -201,7 +187,7 @@ end
 
 local function filter_page_content(page, query_keywords)
 	if #query_keywords == 0 then
-		return page.content
+		return page.content, 0
 	end
 
 	local retval = {}
@@ -237,12 +223,6 @@ local function update_filtered_pages(query)
 	filtered_pages = {}
 	filtered_page_by_id = {}
 
-	if query == "" or query == nil then
-		filtered_pages = all_pages
-		filtered_page_by_id = page_by_id
-		return filtered_pages[1].id
-	end
-
 	local query_keywords = {}
 	for word in query:lower():gmatch("%S+") do
 		table.insert(query_keywords, word)
@@ -253,7 +233,7 @@ local function update_filtered_pages(query)
 
 	for _, page in ipairs(all_pages) do
 		local content, page_weight = filter_page_content(page, query_keywords)
-		if #content > 0 then
+		if page_has_contents(page, content) then
 			local new_page = table.copy(page)
 			new_page.content = content
 
@@ -271,28 +251,114 @@ local function update_filtered_pages(query)
 end
 
 
-local function build_page_components(page)
-	local retval = {}
-	local j = 1
-	for i, content in ipairs(page.content) do
-		if content == false then
-			-- false is used to disable components conditionally (ie: Android specific)
-			j = j - 1
-		elseif type(content) == "string" then
-			local setting = get_setting_info(content)
-			assert(setting, "Unknown setting: " .. content)
+local function check_requirements(name, requires)
+	if requires == nil then
+		return true
+	end
 
+	local video_driver = core.get_active_driver()
+	local shaders_support = video_driver == "opengl" or video_driver == "ogles2"
+	local special = {
+		android = PLATFORM == "Android",
+		desktop = PLATFORM ~= "Android",
+		touchscreen_gui = TOUCHSCREEN_GUI,
+		keyboard_mouse = not TOUCHSCREEN_GUI,
+		shaders_support = shaders_support,
+		shaders = core.settings:get_bool("enable_shaders") and shaders_support,
+		opengl = video_driver == "opengl",
+		gles = video_driver:sub(1, 5) == "ogles",
+	}
+
+	for req_key, req_value in pairs(requires) do
+		if special[req_key] == nil then
+			local required_setting = get_setting_info(req_key)
+			if required_setting == nil then
+				core.log("warning", "Unknown setting " .. req_key .. " required by " .. name)
+			end
+			local actual_value = core.settings:get_bool(req_key,
+				required_setting and core.is_yes(required_setting.default))
+			if actual_value ~= req_value  then
+				return false
+			end
+		elseif special[req_key] ~= req_value then
+			return false
+		end
+	end
+
+	return true
+end
+
+
+function page_has_contents(page, actual_content)
+
+	for _, item in ipairs(actual_content) do
+		if item == false or item.heading then --luacheck: ignore
+			-- skip
+		elseif type(item) == "string" then
+			local setting = get_setting_info(item)
+			assert(setting, "Unknown setting: " .. item)
+			if check_requirements(setting.name, setting.requires) then
+				return true
+			end
+		elseif item.get_formspec then
+			if check_requirements(item.id, item.requires) then
+				return true
+			end
+		else
+			error("Unknown content in page: " .. dump(item))
+		end
+	end
+
+	return false
+end
+
+
+local function build_page_components(page)
+	-- Filter settings based on requirements
+	local content = {}
+	local last_heading
+	for _, item in ipairs(page.content) do
+		if item == false then --luacheck: ignore
+			-- skip
+		elseif item.heading then
+			last_heading = item
+		else
+			local name, requires
+			if type(item) == "string" then
+				local setting = get_setting_info(item)
+				assert(setting, "Unknown setting: " .. item)
+				name = setting.name
+				requires = setting.requires
+			elseif item.get_formspec then
+				name = item.id
+				requires = item.requires
+			else
+				error("Unknown content in page: " .. dump(item))
+			end
+
+			if check_requirements(name, requires) then
+				if last_heading then
+					content[#content + 1] = last_heading
+					last_heading = nil
+				end
+				content[#content + 1] = item
+			end
+		end
+	end
+
+	-- Create components
+	local retval = {}
+	for i, item in ipairs(content) do
+		if type(item) == "string" then
+			local setting = get_setting_info(item)
 			local component_func = component_funcs[setting.type]
 			assert(component_func, "Unknown setting type: " .. setting.type)
-			retval[j] = component_func(setting)
-		elseif content.get_formspec then
-			retval[j] = content
-		elseif content.heading then
-			retval[j] = component_funcs.heading(content.heading)
-		else
-			error("Unknown content in page: " .. dump(content))
+			retval[i] = component_func(setting)
+		elseif item.get_formspec then
+			retval[i] = item
+		elseif item.heading then
+			retval[i] = component_funcs.heading(item.heading)
 		end
-		j = j + 1
 	end
 	return retval
 end
@@ -315,9 +381,7 @@ local formspec_show_hack = false
 
 
 local function get_formspec(dialogdata)
-	header_hide()
-
-	local page_id = dialogdata.page_id or "most_used"
+	local page_id = dialogdata.page_id or "accessibility"
 	local page = filtered_page_by_id[page_id]
 
 	local extra_h = 1 -- not included in tabsize.height
@@ -360,7 +424,7 @@ local function get_formspec(dialogdata)
 		"checkbox[", tostring(tabsize.width - 5), ",", tostring(tabsize.height + 0.5), ";show_technical_names;",
 			fgettext("Show technical names"), ";", tostring(show_technical_names), "]",
 
-		"field[0.25,0.25;", tostring(search_width), ",0.9;Dsearch_query;;",
+		"field[0.25,0.25;", tostring(search_width), ",0.9;search_query;;",
 			core.formspec_escape(dialogdata.query or ""), "]",
 		"container[", tostring(search_width + 0.25), ", 0.25]",
 			"image_button[0,0;0.9,0.9;", core.formspec_escape(defaulttexturedir .. "zoom.png"), ";search;]",
@@ -485,7 +549,7 @@ local function buttonhandler(this, fields)
 	local dialogdata = this.data
 	dialogdata.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or dialogdata.leftscroll
 	dialogdata.rightscroll = core.explode_scrollbar_event(fields.rightscroll).value or dialogdata.rightscroll
-	dialogdata.query = fields["Dsearch_query"]
+	dialogdata.query = fields.search_query
 
 	if fields.back then
 		dialogdata.page_id = update_filtered_pages("")
@@ -499,7 +563,7 @@ local function buttonhandler(this, fields)
 		return true
 	end
 
-	if fields.search or fields.key_enter_field == "Dsearch_query" then
+	if fields.search or fields.key_enter_field == "search_query" then
 		dialogdata.components = nil
 		dialogdata.leftscroll = 0
 		dialogdata.rightscroll = 0
@@ -529,10 +593,15 @@ local function buttonhandler(this, fields)
 
 	for i, comp in ipairs(dialogdata.components) do
 		if comp.on_submit and comp:on_submit(fields, this) then
+			-- Clear components so they regenerate
+			dialogdata.components = nil
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
+
+			-- Clear components so they regenerate
+			dialogdata.components = nil
 			return true
 		end
 	end

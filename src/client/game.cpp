@@ -1390,7 +1390,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Pre-calculated values
 	 */
-	video::ITexture *t = texture_src->getTexture("crack_anylength.png");
+	video::ITexture *t = texture_src->getTexture("blank.png");
 	if (t) {
 		v2u32 size = t->getOriginalSize();
 		crack_animation_length = size.Y / size.X;

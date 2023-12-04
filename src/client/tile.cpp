@@ -1942,49 +1942,6 @@ static void apply_mask(video::IImage *mask, video::IImage *dst,
 	}
 }
 
-video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
-		core::dimension2d<u32> size, u8 tiles, video::IVideoDriver *driver)
-{
-	core::dimension2d<u32> strip_size = crack->getDimension();
-	core::dimension2d<u32> frame_size(strip_size.Width, strip_size.Width);
-	core::dimension2d<u32> tile_size(size / tiles);
-	s32 frame_count = strip_size.Height / strip_size.Width;
-	if (frame_index >= frame_count)
-		frame_index = frame_count - 1;
-	core::rect<s32> frame(v2s32(0, frame_index * frame_size.Height), frame_size);
-	video::IImage *result = nullptr;
-
-// extract crack frame
-	video::IImage *crack_tile = driver->createImage(video::ECF_A8R8G8B8, tile_size);
-	if (!crack_tile)
-		return nullptr;
-	if (tile_size == frame_size) {
-		crack->copyTo(crack_tile, v2s32(0, 0), frame);
-	} else {
-		video::IImage *crack_frame = driver->createImage(video::ECF_A8R8G8B8, frame_size);
-		if (!crack_frame)
-			goto exit__has_tile;
-		crack->copyTo(crack_frame, v2s32(0, 0), frame);
-		crack_frame->copyToScaling(crack_tile);
-		crack_frame->drop();
-	}
-	if (tiles == 1)
-		return crack_tile;
-
-// tile it
-	result = driver->createImage(video::ECF_A8R8G8B8, size);
-	if (!result)
-		goto exit__has_tile;
-	result->fill({});
-	for (u8 i = 0; i < tiles; i++)
-		for (u8 j = 0; j < tiles; j++)
-			crack_tile->copyTo(result, v2s32(i * tile_size.Width, j * tile_size.Height));
-
-exit__has_tile:
-	crack_tile->drop();
-	return result;
-}
-
 void brighten(video::IImage *image)
 {
 	if (image == NULL)

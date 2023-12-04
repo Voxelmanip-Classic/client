@@ -68,7 +68,6 @@ struct ObjectProperties
 	bool show_on_minimap = false;
 
 	ObjectProperties();
-	std::string dump();
 	// check limits of some important properties (strings) that'd cause exceptions later on
 	bool validate();
 	void deSerialize(std::istream &is);

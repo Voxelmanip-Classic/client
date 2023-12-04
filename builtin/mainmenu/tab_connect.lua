@@ -30,7 +30,7 @@ local function get_formspec(tabview, name, tabdata)
 		container_end[]
 
 		box[9.75,0;0.15,7.1;#555]
-		style[lbl_register;border=false]
+		style[lbl_register;bgimg=;bgimg_hovered=;bgimg_pressed=;font_size=+0]
 		button[10.7,0.8;4,0.9;lbl_register;No account?]
 		button[10.7,2.2;4,1.25;btn_register;Register]
 

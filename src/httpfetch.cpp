@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "httpfetch.h"
-#include "porting.h" // for sleep_ms(), get_sysinfo()
+#include "porting.h" // for sleep_ms()
 #include <iostream>
 #include <sstream>
 #include <list>
@@ -44,7 +44,7 @@ static std::unordered_map<u64, std::queue<HTTPFetchResult>>
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(20),
 	connect_timeout(10 * 1000),
-	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
+	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash)
 {
 }
 

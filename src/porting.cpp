@@ -199,52 +199,6 @@ bool detectMSVCBuildDir(const std::string &path)
 	return (!removeStringEnd(path, ends).empty());
 }
 
-std::string get_sysinfo()
-{
-#ifdef _WIN32
-
-	std::ostringstream oss;
-	LPSTR filePath = new char[MAX_PATH];
-	UINT blockSize;
-	VS_FIXEDFILEINFO *fixedFileInfo;
-
-	GetSystemDirectoryA(filePath, MAX_PATH);
-	PathAppendA(filePath, "kernel32.dll");
-
-	DWORD dwVersionSize = GetFileVersionInfoSizeA(filePath, NULL);
-	LPBYTE lpVersionInfo = new BYTE[dwVersionSize];
-
-	GetFileVersionInfoA(filePath, 0, dwVersionSize, lpVersionInfo);
-	VerQueryValueA(lpVersionInfo, "\\", (LPVOID *)&fixedFileInfo, &blockSize);
-
-	oss << "Windows/"
-		<< HIWORD(fixedFileInfo->dwProductVersionMS) << '.' // Major
-		<< LOWORD(fixedFileInfo->dwProductVersionMS) << '.' // Minor
-		<< HIWORD(fixedFileInfo->dwProductVersionLS) << ' '; // Build
-
-	#ifdef _WIN64
-	oss << "x86_64";
-	#else
-	BOOL is64 = FALSE;
-	if (IsWow64Process(GetCurrentProcess(), &is64) && is64)
-		oss << "x86_64"; // 32-bit app on 64-bit OS
-	else
-		oss << "x86";
-	#endif
-
-	delete[] lpVersionInfo;
-	delete[] filePath;
-
-	return oss.str();
-#else
-	struct utsname osinfo;
-	uname(&osinfo);
-	return std::string(osinfo.sysname) + "/"
-		+ osinfo.release + " " + osinfo.machine;
-#endif
-}
-
-
 bool getCurrentWorkingDir(char *buf, size_t len)
 {
 #ifdef _WIN32
@@ -668,37 +622,6 @@ void attachOrCreateConsole()
 #endif
 }
 
-#ifdef _WIN32
-std::string QuoteArgv(const std::string &arg)
-{
-	// Quoting rules on Windows are batshit insane, can differ between applications
-	// and there isn't even a stdlib function to deal with it.
-	// Ref: https://learn.microsoft.com/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
-	if (!arg.empty() && arg.find_first_of(" \t\n\v\"") == std::string::npos)
-		return arg;
-
-	std::string ret;
-	ret.reserve(arg.size()+2);
-	ret.push_back('"');
-	for (auto it = arg.begin(); it != arg.end(); ++it) {
-		u32 back = 0;
-		while (it != arg.end() && *it == '\\')
-			++back, ++it;
-
-		if (it == arg.end()) {
-			ret.append(2 * back, '\\');
-			break;
-		} else if (*it == '"') {
-			ret.append(2 * back + 1, '\\');
-		} else {
-			ret.append(back, '\\');
-		}
-		ret.push_back(*it);
-	}
-	ret.push_back('"');
-	return ret;
-}
-#endif
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 {

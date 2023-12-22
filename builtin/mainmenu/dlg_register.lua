@@ -22,29 +22,29 @@ local function register_formspec(dialogdata)
 
 	local retval = {
 		"formspec_version[4]",
-		"size[10,", tostring(buttons_y + 1.2), "]",
+		"size[11,", tostring(buttons_y + 1.2), "]",
 		"position[0.5,0.55]",
 		formspec_styling,
 		"set_focus[", (dialogdata.name ~= "" and "password" or "name"), "]",
 		"label[0.375,0.8;", fgettext("Register"), "]",
 
 		"label[0.375,2;Name]",
-		"field[3.6,1.5;6,1;name;;", core.formspec_escape(dialogdata.name), "]",
+		"field[4.6,1.5;6,1;name;;", core.formspec_escape(dialogdata.name), "]",
 		"label[0.375,3.5;Password]",
-		"pwdfield[3.6,3;6,1;password;]",
+		"pwdfield[4.6,3;6,1;password;]",
 		"label[0.375,5;Confirm Password]",
-		"pwdfield[3.6,4.5;6,1;password_2;]",
+		"pwdfield[4.6,4.5;6,1;password_2;]",
 
 		"container[0.375,", tostring(buttons_y), "]",
 		"button[0,0;3,1;dlg_register_confirm;", fgettext("Register"), "]",
-		"button[6.25,0;3,1;dlg_register_cancel;", fgettext("Cancel"), "]",
+		"button[7.25,0;3,1;dlg_register_cancel;", fgettext("Cancel"), "]",
 		"container_end[]",
 	}
 
 	if dialogdata.error then
 		table.insert_all(retval, {
-		"box[0.375,", tostring(buttons_y - 0.9), ";9.25,0.6;darkred]",
-		"label[0.625,", tostring(buttons_y - 0.6), ";", core.formspec_escape(dialogdata.error or ""), "]",
+			"box[0.375,", tostring(buttons_y - 0.9), ";10.25,0.6;darkred]",
+			"label[0.625,", tostring(buttons_y - 0.6), ";", core.formspec_escape(dialogdata.error or ""), "]",
 		})
 	end
 

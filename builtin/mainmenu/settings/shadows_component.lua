@@ -96,9 +96,8 @@ return {
 
 		local fs =
 			"label[0,0.2;" .. fgettext("Dynamic shadows") .. "]" ..
-			"dropdown[0,0.4;3,0.8;dd_shadows;" .. table.concat(labels, ",") .. ";" .. idx .. ";true]" ..
-			"label[0,1.5;" .. core.colorize("#bbb", fgettext("(The game will need to enable shadows as well)")) .. "]"
-		return fs, 1.8
+			"dropdown[0,0.4;3,0.8;dd_shadows;" .. table.concat(labels, ",") .. ";" .. idx .. ";true]"
+		return fs, 1.5
 	end,
 	on_submit = function(self, fields)
 		if fields.dd_shadows then

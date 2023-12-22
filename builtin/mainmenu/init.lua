@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 serverdata = {
-	address ="voxelmanip.se",
+	address = "voxelmanip.se",
 	port = 30001
 }
 

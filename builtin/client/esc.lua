@@ -2,9 +2,9 @@
 core.register_on_esc(function()
 	local fs = {[[
 		formspec_version[4]
-		size[6,8]
-		position[0.5,0.525]
-		no_prepend[]
+		size[6,7]
+		position[0.5,0.5]
+		padding[0,0]
 		bgcolor[;true;#000000b0]
 	]]}
 
@@ -18,7 +18,7 @@ core.register_on_esc(function()
 	end
 
 	table.insert(btns, { "btn_exit_menu", "Exit to Menu" })
-	--table.insert(btns, { "btn_exit_os", "Exit to OS" })
+	table.insert(btns, { "btn_exit_os", "Exit to OS" })
 
 	for i = 1, #btns, 1 do
 		table.insert(fs, ("button[1,%s;4,1;%s;%s]"):format((i-1)*1.5, btns[i][1], btns[i][2]))

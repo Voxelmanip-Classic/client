@@ -1551,7 +1551,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			wait_time += dtime;
 			// Only time out if we aren't waiting for the server we started
 			if (!start_data.address.empty() && wait_time > 10) {
-				*error_message = gettext("Connection timed out.");
+				*error_message = gettext("The connection to the server timed out. Check that the game is able to connect to the Internet.\n\nThe Voxelmanip Classic game server may also be under maintenance, please check again sometime later.");
 				errorstream << *error_message << std::endl;
 				break;
 			}

@@ -11,6 +11,7 @@ on:
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/**.yml'
+      - 'AppImageBuilder.yml'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -20,6 +21,7 @@ on:
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/**.yml'
+      - 'AppImageBuilder.yml'
 
 jobs:
   linux:
@@ -29,13 +31,23 @@ jobs:
       - name: Install deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends cmake g++-12 libluajit-5.1-dev libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev libzstd-dev
+          sudo apt-get install -y --no-install-recommends libfuse2 cmake g++-12 libluajit-5.1-dev libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev libzstd-dev
           git clone https://github.com/rollerozxa/irrlicht-vmc lib/irrlichtmt --depth 1
+
+      - name: Obtain appimage-builder
+        run: |
+          wget -O appimage-builder-x86_64.AppImage https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage
+          chmod +x appimage-builder-x86_64.AppImage
+          sudo mv appimage-builder-x86_64.AppImage /usr/local/bin/appimage-builder
 
       - name: Build
         run: |
-          cmake -B build -DRUN_IN_PLACE=TRUE
-          cmake --build build --parallel 4
+          VERSION="2023-11-11" appimage-builder
+
+      - name: Upload output as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: "*.AppImage"
 
   windows:
     runs-on: windows-latest

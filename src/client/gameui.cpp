@@ -114,7 +114,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
-			<< "Minetest " << g_version_hash
+			<< "Voxelmanip Classic " << g_version_hash
 			<< " | FPS: " << fps
 			<< std::setprecision(0)
 			<< " | drawtime: " << m_drawtime_avg << "ms"
@@ -127,7 +127,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< std::setprecision(2)
 			<< " | RTT: " << (client->getRTT() * 1000.0f) << "ms";
 
-		m_guitext->setRelativePosition(core::rect<s32>(50, 5, screensize.X, screensize.Y));
+		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X, screensize.Y));
 
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
 

@@ -18,7 +18,7 @@ core.register_on_esc(function()
 	end
 
 	table.insert(btns, { "btn_exit_menu", "Exit to Menu" })
-	table.insert(btns, { "btn_exit_os", "Exit to OS" })
+	--table.insert(btns, { "btn_exit_os", "Exit to OS" })
 
 	for i = 1, #btns, 1 do
 		table.insert(fs, ("button[1,%s;4,1;%s;%s]"):format((i-1)*1.5, btns[i][1], btns[i][2]))

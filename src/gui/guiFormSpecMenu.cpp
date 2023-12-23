@@ -3532,11 +3532,6 @@ void GUIFormSpecMenu::drawMenu()
 	bool hovered_element_found = false;
 
 	if (hovered) {
-		if (m_show_debug) {
-			core::rect<s32> rect = hovered->getAbsoluteClippingRect();
-			driver->draw2DRectangle(0x22FFFF00, rect, &rect);
-		}
-
 		// find the formspec-element of the hovered IGUIElement (a parent)
 		s32 id;
 		for (gui::IGUIElement *hovered_fselem = hovered; hovered_fselem;
@@ -4034,8 +4029,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_client->makeScreenshot();
 		}
 
-		if (event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug"))
-			m_show_debug = !m_show_debug;
 
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key==KEY_RETURN ||

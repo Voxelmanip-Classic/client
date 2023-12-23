@@ -241,6 +241,21 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 
 	get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
+	// Custom loading screen background
+	auto loadscreen_bg = tsrc->getTexture("menu_bg.png");
+
+	if (loadscreen_bg) {
+		const auto &bg_size = loadscreen_bg->getSize();
+		auto screensize = get_video_driver()->getScreenSize();
+
+		draw2DImageFilterScaled(get_video_driver(), loadscreen_bg,
+				core::rect<s32>(0, 0,
+					bg_size.Width + (screensize.Width - bg_size.Width),
+					bg_size.Height + (screensize.Height - bg_size.Height)),
+				core::rect<s32>(0, 0, bg_size.Width, bg_size.Height),
+				0, 0, true);
+	}
+
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
 		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");

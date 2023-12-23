@@ -6,7 +6,7 @@ core.register_on_sending_chat_message(function(message)
 	end
 
 	local first_char = message:sub(1,1)
-	if first_char == "/" or first_char == "." then
+	if first_char == "." then
 		core.display_chat_message(core.gettext("Issued command: ") .. message)
 	end
 

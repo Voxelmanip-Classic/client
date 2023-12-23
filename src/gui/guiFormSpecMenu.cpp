@@ -4029,6 +4029,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_client->makeScreenshot();
 		}
 
+		if (m_client != NULL) {
+			for (size_t i = 0; i < 9; i++) {
+				std::string slotkey = "keymap_slot" + std::to_string(i+1);
+				if (event.KeyInput.PressedDown && (kp == getKeySetting(slotkey.c_str()))) {
+					m_client->setPlayerItem(i);
+				}
+			}
+		}
 
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key==KEY_RETURN ||

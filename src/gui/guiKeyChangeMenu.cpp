@@ -149,6 +149,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
+	offset.X += 260 * s;
+	offset.Y = 60 * s;
+
 	{
 		s32 option_x = offset.X;
 		s32 option_y = offset.Y + 5 * s;

@@ -20,8 +20,8 @@ set(CLANG_MINIMUM_VERSION "6.0")
 
 # You should not need to edit these manually, use util/bump_version.sh
 set(VERSION_MAJOR 2023)
-set(VERSION_MINOR 11)
-set(VERSION_PATCH 11)
+set(VERSION_MINOR 12)
+set(VERSION_PATCH 23)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
